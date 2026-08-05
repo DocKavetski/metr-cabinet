@@ -1,0 +1,2727 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Психологические тесты — профессиональный инструмент</title>
+<style>
+:root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2333;
+    --card: #1c2333;
+    --border: #30363d;
+    --text: #f0f6fc;
+    --text2: #8b949e;
+    --primary: #58a6ff;
+    --primary-dark: #1f6feb;
+    --accent: #f0883e;
+    --success: #3fb950;
+    --danger: #f85149;
+    --warning: #d29922;
+    --shadow: rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+    --bg: #eef4f9;
+    --bg2: #f0f4f8;
+    --bg3: #e8edf3;
+    --card: #ffffff;
+    --border: #d0d7de;
+    --text: #1f2937;
+    --text2: #4a6a8a;
+    --primary: #1f4e6e;
+    --primary-dark: #123a52;
+    --accent: #ffb74d;
+    --success: #2ea043;
+    --danger: #cf222e;
+    --warning: #9a6700;
+    --shadow: rgba(0,0,0,0.1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',Roboto,system-ui,sans-serif; height:100vh; display:flex; flex-direction:column; transition:background .3s,color .3s; }
+.app { display:flex; flex:1; overflow:hidden; }
+.sidebar { width:280px; background:var(--bg2); border-right:1px solid var(--border); padding:1rem 0; overflow-y:auto; flex-shrink:0; display:flex; flex-direction:column; }
+.sidebar-brand { font-size:1.2rem; font-weight:700; padding:0.5rem 1.5rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.sidebar-category { padding:0.5rem 1.5rem; font-weight:600; color:var(--text2); font-size:.7rem; text-transform:uppercase; margin-top:.5rem; letter-spacing:.5px; }
+.sidebar-item { padding:.4rem 1.5rem .4rem 2rem; cursor:pointer; transition:.15s; border-left:3px solid transparent; font-size:.9rem; color:var(--text2); }
+.sidebar-item:hover { background:var(--bg3); color:var(--text); }
+.sidebar-item.active { background:var(--bg3); border-left-color:var(--accent); color:var(--text); }
+.main { flex:1; overflow-y:auto; padding:1.5rem 2rem; background:var(--bg); }
+.main-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px; }
+.main-header .title { font-size:1.4rem; font-weight:600; }
+.main-header .controls { display:flex; gap:8px; flex-wrap:wrap; }
+.test-title { font-size:1.3rem; font-weight:600; color:var(--text); margin-bottom:.5rem; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.test-title .badge { font-size:.7rem; background:var(--bg3); padding:.2rem .7rem; border-radius:20px; font-weight:400; color:var(--text2); }
+.test-desc { color:var(--text2); margin-bottom:1rem; font-size:.95rem; line-height:1.5; }
+.test-desc strong { color:var(--text); }
+.question-row { display:flex; flex-wrap:wrap; align-items:center; background:var(--card); padding:.5rem .8rem; border-radius:.8rem; border:1px solid var(--border); margin-bottom:.3rem; gap:.5rem 1rem; transition:background .1s; }
+.question-row:hover { background:var(--bg3); }
+.question-row .q-label { flex:1 1 200px; font-size:.9rem; font-weight:500; color:var(--text); }
+.question-row .q-label .q-num { color:var(--text2); font-weight:400; margin-right:4px; }
+.string-input-group { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:1rem; }
+.string-input-group input { flex:2; min-width:200px; padding:8px 14px; border-radius:2rem; border:2px solid var(--border); font-size:1rem; font-family:monospace; background:var(--card); color:var(--text); transition:border-color .2s; }
+.string-input-group input:focus { outline:none; border-color:var(--primary); }
+.string-input-group input.error { border-color:var(--danger); background:rgba(248,81,73,0.1); }
+.string-input-group input.valid { border-color:var(--success); background:rgba(63,185,80,0.1); }
+.string-input-group .counter { font-size:.85rem; color:var(--text2); white-space:nowrap; }
+.string-input-group .counter.error { color:var(--danger); font-weight:600; }
+.string-input-group .counter.valid { color:var(--success); font-weight:600; }
+.string-input-group .hint { font-size:.8rem; color:var(--text2); font-family:monospace; }
+.radio-group { display:flex; flex-wrap:wrap; gap:6px 12px; align-items:center; flex:0 1 auto; }
+.radio-group label { display:flex; align-items:center; gap:3px; font-size:.8rem; cursor:pointer; padding:2px 6px; border-radius:4px; transition:background .1s; color:var(--text2); }
+.radio-group label:hover { background:var(--bg3); color:var(--text); }
+.radio-group label.selected { color:var(--text); background:var(--bg3); }
+.radio-group input[type="radio"] { margin:0; cursor:pointer; width:16px; height:16px; accent-color:var(--primary); }
+.hads-vertical .question-row { flex-direction:column; align-items:stretch; }
+.hads-vertical .q-label { flex:1 1 auto; margin-bottom:4px; }
+.hads-vertical .radio-group { justify-content:flex-start; flex-direction:column; align-items:stretch; gap:2px; }
+.hads-vertical .radio-group label { padding:3px 8px; border-radius:4px; border:1px solid transparent; transition:all .15s; }
+.hads-vertical .radio-group label:hover { background:var(--bg3); border-color:var(--border); }
+.hads-vertical .radio-group label.selected { background:var(--bg3); border-color:var(--primary); }
+.btn { background:var(--primary); color:#fff; border:none; padding:.4rem 1.2rem; border-radius:2rem; font-weight:600; font-size:.85rem; cursor:pointer; transition:.2s; }
+.btn:hover { transform:scale(1.02); opacity:.9; }
+.btn-secondary { background:var(--bg3); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--border); }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-danger:hover { background:#d63a3a; }
+.btn-success { background:var(--success); color:#fff; }
+.btn-success:hover { background:#2ea043; }
+.result-area { margin-top:1rem; background:var(--bg2); border-radius:1rem; padding:.8rem 1.2rem; border-left:4px solid var(--accent); min-height:3rem; font-size:.95rem; line-height:1.6; color:var(--text); }
+.result-area strong { color:var(--text); }
+.result-area .sub-result { margin:.2rem 0; padding-left:1rem; border-left:2px solid var(--border); }
+.result-area .level-low { color:var(--success); }
+.result-area .level-moderate { color:var(--warning); }
+.result-area .level-high { color:var(--danger); }
+.global-result { background:var(--bg2); border-top:2px solid var(--border); padding:1rem 2rem; margin-top:1rem; }
+.global-result h3 { font-size:1.1rem; margin-bottom:.5rem; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.global-result textarea { width:100%; min-height:150px; padding:.8rem; border-radius:1rem; border:1px solid var(--border); font-family:'Courier New',monospace; font-size:.9rem; background:var(--card); color:var(--text); resize:vertical; }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg2); color:var(--text); padding:8px 20px; border-radius:40px; font-size:.85rem; opacity:0; transition:opacity .3s; pointer-events:none; z-index:999; border:1px solid var(--border); }
+@media (max-width:700px) {
+ .app { flex-direction:column; }
+ .sidebar { width:100%; flex-direction:row; flex-wrap:wrap; max-height:200px; overflow-y:auto; padding:.5rem; border-right:none; border-bottom:1px solid var(--border); }
+ .sidebar-brand, .sidebar-category { display:none; }
+ .sidebar-item { padding:.2rem .8rem; font-size:.8rem; border-left:none; border-bottom:2px solid transparent; }
+ .sidebar-item.active { border-bottom-color:var(--accent); border-left:none; }
+ .main { padding:.5rem; }
+ .question-row .q-label { flex:1 1 100%; }
+ .radio-group { justify-content:flex-start; }
+ .main-header { flex-direction:column; align-items:stretch; }
+ .hads-vertical .radio-group { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">🧠 Психологические тесты</div>
+  <div id="menuContainer"></div>
+ </div>
+ <div class="main" id="mainContent">
+  <div class="main-header">
+   <span class="title" id="currentTestTitle">Выберите тест</span>
+   <div class="controls">
+    <button class="btn btn-secondary" id="themeToggle" title="Переключить тему">🌙</button>
+    <button class="btn btn-secondary" id="modeToggle" title="Переключить режим ввода">📝 Ввод строкой</button>
+   </div>
+  </div>
+  <div id="testContainer"></div>
+  <div class="global-result">
+   <h3>📋 Сводка результатов <button class="btn btn-secondary" id="copyGlobalBtn">Копировать всё</button> <button class="btn btn-danger" id="clearGlobalBtn">Очистить все</button></h3>
+   <textarea id="globalOutput" readonly placeholder="Здесь появятся результаты..."></textarea>
+  </div>
+ </div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+// =============================================================
+// 1. ДВИЖОК (Engine) — исправлены HADS и SCL-90
+// =============================================================
+const Engine = {
+    answers: {},
+    globalResults: [],
+    currentTestId: 'bdi',
+    inputMode: 'string',
+    theme: 'dark',
+
+    init() {
+        this.loadState();
+        this.applyTheme();
+        this.buildMenu();
+        this.loadTest('bdi');
+        this.setupGlobalButtons();
+        this.setupThemeToggle();
+        this.setupModeToggle();
+        this.showToast('Выберите тест слева');
+    },
+
+    saveState() {
+        try {
+            localStorage.setItem('psych_tests_state', JSON.stringify({
+                answers: this.answers,
+                globalResults: this.globalResults,
+                inputMode: this.inputMode,
+                theme: this.theme
+            }));
+        } catch(e) {}
+    },
+
+    loadState() {
+        try {
+            const data = localStorage.getItem('psych_tests_state');
+            if (data) {
+                const state = JSON.parse(data);
+                this.answers = state.answers || {};
+                this.globalResults = state.globalResults || [];
+                this.inputMode = state.inputMode || 'string';
+                this.theme = state.theme || 'dark';
+            }
+        } catch(e) {}
+    },
+
+    applyTheme() {
+        document.documentElement.setAttribute('data-theme', this.theme);
+        document.getElementById('themeToggle').textContent = this.theme === 'dark' ? '🌙' : '☀️';
+    },
+
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        this.applyTheme();
+        this.saveState();
+    },
+
+    setupThemeToggle() {
+        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+    },
+
+    setupModeToggle() {
+        const btn = document.getElementById('modeToggle');
+        btn.textContent = this.inputMode === 'string' ? '📝 Ввод строкой' : '☑️ Выбор вариантов';
+        btn.addEventListener('click', () => {
+            this.inputMode = this.inputMode === 'string' ? 'radio' : 'string';
+            btn.textContent = this.inputMode === 'string' ? '📝 Ввод строкой' : '☑️ Выбор вариантов';
+            this.saveState();
+            this.loadTest(this.currentTestId);
+            this.showToast(`Режим: ${this.inputMode === 'string' ? 'ввод строкой' : 'выбор вариантов'}`);
+        });
+    },
+
+    buildMenu() {
+        const container = document.getElementById('menuContainer');
+        const cats = {};
+        Object.keys(testCategories).forEach(id => {
+            const cat = testCategories[id];
+            if (!cats[cat]) cats[cat] = [];
+            cats[cat].push({ id, label: testLabels[id] || id });
+        });
+        let html = '';
+        const sorted = Object.keys(cats).sort((a,b) => {
+            const ia = categoryOrder.indexOf(a), ib = categoryOrder.indexOf(b);
+            if (ia === -1 && ib === -1) return a.localeCompare(b);
+            if (ia === -1) return 1;
+            if (ib === -1) return -1;
+            return ia - ib;
+        });
+        sorted.forEach(cat => {
+            html += `<div class="sidebar-category">${cat}</div>`;
+            cats[cat].sort((a,b) => a.label.localeCompare(b.label));
+            cats[cat].forEach(t => {
+                html += `<div class="sidebar-item" data-test="${t.id}">${t.label}</div>`;
+            });
+        });
+        container.innerHTML = html;
+        container.querySelectorAll('.sidebar-item').forEach(el => {
+            el.addEventListener('click', () => this.loadTest(el.dataset.test));
+        });
+    },
+
+    loadTest(testId) {
+        const config = testConfigs[testId];
+        if (!config) {
+            document.getElementById('testContainer').innerHTML = `<p style="color:var(--danger);">Тест не найден</p>`;
+            return;
+        }
+        this.currentTestId = testId;
+        document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.sidebar-item[data-test="${testId}"]`)?.classList.add('active');
+        document.getElementById('currentTestTitle').textContent = config.label;
+
+        const container = document.getElementById('testContainer');
+        container.innerHTML = '';
+        this.renderTest(config, container);
+    },
+
+    renderTest(config, container) {
+        const mode = this.inputMode;
+        const isString = mode === 'string';
+
+        let html = `<div class="test-title">${config.icon || '📋'} ${config.label}`;
+        if (config.badge) html += ` <span class="badge">${config.badge}</span>`;
+        html += `</div>`;
+        if (config.desc) html += `<div class="test-desc">${config.desc}</div>`;
+
+        const count = config.questions ? config.questions.length : 0;
+        const saved = this.answers[config.id] || '';
+
+        if (config.id === 'bdi') {
+            if (isString) {
+                html += this.renderBdiInput(config);
+            } else {
+                html += this.renderBdiRadioSimple(config);
+            }
+        } else if (config.id === 'asq') {
+            html += this.renderAsqContent(config);
+        } else if (config.id === 'scl90') {
+            html += this.renderScl90Content(config, isString);
+        } else if (config.id === 'hads') {
+            html += this.renderHads(config, isString);
+        } else if (isString && config.type !== 'text-input' && count > 0) {
+            html += this.renderStringInput(config, count, saved);
+        } else if (config.type === 'text-input') {
+            html += this.renderTextInput(config);
+        } else {
+            html += this.renderRadioQuestions(config);
+        }
+
+        html += `<div style="margin-top:1rem;">`;
+        html += `<button class="btn" id="calcBtn">Рассчитать</button>`;
+        html += `<button class="btn btn-danger" id="clearBtn">Очистить</button>`;
+        html += `</div>`;
+        html += `<div class="result-area" id="resultArea">Ожидание расчёта</div>`;
+
+        container.innerHTML = html;
+
+        const calcBtn = document.getElementById('calcBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        if (calcBtn) calcBtn.addEventListener('click', () => this.calculateTest(config));
+        if (clearBtn) clearBtn.addEventListener('click', () => this.clearTest(config));
+
+        this.setupInputHandlers(config);
+    },
+
+    // ---- BDI ----
+    renderBdiInput(config) {
+        const saved = this.answers[config.id] || '';
+        return `
+            <div class="string-input-group">
+                <input type="text" id="stringInput" placeholder="21 цифра (0-3)..." value="${saved}" />
+                <span class="counter" id="stringCounter">${saved.length} / 21</span>
+                <span class="hint">Пример: 000000000000000000000</span>
+            </div>
+        `;
+    },
+
+    renderBdiRadioSimple(config) {
+        const saved = this.answers[config.id] || {};
+        const bdiQuestions = [
+            'Настроение', 'Пессимизм', 'Чувство несостоятельности', 'Неудовлетворенность',
+            'Чувство вины', 'Ощущение, что буду наказан', 'Отвращение к себе', 'Идеи самообвинения',
+            'Суицидальные мысли', 'Слезливость', 'Раздражительность', 'Нарушение социальных связей',
+            'Нерешительность', 'Образ тела', 'Утрата трудоспособности', 'Нарушение сна',
+            'Утомляемость', 'Снижение аппетита', 'Потеря веса', 'Охваченность телесными ощущениями',
+            'Утрата либидо'
+        ];
+        let html = `<div id="itemsContainer">`;
+        bdiQuestions.forEach((text, idx) => {
+            html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+            for (let v = 0; v <= 3; v++) {
+                const checked = saved[idx] === v ? 'checked' : '';
+                html += `<label><input type="radio" name="q_${idx}" value="${v}" ${checked}> ${v}</label>`;
+            }
+            html += `</div></div>`;
+        });
+        html += `</div>`;
+        return html;
+    },
+
+    // ---- ASQ ----
+    renderAsqContent(config) {
+        const saved = this.answers['asq'] || {};
+        const isString = this.inputMode === 'string';
+        const showQ5 = saved.anyYes || false;
+        const q5Answer = saved.q5 || '0';
+        const comment = saved.comment || '';
+
+        let html = `<div id="asqItems">`;
+        const asqQuestions = [
+            'За последние несколько недель хотелось ли Вам умереть?',
+            'За последние несколько недель чувствовали ли Вы, что Вам или Вашей семье было бы лучше, если бы Вы умерли?',
+            'За последнюю неделю были ли у Вас мысли о самоубийстве?',
+            'Вы когда-нибудь пытались убить себя?'
+        ];
+        asqQuestions.forEach((text, idx) => {
+            const val = saved[idx] !== undefined ? saved[idx] : '';
+            html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+            if (isString) {
+                html += `<label><input type="radio" name="asq_${idx}" value="1" ${val === 1 ? 'checked' : ''}> 1 (Да)</label>`;
+                html += `<label><input type="radio" name="asq_${idx}" value="0" ${val === 0 ? 'checked' : ''}> 0 (Нет)</label>`;
+            } else {
+                html += `<label><input type="radio" name="asq_${idx}" value="1" ${val === 1 ? 'checked' : ''}> Да</label>`;
+                html += `<label><input type="radio" name="asq_${idx}" value="0" ${val === 0 ? 'checked' : ''}> Нет</label>`;
+            }
+            html += `</div></div>`;
+        });
+        html += `</div>`;
+
+        html += `<div id="asqQuestion5" style="${showQ5 ? 'display:block;' : 'display:none;'} margin-top:10px; padding:12px; background:var(--bg3); border-radius:1rem; border:1px solid var(--accent);">`;
+        html += `<div class="question-row"><div class="q-label"><span class="q-num">5.</span> Думаете ли Вы о том, чтобы убить себя прямо сейчас?</div><div class="radio-group">`;
+        if (isString) {
+            html += `<label><input type="radio" name="asq_q5" value="1" ${q5Answer === '1' ? 'checked' : ''}> 1 (Да)</label>`;
+            html += `<label><input type="radio" name="asq_q5" value="0" ${q5Answer === '0' ? 'checked' : ''}> 0 (Нет)</label>`;
+        } else {
+            html += `<label><input type="radio" name="asq_q5" value="1" ${q5Answer === '1' ? 'checked' : ''}> Да</label>`;
+            html += `<label><input type="radio" name="asq_q5" value="0" ${q5Answer === '0' ? 'checked' : ''}> Нет</label>`;
+        }
+        html += `</div></div>`;
+        html += `<div style="margin-top:5px;">`;
+        html += `<label style="font-size:.9rem;color:var(--text2);">Если да, опишите, пожалуйста, свои мысли:</label>`;
+        html += `<textarea id="asqComment" rows="4" style="width:100%;border-radius:.8rem;border:1px solid var(--border);padding:.5rem;font-family:inherit;background:var(--card);color:var(--text);margin-top:4px;">${comment}</textarea>`;
+        html += `</div></div>`;
+        return html;
+    },
+
+    // ---- HADS (исправлен: сначала тревога, потом депрессия) ----
+    renderHads(config, isString) {
+        const saved = this.answers['hads'] || {};
+        const anxietyQuestions = [
+            'Я испытываю напряжение, мне не по себе',
+            'Я испытываю страх, кажется, будто что-то ужасное может вот-вот случиться',
+            'Беспокойные мысли крутятся у меня в голове',
+            'Я легко могу сесть и расслабиться',
+            'Я испытываю внутреннее напряжение или дрожь',
+            'Я испытываю неусидчивость, мне постоянно нужно двигаться',
+            'У меня бывает внезапное чувство паники'
+        ];
+        const depressionQuestions = [
+            'То, что приносило мне большое удовольствие, и сейчас вызывает у меня такое же чувство',
+            'Я способен рассмеяться и увидеть в том или ином событии смешное',
+            'Я испытываю бодрость',
+            'Мне кажется, что я стал все делать очень медленно',
+            'Я не слежу за своей внешностью',
+            'Я считаю, что мои дела могут принести мне чувство удовлетворения',
+            'Я могу получить удовольствие от хорошей книги, радио- или телепрограммы'
+        ];
+
+        let html = `<div class="hads-vertical" style="display:flex;flex-wrap:wrap;gap:2rem;">`;
+
+        // Блок тревоги
+        html += `<div style="flex:1;min-width:280px;"><h3 style="color:var(--text);margin-bottom:.5rem;">Тревога</h3>`;
+        if (isString) {
+            html += `<div class="string-input-group" style="margin-bottom:.5rem;">
+                <input type="text" id="hads_anxiety_input" placeholder="7 цифр (0-3)..." value="${saved.anxiety || ''}" />
+                <span class="counter" id="hads_anxiety_counter">${(saved.anxiety || '').length} / 7</span>
+            </div>`;
+        } else {
+            anxietyQuestions.forEach((text, idx) => {
+                html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+                for (let v = 0; v <= 3; v++) {
+                    const checked = saved.anxiety && saved.anxiety[idx] === v ? 'checked' : '';
+                    html += `<label><input type="radio" name="hads_a_${idx}" value="${v}" ${checked}> ${v}</label>`;
+                }
+                html += `</div></div>`;
+            });
+        }
+        html += `</div>`;
+
+        // Блок депрессии
+        html += `<div style="flex:1;min-width:280px;"><h3 style="color:var(--text);margin-bottom:.5rem;">Депрессия</h3>`;
+        if (isString) {
+            html += `<div class="string-input-group" style="margin-bottom:.5rem;">
+                <input type="text" id="hads_depression_input" placeholder="7 цифр (0-3)..." value="${saved.depression || ''}" />
+                <span class="counter" id="hads_depression_counter">${(saved.depression || '').length} / 7</span>
+            </div>`;
+        } else {
+            depressionQuestions.forEach((text, idx) => {
+                html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+                for (let v = 0; v <= 3; v++) {
+                    const checked = saved.depression && saved.depression[idx] === v ? 'checked' : '';
+                    html += `<label><input type="radio" name="hads_d_${idx}" value="${v}" ${checked}> ${v}</label>`;
+                }
+                html += `</div></div>`;
+            });
+        }
+        html += `</div></div>`;
+
+        html += `<div style="margin-top:.5rem;color:var(--text2);font-size:.85rem;">
+            <strong>Интерпретация:</strong> 0-7 — норма, 8-10 — субклиническая, 11+ — клиническая
+        </div>`;
+        return html;
+    },
+
+    // ---- SCL-90 ----
+    renderScl90Content(config, isString) {
+        const saved = this.answers['scl90'] || {};
+        const count = 90;
+        if (isString) {
+            const val = saved._string || '';
+            return `
+                <div class="string-input-group">
+                    <input type="text" id="stringInput" placeholder="Введите 90 цифр (1-5)..." value="${val}" />
+                    <span class="counter" id="stringCounter">${val.length} / ${count}</span>
+                    <span class="hint">Пример: ${Array(count).fill(1).join('')}</span>
+                </div>
+                <div id="scl90Items" style="display:none;"></div>
+            `;
+        } else {
+            const opts = [1,2,3,4,5];
+            let html = `<div id="scl90Items">`;
+            config.questions.forEach((text, idx) => {
+                const val = saved[idx] !== undefined ? saved[idx] : '';
+                html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+                opts.forEach(v => {
+                    const label = v === 1 ? 'Совсем нет' : v === 2 ? 'Немного' : v === 3 ? 'Умеренно' : v === 4 ? 'Сильно' : 'Очень сильно';
+                    const checked = val == v ? 'checked' : '';
+                    html += `<label><input type="radio" name="q_${idx}" value="${v}" ${checked}> ${v} — ${label}</label>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `</div>`;
+            return html;
+        }
+    },
+
+    renderStringInput(config, count, saved) {
+        const minVal = 0;
+        const maxVal = config.options ? this.getMaxOptionValue(config.options) : 0;
+        return `
+            <div class="string-input-group">
+                <input type="text" id="stringInput" placeholder="Введите ${count} цифр (${minVal}-${maxVal})..." value="${saved}" />
+                <span class="counter" id="stringCounter">${saved.length} / ${count}</span>
+                <span class="hint">Пример: ${Array(count).fill(minVal).join('')}</span>
+            </div>
+            <div id="itemsContainer" style="display:none;"></div>
+        `;
+    },
+
+    getMaxOptionValue(options) {
+        if (!options || !options.length) return 0;
+        if (typeof options[0] === 'object') {
+            return Math.max(...options.map(o => o.value));
+        }
+        return Math.max(...options);
+    },
+
+    renderRadioQuestions(config) {
+        const saved = this.answers[config.id] || {};
+        const opts = config.options || [0,1,2,3];
+        const isVertical = config.layout === 'vertical';
+        let html = `<div id="itemsContainer"${isVertical ? ' class="hads-vertical"' : ''}>`;
+        config.questions.forEach((text, idx) => {
+            html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+            opts.forEach((opt, oi) => {
+                const val = typeof opt === 'object' ? opt.value : opt;
+                const label = typeof opt === 'object' ? opt.label : String(opt);
+                const checked = saved[idx] === val ? 'checked' : '';
+                html += `<label><input type="radio" name="q_${idx}" value="${val}" ${checked}> ${label}</label>`;
+            });
+            html += `</div></div>`;
+        });
+        html += `</div>`;
+        return html;
+    },
+
+    renderTextInput(config) {
+        const saved = this.answers[config.id] || '';
+        return `
+            <div style="margin-bottom:10px;">
+                <input type="text" id="textInput" value="${saved}" style="width:100%;padding:8px 14px;border-radius:1rem;border:2px solid var(--border);font-size:1rem;background:var(--card);color:var(--text);" placeholder="${config.desc || 'Введите данные...'}" />
+            </div>
+        `;
+    },
+
+    setupInputHandlers(config) {
+        const isString = this.inputMode === 'string';
+        const count = config.questions ? config.questions.length : 0;
+
+        // BDI
+        if (config.id === 'bdi') {
+            if (isString) {
+                const input = document.getElementById('stringInput');
+                const counter = document.getElementById('stringCounter');
+                if (!input) return;
+                const saved = this.answers[config.id] || '';
+                input.value = saved;
+                if (counter) counter.textContent = `${saved.length} / 21`;
+                if (saved.length === 21) {
+                    input.classList.add('valid');
+                    if (counter) counter.classList.add('valid');
+                }
+                input.addEventListener('input', () => {
+                    let val = input.value.replace(/\D/g, '');
+                    if (val.length > 21) val = val.slice(0, 21);
+                    input.value = val;
+                    const len = val.length;
+                    if (counter) counter.textContent = `${len} / 21`;
+                    input.className = '';
+                    if (counter) counter.className = 'counter';
+                    if (len === 21) {
+                        input.classList.add('valid');
+                        if (counter) counter.classList.add('valid');
+                        this.answers[config.id] = val;
+                        this.saveState();
+                        this.calculateTest(config);
+                    } else if (len > 0) {
+                        input.classList.add('error');
+                        if (counter) counter.classList.add('error');
+                    }
+                });
+                if (input.value.length === 21) this.calculateTest(config);
+            } else {
+                const saved = this.answers[config.id] || {};
+                for (let i = 0; i < 21; i++) {
+                    const radios = document.getElementsByName(`q_${i}`);
+                    for (const r of radios) {
+                        r.addEventListener('change', () => {
+                            this.answers[config.id] = this.answers[config.id] || {};
+                            this.answers[config.id][i] = parseInt(r.value, 10);
+                            this.saveState();
+                            this.calculateTest(config);
+                        });
+                    }
+                    if (saved[i] !== undefined) {
+                        for (const r of radios) {
+                            if (parseInt(r.value, 10) === saved[i]) r.checked = true;
+                        }
+                    }
+                }
+                if (Object.keys(saved).length > 0) setTimeout(() => this.calculateTest(config), 50);
+            }
+            return;
+        }
+
+        // ASQ
+        if (config.id === 'asq') {
+            this.setupAsqHandlers(config);
+            return;
+        }
+
+        // HADS
+        if (config.id === 'hads') {
+            this.setupHadsHandlers(config);
+            return;
+        }
+
+        // SCL-90
+        if (config.id === 'scl90') {
+            this.setupScl90Handlers(config);
+            return;
+        }
+
+        // Остальные тесты
+        if (isString && config.type !== 'text-input' && count > 0) {
+            const input = document.getElementById('stringInput');
+            const counter = document.getElementById('stringCounter');
+            if (!input) return;
+            const saved = this.answers[config.id] || '';
+            input.value = saved;
+            if (counter) counter.textContent = `${saved.length} / ${count}`;
+            if (saved.length === count) {
+                input.classList.add('valid');
+                if (counter) counter.classList.add('valid');
+            }
+            input.addEventListener('input', () => {
+                let val = input.value.replace(/\D/g, '');
+                if (val.length > count) val = val.slice(0, count);
+                input.value = val;
+                const len = val.length;
+                if (counter) counter.textContent = `${len} / ${count}`;
+                input.className = '';
+                if (counter) counter.className = 'counter';
+                if (len === count) {
+                    input.classList.add('valid');
+                    if (counter) counter.classList.add('valid');
+                    this.answers[config.id] = val;
+                    this.saveState();
+                    this.calculateTest(config);
+                } else if (len > 0) {
+                    input.classList.add('error');
+                    if (counter) counter.classList.add('error');
+                }
+            });
+            if (input.value.length === count) this.calculateTest(config);
+        } else if (config.type !== 'text-input') {
+            const saved = this.answers[config.id] || {};
+            for (let i = 0; i < count; i++) {
+                const radios = document.getElementsByName(`q_${i}`);
+                for (const r of radios) {
+                    r.addEventListener('change', () => {
+                        this.answers[config.id] = this.answers[config.id] || {};
+                        this.answers[config.id][i] = parseInt(r.value, 10);
+                        this.saveState();
+                        this.calculateTest(config);
+                    });
+                }
+                if (saved[i] !== undefined) {
+                    for (const r of radios) {
+                        if (parseInt(r.value, 10) === saved[i]) r.checked = true;
+                    }
+                }
+            }
+            if (Object.keys(saved).length > 0) setTimeout(() => this.calculateTest(config), 50);
+        }
+
+        if (config.type === 'text-input') {
+            const input = document.getElementById('textInput');
+            if (input) {
+                const saved = this.answers[config.id] || '';
+                input.value = saved;
+                input.addEventListener('input', () => {
+                    this.answers[config.id] = input.value;
+                    this.saveState();
+                    if (config.scoring) {
+                        const result = config.scoring(input.value);
+                        this.showResult(config, result);
+                        this.updateGlobalResult(config.id, config.label, result);
+                    }
+                });
+                if (saved) {
+                    setTimeout(() => {
+                        if (config.scoring) {
+                            const result = config.scoring(saved);
+                            this.showResult(config, result);
+                            this.updateGlobalResult(config.id, config.label, result);
+                        }
+                    }, 50);
+                }
+            }
+        }
+    },
+
+    setupAsqHandlers(config) {
+        const saved = this.answers['asq'] || {};
+
+        function checkAnyYes() {
+            let anyYes = false;
+            for (let i = 0; i < 4; i++) {
+                const radios = document.getElementsByName(`asq_${i}`);
+                for (const r of radios) {
+                    if (r.checked && r.value === '1') anyYes = true;
+                }
+            }
+            return anyYes;
+        }
+
+        for (let i = 0; i < 4; i++) {
+            const radios = document.getElementsByName(`asq_${i}`);
+            for (const r of radios) {
+                r.addEventListener('change', function() {
+                    const anyYes = checkAnyYes();
+                    document.getElementById('asqQuestion5').style.display = anyYes ? 'block' : 'none';
+                    Engine.answers['asq'] = Engine.answers['asq'] || {};
+                    Engine.answers['asq'].anyYes = anyYes;
+                    Engine.saveState();
+                    Engine.calculateTest(config);
+                });
+            }
+        }
+
+        const q5Radios = document.getElementsByName('asq_q5');
+        for (const r of q5Radios) {
+            r.addEventListener('change', function() {
+                Engine.answers['asq'] = Engine.answers['asq'] || {};
+                Engine.answers['asq'].q5 = this.value;
+                Engine.saveState();
+                Engine.calculateTest(config);
+            });
+        }
+
+        const commentField = document.getElementById('asqComment');
+        if (commentField) {
+            commentField.addEventListener('input', function() {
+                Engine.answers['asq'] = Engine.answers['asq'] || {};
+                Engine.answers['asq'].comment = this.value;
+                Engine.saveState();
+                Engine.calculateTest(config);
+            });
+        }
+
+        if (saved.anyYes) {
+            const q5block = document.getElementById('asqQuestion5');
+            if (q5block) q5block.style.display = 'block';
+        }
+        if (Object.keys(saved).length > 0) setTimeout(() => this.calculateTest(config), 50);
+    },
+
+    setupHadsHandlers(config) {
+        const isString = this.inputMode === 'string';
+        const saved = this.answers['hads'] || {};
+
+        if (isString) {
+            const anxietyInput = document.getElementById('hads_anxiety_input');
+            const depressionInput = document.getElementById('hads_depression_input');
+            const anxietyCounter = document.getElementById('hads_anxiety_counter');
+            const depressionCounter = document.getElementById('hads_depression_counter');
+
+            if (anxietyInput) {
+                const val = saved.anxiety || '';
+                anxietyInput.value = val;
+                if (anxietyCounter) anxietyCounter.textContent = `${val.length} / 7`;
+                if (val.length === 7) {
+                    anxietyInput.classList.add('valid');
+                    if (anxietyCounter) anxietyCounter.classList.add('valid');
+                }
+                anxietyInput.addEventListener('input', () => {
+                    let v = anxietyInput.value.replace(/\D/g, '');
+                    if (v.length > 7) v = v.slice(0, 7);
+                    anxietyInput.value = v;
+                    if (anxietyCounter) anxietyCounter.textContent = `${v.length} / 7`;
+                    anxietyInput.className = '';
+                    if (anxietyCounter) anxietyCounter.className = 'counter';
+                    if (v.length === 7) {
+                        anxietyInput.classList.add('valid');
+                        if (anxietyCounter) anxietyCounter.classList.add('valid');
+                        this.answers['hads'] = this.answers['hads'] || {};
+                        this.answers['hads'].anxiety = v;
+                        this.saveState();
+                        this.calculateTest(config);
+                    } else if (v.length > 0) {
+                        anxietyInput.classList.add('error');
+                        if (anxietyCounter) anxietyCounter.classList.add('error');
+                    }
+                });
+                if (val.length === 7) this.calculateTest(config);
+            }
+
+            if (depressionInput) {
+                const val = saved.depression || '';
+                depressionInput.value = val;
+                if (depressionCounter) depressionCounter.textContent = `${val.length} / 7`;
+                if (val.length === 7) {
+                    depressionInput.classList.add('valid');
+                    if (depressionCounter) depressionCounter.classList.add('valid');
+                }
+                depressionInput.addEventListener('input', () => {
+                    let v = depressionInput.value.replace(/\D/g, '');
+                    if (v.length > 7) v = v.slice(0, 7);
+                    depressionInput.value = v;
+                    if (depressionCounter) depressionCounter.textContent = `${v.length} / 7`;
+                    depressionInput.className = '';
+                    if (depressionCounter) depressionCounter.className = 'counter';
+                    if (v.length === 7) {
+                        depressionInput.classList.add('valid');
+                        if (depressionCounter) depressionCounter.classList.add('valid');
+                        this.answers['hads'] = this.answers['hads'] || {};
+                        this.answers['hads'].depression = v;
+                        this.saveState();
+                        this.calculateTest(config);
+                    } else if (v.length > 0) {
+                        depressionInput.classList.add('error');
+                        if (depressionCounter) depressionCounter.classList.add('error');
+                    }
+                });
+                if (val.length === 7) this.calculateTest(config);
+            }
+        } else {
+            // Radio mode
+            for (let i = 0; i < 7; i++) {
+                const radiosA = document.getElementsByName(`hads_a_${i}`);
+                for (const r of radiosA) {
+                    r.addEventListener('change', () => {
+                        this.answers['hads'] = this.answers['hads'] || {};
+                        this.answers['hads'].anxiety = this.answers['hads'].anxiety || {};
+                        this.answers['hads'].anxiety[i] = parseInt(r.value, 10);
+                        this.saveState();
+                        this.calculateTest(config);
+                    });
+                }
+                if (saved.anxiety && saved.anxiety[i] !== undefined) {
+                    for (const r of radiosA) {
+                        if (parseInt(r.value, 10) === saved.anxiety[i]) r.checked = true;
+                    }
+                }
+                const radiosD = document.getElementsByName(`hads_d_${i}`);
+                for (const r of radiosD) {
+                    r.addEventListener('change', () => {
+                        this.answers['hads'] = this.answers['hads'] || {};
+                        this.answers['hads'].depression = this.answers['hads'].depression || {};
+                        this.answers['hads'].depression[i] = parseInt(r.value, 10);
+                        this.saveState();
+                        this.calculateTest(config);
+                    });
+                }
+                if (saved.depression && saved.depression[i] !== undefined) {
+                    for (const r of radiosD) {
+                        if (parseInt(r.value, 10) === saved.depression[i]) r.checked = true;
+                    }
+                }
+            }
+            if (Object.keys(saved).length > 0) setTimeout(() => this.calculateTest(config), 50);
+        }
+    },
+
+    setupScl90Handlers(config) {
+        const count = 90;
+        const saved = this.answers['scl90'] || {};
+        const isString = this.inputMode === 'string';
+
+        if (isString) {
+            const input = document.getElementById('stringInput');
+            const counter = document.getElementById('stringCounter');
+            if (!input) return;
+            const val = saved._string || '';
+            input.value = val;
+            if (counter) counter.textContent = `${val.length} / ${count}`;
+            if (val.length === count) {
+                input.classList.add('valid');
+                if (counter) counter.classList.add('valid');
+            }
+            input.addEventListener('input', () => {
+                let v = input.value.replace(/\D/g, '');
+                if (v.length > count) v = v.slice(0, count);
+                input.value = v;
+                if (counter) counter.textContent = `${v.length} / ${count}`;
+                input.className = '';
+                if (counter) counter.className = 'counter';
+                if (v.length === count) {
+                    input.classList.add('valid');
+                    if (counter) counter.classList.add('valid');
+                    this.answers['scl90'] = this.answers['scl90'] || {};
+                    this.answers['scl90']._string = v;
+                    this.saveState();
+                    this.calculateTest(config);
+                } else if (v.length > 0) {
+                    input.classList.add('error');
+                    if (counter) counter.classList.add('error');
+                }
+            });
+            if (val.length === count) this.calculateTest(config);
+        } else {
+            // Radio mode
+            for (let i = 0; i < count; i++) {
+                const radios = document.getElementsByName(`q_${i}`);
+                for (const r of radios) {
+                    r.addEventListener('change', () => {
+                        this.answers['scl90'] = this.answers['scl90'] || {};
+                        this.answers['scl90'][i] = parseInt(r.value, 10);
+                        this.saveState();
+                        this.calculateTest(config);
+                    });
+                }
+                if (saved[i] !== undefined) {
+                    for (const r of radios) {
+                        if (parseInt(r.value, 10) === saved[i]) r.checked = true;
+                    }
+                }
+            }
+            if (Object.keys(saved).length > 0) setTimeout(() => this.calculateTest(config), 50);
+        }
+    },
+
+    calculateTest(config) {
+        if (!config) return;
+        const isString = this.inputMode === 'string';
+
+        // BDI
+        if (config.id === 'bdi') {
+            if (isString) {
+                const input = document.getElementById('stringInput');
+                if (!input) return;
+                const raw = input.value.trim();
+                if (raw.length !== 21) {
+                    this.showResult(config, `Ожидается 21 цифра (получено ${raw.length})`);
+                    return;
+                }
+                const nums = raw.split('').map(Number);
+                if (nums.some(v => v < 0 || v > 3)) {
+                    this.showResult(config, 'Цифры должны быть от 0 до 3');
+                    return;
+                }
+                const total = nums.reduce((a,b) => a+b, 0);
+                const result = this.interpretScore(config, total);
+                this.answers[config.id] = raw;
+                this.saveState();
+                this.showResult(config, result, total);
+                this.updateGlobalResult(config.id, config.label, result);
+            } else {
+                let sum = 0;
+                for (let i = 0; i < 21; i++) {
+                    const val = this.getRadioValue(`q_${i}`);
+                    sum += val;
+                    this.answers[config.id] = this.answers[config.id] || {};
+                    this.answers[config.id][i] = val;
+                }
+                this.saveState();
+                const result = this.interpretScore(config, sum);
+                this.showResult(config, result, sum);
+                this.updateGlobalResult(config.id, config.label, result);
+            }
+            return;
+        }
+
+        // ASQ
+        if (config.id === 'asq') {
+            let anyYes = false;
+            for (let i = 0; i < 4; i++) {
+                const val = this.getRadioValue(`asq_${i}`);
+                if (val === 1) anyYes = true;
+                this.answers['asq'] = this.answers['asq'] || {};
+                this.answers['asq'][i] = val;
+            }
+            const q5 = this.getRadioValueStr('asq_q5') || '0';
+            const comment = document.getElementById('asqComment')?.value || '';
+            this.answers['asq'].q5 = q5;
+            this.answers['asq'].comment = comment;
+            this.saveState();
+
+            let resultText = '';
+            if (!anyYes) {
+                resultText = 'Риск суицида не выявлен (все ответы "Нет").';
+            } else {
+                if (q5 === '1') {
+                    resultText = 'ОСТРЫЙ СУИЦИДАЛЬНЫЙ РИСК! Требуется немедленное вмешательство!';
+                    if (comment) resultText += `\nКомментарий: ${comment}`;
+                } else {
+                    resultText = 'Выявлен риск суицида (положительный ответ на один из скрининговых вопросов). Рекомендована консультация психиатра/психотерапевта.';
+                    if (comment) resultText += `\nПримечание: ${comment}`;
+                }
+            }
+            this.showResult(config, resultText);
+            this.updateGlobalResult(config.id, config.label, resultText);
+            return;
+        }
+
+        // HADS (исправлен: сначала тревога, потом депрессия)
+        if (config.id === 'hads') {
+            let anxiety = 0, depression = 0;
+            const saved = this.answers['hads'] || {};
+
+            if (isString) {
+                const anxietyInput = document.getElementById('hads_anxiety_input');
+                const depressionInput = document.getElementById('hads_depression_input');
+                if (!anxietyInput || !depressionInput) return;
+                const aRaw = anxietyInput.value.trim();
+                const dRaw = depressionInput.value.trim();
+                if (aRaw.length !== 7 || dRaw.length !== 7) {
+                    this.showResult(config, 'Для каждой части нужно 7 цифр');
+                    return;
+                }
+                const aNums = aRaw.split('').map(Number);
+                const dNums = dRaw.split('').map(Number);
+                if (aNums.some(v => v < 0 || v > 3) || dNums.some(v => v < 0 || v > 3)) {
+                    this.showResult(config, 'Цифры должны быть от 0 до 3');
+                    return;
+                }
+                anxiety = aNums.reduce((a,b) => a+b, 0);
+                depression = dNums.reduce((a,b) => a+b, 0);
+                this.answers['hads'] = { anxiety: aRaw, depression: dRaw };
+                this.saveState();
+            } else {
+                for (let i = 0; i < 7; i++) {
+                    anxiety += this.getRadioValue(`hads_a_${i}`);
+                    depression += this.getRadioValue(`hads_d_${i}`);
+                }
+                this.answers['hads'] = { anxiety: anxiety, depression: depression };
+                this.saveState();
+            }
+
+            let aLevel = '', dLevel = '';
+            if (anxiety <= 7) aLevel = 'норма';
+            else if (anxiety <= 10) aLevel = 'субклиническая тревога';
+            else aLevel = 'клиническая тревога';
+            if (depression <= 7) dLevel = 'норма';
+            else if (depression <= 10) dLevel = 'субклиническая депрессия';
+            else dLevel = 'клиническая депрессия';
+            const result = `Тревога: ${anxiety} (${aLevel}), Депрессия: ${depression} (${dLevel})`;
+            this.showResult(config, result);
+            this.updateGlobalResult(config.id, config.label, result);
+            return;
+        }
+
+        // SCL-90 (исправлены ключи шкал)
+        if (config.id === 'scl90') {
+            const count = 90;
+            let scores = [];
+            if (isString) {
+                const input = document.getElementById('stringInput');
+                if (!input) return;
+                const raw = input.value.trim();
+                if (raw.length !== count) {
+                    this.showResult(config, `Ожидается ${count} цифр (получено ${raw.length})`);
+                    return;
+                }
+                scores = raw.split('').map(Number);
+                if (scores.some(v => v < 1 || v > 5)) {
+                    this.showResult(config, 'Цифры должны быть от 1 до 5');
+                    return;
+                }
+                this.answers['scl90'] = { _string: raw };
+                this.saveState();
+            } else {
+                for (let i = 0; i < count; i++) {
+                    const val = this.getRadioValue(`q_${i}`);
+                    scores.push(val);
+                    this.answers['scl90'] = this.answers['scl90'] || {};
+                    this.answers['scl90'][i] = val;
+                }
+                this.saveState();
+            }
+
+            // Правильные ключи шкал SCL-90 (индексы от 0)
+            const sclKeys = {
+                som: [0,3,11,26,39,41,48,51,55,56,57,58],
+                oc: [2,8,9,27,37,44,45,50,54,64],
+                int: [5,20,28,33,35,36,60,68,69],
+                dep: [4,13,14,21,29,30,31,32,53,59,70,76,78,79,88],
+                anx: [1,16,22,23,38,46,47,61,71,72],
+                hos: [10,23,24,62,66,73,80],
+                phob: [12,24,42,46,49,64,69,74,81],
+                par: [7,17,18,42,43,65,74,82],
+                psy: [6,15,34,40,42,61,67,75,83,84,89]
+            };
+            const scaleNamesRu = {
+                som: 'Соматизация (СОМ)',
+                oc: 'Обсессивно-компульсивные (ОК)',
+                int: 'Межличностная сенситивность (МС)',
+                dep: 'Депрессия (ДЕП)',
+                anx: 'Тревога (ТР)',
+                hos: 'Враждебность (ВР)',
+                phob: 'Фобическая тревога (ФТ)',
+                par: 'Параноидные идеи (ПИ)',
+                psy: 'Психотизм (ПС)'
+            };
+
+            const scaleSums = {};
+            for (let key in sclKeys) {
+                let sum = 0;
+                sclKeys[key].forEach(idx => { sum += scores[idx] || 0; });
+                scaleSums[key] = sum;
+            }
+
+            const totalSum = scores.reduce((a,b) => a+b, 0);
+            const gsi = (totalSum / count).toFixed(2);
+            const pst = scores.filter(s => s >= 3).length;
+            const psdi = pst > 0 ? (totalSum / pst).toFixed(2) : 0;
+
+            let resultHtml = `<div><strong>Глобальные индексы:</strong></div>`;
+            resultHtml += `<div>GSI (общий индекс тяжести): ${gsi}</div>`;
+            resultHtml += `<div>PST (количество симптомов ≥3): ${pst} из 90</div>`;
+            resultHtml += `<div>PSDI (индекс дистресса): ${psdi}</div>`;
+            resultHtml += `<br><div><strong>Баллы по шкалам (сырые / средний):</strong></div>`;
+
+            let overallLevel = '';
+            if (gsi < 2.0) overallLevel = 'Норма (низкий уровень дистресса)';
+            else if (gsi < 3.0) overallLevel = 'Умеренный дистресс';
+            else overallLevel = 'Высокий дистресс';
+
+            let scaleResults = [];
+            for (let key in scaleSums) {
+                const countQ = sclKeys[key].length;
+                const avg = (scaleSums[key] / countQ).toFixed(2);
+                let level = '';
+                if (avg < 2.0) level = 'низкий';
+                else if (avg < 3.0) level = 'умеренный';
+                else level = 'высокий';
+                scaleResults.push(`${scaleNamesRu[key]}: ${scaleSums[key]} (ср. ${avg}) — ${level}`);
+            }
+            resultHtml += scaleResults.map(s => `<div class="sub-result">${s}</div>`).join('');
+            resultHtml += `<br><div><strong>Общий уровень: ${overallLevel}</strong></div>`;
+
+            this.showResult(config, resultHtml);
+            this.updateGlobalResult('scl90', config.label, `GSI: ${gsi}, PST: ${pst}, PSDI: ${psdi}, ${overallLevel}`);
+            return;
+        }
+
+        // Остальные тесты
+        const count = config.questions ? config.questions.length : 0;
+
+        if (isString && config.type !== 'text-input' && count > 0) {
+            const input = document.getElementById('stringInput');
+            if (!input) return;
+            const raw = input.value.trim();
+            if (raw.length !== count) {
+                this.showResult(config, `Ожидается ${count} цифр (получено ${raw.length})`);
+                return;
+            }
+            const nums = raw.split('').map(Number);
+            const maxVal = config.options ? this.getMaxOptionValue(config.options) : 0;
+            if (nums.some(v => v < 0 || v > maxVal)) {
+                this.showResult(config, `Цифры должны быть от 0 до ${maxVal}`);
+                return;
+            }
+            this.answers[config.id] = raw;
+            this.saveState();
+
+            if (config.scoring && config.scoring.custom) {
+                const result = config.scoring.custom(nums);
+                this.showResult(config, result);
+                this.updateGlobalResult(config.id, config.label, result);
+            } else {
+                const total = nums.reduce((a,b) => a+b, 0);
+                const result = this.interpretScore(config, total);
+                this.showResult(config, result, total);
+                this.updateGlobalResult(config.id, config.label, result);
+            }
+            return;
+        }
+
+        if (config.type !== 'text-input' && count > 0) {
+            const allValues = [];
+            let sum = 0;
+            for (let i = 0; i < count; i++) {
+                const val = this.getRadioValue(`q_${i}`);
+                allValues.push(val);
+                sum += val;
+                this.answers[config.id] = this.answers[config.id] || {};
+                this.answers[config.id][i] = val;
+            }
+            this.saveState();
+            if (config.scoring && config.scoring.custom) {
+                const result = config.scoring.custom(allValues);
+                this.showResult(config, result);
+                this.updateGlobalResult(config.id, config.label, result);
+            } else {
+                const result = this.interpretScore(config, sum);
+                this.showResult(config, result, sum);
+                this.updateGlobalResult(config.id, config.label, result);
+            }
+            return;
+        }
+
+        if (config.type === 'text-input') {
+            const input = document.getElementById('textInput');
+            if (input && config.scoring) {
+                this.answers[config.id] = input.value;
+                this.saveState();
+                const result = config.scoring(input.value);
+                this.showResult(config, result);
+                this.updateGlobalResult(config.id, config.label, result);
+            }
+            return;
+        }
+    },
+
+    getRadioValue(name) {
+        const radios = document.getElementsByName(name);
+        for (const r of radios) if (r.checked) return parseInt(r.value, 10);
+        return 0;
+    },
+
+    getRadioValueStr(name) {
+        const radios = document.getElementsByName(name);
+        for (const r of radios) if (r.checked) return r.value;
+        return '';
+    },
+
+    interpretScore(config, score) {
+        if (!config.interpretation) return `${score} баллов`;
+        let level = '';
+        for (const rule of config.interpretation) {
+            if (score >= rule.min && score <= rule.max) {
+                level = rule.label;
+                break;
+            }
+        }
+        return `${score} баллов — ${level}`;
+    },
+
+    showResult(config, result, score) {
+        const area = document.getElementById('resultArea');
+        if (!area) return;
+        let levelClass = '';
+        if (config.interpretation && score !== undefined) {
+            for (const rule of config.interpretation) {
+                if (score >= rule.min && score <= rule.max) {
+                    if (rule.level === 'low') levelClass = 'level-low';
+                    else if (rule.level === 'moderate') levelClass = 'level-moderate';
+                    else if (rule.level === 'high') levelClass = 'level-high';
+                    break;
+                }
+            }
+        }
+        area.innerHTML = `<strong class="${levelClass}">${result}</strong>`;
+    },
+
+    clearTest(config) {
+        if (!config) return;
+        const isString = this.inputMode === 'string';
+
+        if (config.id === 'bdi') {
+            if (isString) {
+                const input = document.getElementById('stringInput');
+                if (input) { input.value = ''; input.className = ''; }
+                const counter = document.getElementById('stringCounter');
+                if (counter) { counter.textContent = '0 / 21'; counter.className = 'counter'; }
+            } else {
+                for (let i = 0; i < 21; i++) {
+                    const radios = document.getElementsByName(`q_${i}`);
+                    for (const r of radios) {
+                        if (parseInt(r.value, 10) === 0) r.checked = true;
+                        else r.checked = false;
+                    }
+                }
+            }
+            delete this.answers[config.id];
+            this.saveState();
+            document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+            this.clearGlobalResult(config.id);
+            this.showToast(`${config.label} очищен`);
+            return;
+        }
+
+        if (config.id === 'asq') {
+            for (let i = 0; i < 4; i++) {
+                const radios = document.getElementsByName(`asq_${i}`);
+                for (const r of radios) {
+                    if (r.value === '0') r.checked = true;
+                    else r.checked = false;
+                }
+            }
+            const q5Radios = document.getElementsByName('asq_q5');
+            for (const r of q5Radios) {
+                if (r.value === '0') r.checked = true;
+                else r.checked = false;
+            }
+            const comment = document.getElementById('asqComment');
+            if (comment) comment.value = '';
+            const q5block = document.getElementById('asqQuestion5');
+            if (q5block) q5block.style.display = 'none';
+            delete this.answers['asq'];
+            this.saveState();
+            document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+            this.clearGlobalResult('asq');
+            this.showToast('Методика скрининга суицидального риска очищена');
+            return;
+        }
+
+        if (config.id === 'hads') {
+            if (isString) {
+                const ai = document.getElementById('hads_anxiety_input');
+                const di = document.getElementById('hads_depression_input');
+                if (ai) { ai.value = ''; ai.className = ''; }
+                if (di) { di.value = ''; di.className = ''; }
+                const ac = document.getElementById('hads_anxiety_counter');
+                const dc = document.getElementById('hads_depression_counter');
+                if (ac) { ac.textContent = '0 / 7'; ac.className = 'counter'; }
+                if (dc) { dc.textContent = '0 / 7'; dc.className = 'counter'; }
+            } else {
+                for (let i = 0; i < 7; i++) {
+                    const radiosA = document.getElementsByName(`hads_a_${i}`);
+                    for (const r of radiosA) {
+                        if (parseInt(r.value, 10) === 0) r.checked = true;
+                        else r.checked = false;
+                    }
+                    const radiosD = document.getElementsByName(`hads_d_${i}`);
+                    for (const r of radiosD) {
+                        if (parseInt(r.value, 10) === 0) r.checked = true;
+                        else r.checked = false;
+                    }
+                }
+            }
+            delete this.answers['hads'];
+            this.saveState();
+            document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+            this.clearGlobalResult('hads');
+            this.showToast('HADS очищен');
+            return;
+        }
+
+        if (config.id === 'scl90') {
+            if (isString) {
+                const input = document.getElementById('stringInput');
+                if (input) { input.value = ''; input.className = ''; }
+                const counter = document.getElementById('stringCounter');
+                if (counter) { counter.textContent = '0 / 90'; counter.className = 'counter'; }
+            } else {
+                for (let i = 0; i < 90; i++) {
+                    const radios = document.getElementsByName(`q_${i}`);
+                    for (const r of radios) {
+                        if (parseInt(r.value, 10) === 1) r.checked = true;
+                        else r.checked = false;
+                    }
+                }
+            }
+            delete this.answers['scl90'];
+            this.saveState();
+            document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+            this.clearGlobalResult('scl90');
+            this.showToast('SCL-90 очищен');
+            return;
+        }
+
+        const count = config.questions ? config.questions.length : 0;
+
+        if (isString && config.type !== 'text-input' && count > 0) {
+            const input = document.getElementById('stringInput');
+            if (input) {
+                input.value = '';
+                input.className = '';
+                const counter = document.getElementById('stringCounter');
+                if (counter) { counter.textContent = `0 / ${count}`; counter.className = 'counter'; }
+            }
+        }
+
+        if (config.type === 'radio' || (!isString && config.type !== 'text-input')) {
+            const firstVal = config.options ? (
+                typeof config.options[0] === 'object' ? config.options[0].value : config.options[0]
+            ) : 0;
+            for (let i = 0; i < count; i++) {
+                const radios = document.getElementsByName(`q_${i}`);
+                for (const r of radios) {
+                    if (parseInt(r.value, 10) === firstVal) r.checked = true;
+                    else r.checked = false;
+                }
+            }
+        }
+
+        if (config.type === 'text-input') {
+            const input = document.getElementById('textInput');
+            if (input) input.value = '';
+        }
+
+        delete this.answers[config.id];
+        this.saveState();
+        document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+        this.clearGlobalResult(config.id);
+        this.showToast(`${config.label} очищен`);
+    },
+
+    // ===== ГЛОБАЛЬНАЯ СВОДКА =====
+    renderGlobalSummary() {
+        const out = document.getElementById('globalOutput');
+        if (!this.globalResults.length) { out.value = ''; return; }
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'}).replace(/\//g, '.') + ' г.';
+        let text = dateStr + '\n\n';
+        const groups = {};
+        this.globalResults.forEach(item => {
+            const cat = testCategories[item.testId] || 'Прочее';
+            if (!groups[cat]) groups[cat] = [];
+            groups[cat].push(item);
+        });
+        const sorted = Object.keys(groups).sort((a,b) => {
+            const ia = categoryOrder.indexOf(a), ib = categoryOrder.indexOf(b);
+            if (ia === -1 && ib === -1) return a.localeCompare(b);
+            if (ia === -1) return 1;
+            if (ib === -1) return -1;
+            return ia - ib;
+        });
+        sorted.forEach((cat, index) => {
+            const items = groups[cat];
+            items.sort((a,b) => a.label.localeCompare(b.label));
+            text += cat + ':\n';
+            items.forEach(item => {
+                text += '- ' + item.label + ': ' + item.result + '\n';
+            });
+            if (index < sorted.length - 1) text += '\n';
+        });
+        out.value = text.trim();
+    },
+
+    updateGlobalResult(id, label, result) {
+        const idx = this.globalResults.findIndex(i => i.testId === id);
+        if (idx !== -1) this.globalResults.splice(idx, 1);
+        if (result && result.trim()) {
+            this.globalResults.push({ testId: id, label, result: result.trim() });
+        }
+        this.renderGlobalSummary();
+        this.saveState();
+    },
+
+    clearGlobalResult(id) {
+        const idx = this.globalResults.findIndex(i => i.testId === id);
+        if (idx !== -1) {
+            this.globalResults.splice(idx, 1);
+            this.renderGlobalSummary();
+            this.saveState();
+        }
+    },
+
+    clearAll() {
+        this.globalResults = [];
+        this.answers = {};
+        this.renderGlobalSummary();
+        this.saveState();
+        document.querySelectorAll('.btn-danger').forEach(btn => btn.click());
+        this.showToast('Все тесты и сводка очищены');
+    },
+
+    setupGlobalButtons() {
+        document.getElementById('copyGlobalBtn').addEventListener('click', () => {
+            const ta = document.getElementById('globalOutput');
+            navigator.clipboard.writeText(ta.value).then(() => this.showToast('Сводка скопирована')).catch(() => {
+                ta.select();
+                document.execCommand('copy');
+                this.showToast('Сводка скопирована');
+            });
+        });
+        document.getElementById('clearGlobalBtn').addEventListener('click', () => this.clearAll());
+    },
+
+    showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.style.opacity = '0', 2500);
+    }
+};
+
+// =============================================================
+// 2. КАТЕГОРИИ И НАЗВАНИЯ
+// =============================================================
+const testCategories = {
+    bdi:'Депрессия', hamd:'Депрессия', madrs:'Депрессия', phq9:'Депрессия', gds15:'Депрессия',
+    bai:'Тревога', hads:'Тревога', gad7:'Тревога', hama:'Тревога',
+    hcl33:'Биполярный спектр', mdq:'Биполярный спектр',
+    isi:'Сон', epworth:'Сон', stopbang:'Сон', sleepapnea:'Сон',
+    asrs:'СДВГ',
+    aq10:'РАС', aq50:'РАС', raadsr:'РАС', catq:'РАС',
+    pcl5:'ПТСР',
+    ybocs:'ОКР', ocir:'ОКР',
+    iief5:'Сексология', pedt:'Сексология', fsfi:'Сексология', asex:'Сексология',
+    cssrs:'Суицидальный риск', hopeless:'Суицидальный риск', asq:'Суицидальный риск',
+    pdq20:'Когнитивные', moca:'Когнитивные', mmse:'Когнитивные',
+    scl90:'Личностные', bpi:'Личностные', tas20:'Личностные', neuroticism:'Личностные'
+};
+
+const testLabels = {
+    bdi:'Шкала депрессии Бека (BDI)',
+    hamd:'Шкала Гамильтона (HAM-D)',
+    madrs:'Шкала MADRS',
+    phq9:'Опросник PHQ-9',
+    gds15:'Гериатрическая шкала (GDS-15)',
+    bai:'Шкала тревоги Бека (BAI)',
+    hads:'Госпитальная шкала (HADS)',
+    gad7:'Шкала GAD-7',
+    hama:'Шкала Гамильтона (HAM-A)',
+    hcl33:'Опросник HCL-33',
+    mdq:'Опросник MDQ',
+    isi:'Индекс тяжести бессонницы (ISI)',
+    epworth:'Шкала сонливости Эпворта',
+    stopbang:'Скрининг апноэ STOP-BANG',
+    sleepapnea:'Тест на апноэ сна',
+    asrs:'Шкала СДВГ (ASRS v1.1)',
+    aq10:'Скрининг РАС (AQ-10)',
+    aq50:'Опросник AQ-50',
+    raadsr:'Опросник RAADS-R',
+    catq:'Опросник CAT-Q',
+    pcl5:'Шкала PCL-5',
+    ybocs:'Шкала Y-BOCS',
+    ocir:'Шкала OCI-R',
+    iief5:'Опросник IIEF-5',
+    pedt:'Шкала PEDT',
+    fsfi:'Опросник FSFI',
+    asex:'Шкала ASEX',
+    cssrs:'Колумбийская шкала (C-SSRS)',
+    hopeless:'Шкала безнадежности',
+    asq:'Методика скрининга суицидального риска',
+    pdq20:'Опросник PDQ-20',
+    moca:'Монреальская шкала (MoCA)',
+    mmse:'Краткая шкала (MMSE)',
+    scl90:'SCL-90-R (симптоматический)',
+    bpi:'Опросник ПРЛ (BPI)',
+    tas20:'TAS-20 (алекситимия)',
+    neuroticism:'Опросник невротизации'
+};
+
+const categoryOrder = ['Депрессия','Тревога','Биполярный спектр','Сон','СДВГ','РАС','ПТСР','ОКР','Сексология','Суицидальный риск','Когнитивные','Личностные'];
+
+// =============================================================
+// 3. КОНФИГУРАЦИИ ТЕСТОВ
+// =============================================================
+const testConfigs = {};
+
+// ---- BDI ----
+testConfigs.bdi = {
+    id: 'bdi',
+    category: 'Депрессия',
+    label: 'Шкала депрессии Бека (BDI)',
+    icon: '📝',
+    badge: '21 вопрос, 0-3',
+    desc: '<strong>Для кого:</strong> для оценки тяжести депрессии у взрослых и подростков.<br><strong>Что измеряет:</strong> когнитивные, эмоциональные и соматические симптомы депрессии.<br><strong>Интерпретация:</strong> 0-10 — норма, 11-16 — лёгкая, 17-29 — средняя, 30-63 — тяжёлая депрессия.<br><strong>Время:</strong> 5-10 минут.',
+    questions: Array(21).fill(''),
+    interpretation: [
+        { min: 0, max: 10, label: 'норма', level: 'low' },
+        { min: 11, max: 16, label: 'лёгкая депрессия', level: 'moderate' },
+        { min: 17, max: 29, label: 'средняя депрессия', level: 'moderate' },
+        { min: 30, max: 63, label: 'тяжёлая депрессия', level: 'high' }
+    ]
+};
+
+// ---- HADS (исправлен) ----
+testConfigs.hads = {
+    id: 'hads',
+    category: 'Тревога',
+    label: 'Госпитальная шкала (HADS)',
+    icon: '🏥',
+    badge: '14 вопросов, 0-3',
+    layout: 'vertical',
+    desc: '<strong>Для кого:</strong> для выявления тревоги и депрессии в общесоматической практике.<br><strong>Что измеряет:</strong> две субшкалы: тревога и депрессия.<br><strong>Интерпретация:</strong> 0-7 — норма, 8-10 — субклиническая, 11+ — клиническая.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        // Тревога (первые 7)
+        'Я испытываю напряжение, мне не по себе',
+        'Я испытываю страх, кажется, будто что-то ужасное может вот-вот случиться',
+        'Беспокойные мысли крутятся у меня в голове',
+        'Я легко могу сесть и расслабиться',
+        'Я испытываю внутреннее напряжение или дрожь',
+        'Я испытываю неусидчивость, мне постоянно нужно двигаться',
+        'У меня бывает внезапное чувство паники',
+        // Депрессия (последние 7)
+        'То, что приносило мне большое удовольствие, и сейчас вызывает у меня такое же чувство',
+        'Я способен рассмеяться и увидеть в том или ином событии смешное',
+        'Я испытываю бодрость',
+        'Мне кажется, что я стал все делать очень медленно',
+        'Я не слежу за своей внешностью',
+        'Я считаю, что мои дела могут принести мне чувство удовлетворения',
+        'Я могу получить удовольствие от хорошей книги, радио- или телепрограммы'
+    ],
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 7, label: 'норма', level: 'low' },
+        { min: 8, max: 10, label: 'субклиническая', level: 'moderate' },
+        { min: 11, max: 21, label: 'клиническая', level: 'high' }
+    ]
+};
+
+// ---- Остальные конфигурации (сокращены для экономии места) ----
+// PHQ-9
+testConfigs.phq9 = {
+    id: 'phq9',
+    category: 'Депрессия',
+    label: 'Опросник PHQ-9',
+    icon: '📋',
+    badge: '9 вопросов, 0-3',
+    desc: '<strong>Для кого:</strong> для скрининга депрессии в первичной помощи.<br><strong>Что измеряет:</strong> частоту симптомов депрессии за последние 2 недели.<br><strong>Интерпретация:</strong> 0-4 — норма, 5-9 — лёгкая, 10-14 — средняя, 15-19 — умеренно-тяжёлая, 20-27 — тяжёлая.<br><strong>Время:</strong> 3-5 минут.',
+    questions: [
+        'Мало интереса или удовольствия от дел',
+        'Подавленное настроение, безнадёжность',
+        'Трудности с засыпанием или сонливость',
+        'Чувство усталости или недостаток энергии',
+        'Нарушение аппетита или переедание',
+        'Плохое мнение о себе',
+        'Трудности с концентрацией',
+        'Замедленность или возбуждённость',
+        'Мысли о смерти или самоповреждении'
+    ],
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 4, label: 'норма', level: 'low' },
+        { min: 5, max: 9, label: 'лёгкая депрессия', level: 'moderate' },
+        { min: 10, max: 14, label: 'средняя депрессия', level: 'moderate' },
+        { min: 15, max: 19, label: 'умеренно-тяжёлая', level: 'high' },
+        { min: 20, max: 27, label: 'тяжёлая депрессия', level: 'high' }
+    ]
+};
+
+// GAD-7
+testConfigs.gad7 = {
+    id: 'gad7',
+    category: 'Тревога',
+    label: 'Шкала GAD-7',
+    icon: '📊',
+    badge: '7 вопросов, 0-3',
+    desc: '<strong>Для кого:</strong> для скрининга генерализованного тревожного расстройства.<br><strong>Что измеряет:</strong> частоту симптомов тревоги за последние 2 недели.<br><strong>Интерпретация:</strong> 0-4 — норма, 5-9 — лёгкая, 10-14 — умеренная, 15-21 — тяжёлая тревога.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Чувство нервозности, тревоги или беспокойства',
+        'Невозможность остановить или контролировать беспокойство',
+        'Чрезмерное беспокойство по разным поводам',
+        'Трудности с расслаблением',
+        'Беспокойство, из-за которого трудно усидеть на месте',
+        'Лёгкая раздражительность или озлобленность',
+        'Чувство страха, будто что-то ужасное может произойти'
+    ],
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 4, label: 'норма', level: 'low' },
+        { min: 5, max: 9, label: 'лёгкая тревога', level: 'moderate' },
+        { min: 10, max: 14, label: 'умеренная тревога', level: 'moderate' },
+        { min: 15, max: 21, label: 'тяжёлая тревога', level: 'high' }
+    ]
+};
+
+// GDS-15
+testConfigs.gds15 = {
+    id: 'gds15',
+    category: 'Депрессия',
+    label: 'Гериатрическая шкала (GDS-15)',
+    icon: '👴',
+    badge: '15 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для выявления депрессии у пожилых людей.<br><strong>Что измеряет:</strong> симптомы депрессии у пациентов старше 65 лет.<br><strong>Интерпретация:</strong> 0-5 — норма, 6-9 — лёгкая, 10-15 — депрессия.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Вы в основном удовлетворены своей жизнью?',
+        'Вы забросили многие свои занятия и интересы?',
+        'Вы чувствуете, что ваша жизнь пуста?',
+        'Вам часто бывает скучно?',
+        'У вас часто бывает хорошее настроение?',
+        'Вы боитесь, что с вами случится что-то плохое?',
+        'Вы чувствуете себя счастливым большую часть времени?',
+        'Вы часто чувствуете беспомощность?',
+        'Вы предпочитаете оставаться дома?',
+        'Вам кажется, что у вас больше проблем с памятью?',
+        'Вы считаете, что жить сейчас замечательно?',
+        'Вы чувствуете себя никчёмным?',
+        'Вы чувствуете себя полным энергии?',
+        'Вы чувствуете, что ваше положение безнадёжно?',
+        'Вы считаете, что большинство людей живут лучше?'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 5, label: 'норма', level: 'low' },
+        { min: 6, max: 9, label: 'лёгкая депрессия', level: 'moderate' },
+        { min: 10, max: 15, label: 'депрессия', level: 'high' }
+    ]
+};
+
+// BAI
+testConfigs.bai = {
+    id: 'bai',
+    category: 'Тревога',
+    label: 'Шкала тревоги Бека (BAI)',
+    icon: '📈',
+    badge: '21 вопрос, 0-3',
+    desc: '<strong>Для кого:</strong> для оценки тяжести тревоги у взрослых.<br><strong>Что измеряет:</strong> соматические и когнитивные симптомы тревоги.<br><strong>Интерпретация:</strong> 0-21 — низкая, 22-35 — средняя, 36-63 — высокая тревожность.<br><strong>Время:</strong> 5-10 минут.',
+    questions: [
+        'Онемение или покалывание', 'Ощущение жара', 'Дрожь в ногах',
+        'Неспособность расслабиться', 'Страх, что произойдёт самое плохое',
+        'Головокружение', 'Ускоренное сердцебиение', 'Неустойчивость',
+        'Ощущение ужаса', 'Нервозность', 'Дрожь в руках', 'Ощущение удушья',
+        'Шаткость походки', 'Страх утраты контроля', 'Затруднённость дыхания',
+        'Страх смерти', 'Испуг', 'Желудочно-кишечные расстройства',
+        'Обмороки', 'Приливы крови к лицу', 'Усиление потоотделения'
+    ],
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 21, label: 'низкая тревожность', level: 'low' },
+        { min: 22, max: 35, label: 'средняя тревожность', level: 'moderate' },
+        { min: 36, max: 63, label: 'высокая тревожность', level: 'high' }
+    ]
+};
+
+// HAM-A
+testConfigs.hama = {
+    id: 'hama',
+    category: 'Тревога',
+    label: 'Шкала Гамильтона (HAM-A)',
+    icon: '📊',
+    badge: '14 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки тяжести тревоги.<br><strong>Что измеряет:</strong> психические и соматические симптомы тревоги.<br><strong>Интерпретация:</strong> 0-17 — отсутствие, 18-24 — средняя, 25-56 — тяжёлая тревога.<br><strong>Время:</strong> 10-15 минут.',
+    questions: [
+        'Тревожное настроение', 'Напряжение', 'Страхи', 'Инсомния',
+        'Интеллектуальные нарушения', 'Депрессивное настроение',
+        'Соматические мышечные симптомы', 'Соматические сенсорные симптомы',
+        'Сердечно-сосудистые симптомы', 'Респираторные симптомы',
+        'Гастроинтестинальные симптомы', 'Мочеполовые симптомы',
+        'Вегетативные симптомы', 'Поведение при осмотре'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 17, label: 'отсутствие тревоги', level: 'low' },
+        { min: 18, max: 24, label: 'средняя тревога', level: 'moderate' },
+        { min: 25, max: 56, label: 'тяжёлая тревога', level: 'high' }
+    ]
+};
+
+// HAM-D
+testConfigs.hamd = {
+    id: 'hamd',
+    category: 'Депрессия',
+    label: 'Шкала Гамильтона (HAM-D)',
+    icon: '📊',
+    badge: '17 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки тяжести депрессии.<br><strong>Что измеряет:</strong> 17 симптомов депрессии.<br><strong>Интерпретация:</strong> 0-7 — ремиссия, 8-13 — лёгкая, 14-18 — умеренная, 19-22 — тяжёлая, >22 — очень тяжёлая.<br><strong>Время:</strong> 15-20 минут.',
+    questions: [
+        'Сниженное настроение (печаль, безнадёжность)',
+        'Чувство вины (самоуничижение, идеи виновности)',
+        'Суицидальные намерения (мысли о смерти, попытки)',
+        'Бессонница: ранняя (трудности засыпания)',
+        'Бессонница: середина ночи (пробуждения)',
+        'Бессонница: поздняя (ранние пробуждения)',
+        'Работоспособность и активность (потеря интереса)',
+        'Заторможенность (речи, движений)',
+        'Ажитация (беспокойство, неусидчивость)',
+        'Тревога психическая (беспокойство, страхи)',
+        'Тревога соматическая (сухость, тахикардия, потливость)',
+        'Желудочно-кишечные симптомы (потеря аппетита)',
+        'Общие соматические симптомы (тяжесть, боли, усталость)',
+        'Генитальные симптомы (снижение либидо, нарушения)',
+        'Ипохондрия (озабоченность здоровьем)',
+        'Потеря массы тела (по данным анамнеза)',
+        'Критичность отношения к болезни (осознание депрессии)'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 7, label: 'ремиссия', level: 'low' },
+        { min: 8, max: 13, label: 'лёгкая депрессия', level: 'moderate' },
+        { min: 14, max: 18, label: 'умеренная депрессия', level: 'moderate' },
+        { min: 19, max: 22, label: 'тяжёлая депрессия', level: 'high' },
+        { min: 23, max: 52, label: 'очень тяжёлая депрессия', level: 'high' }
+    ]
+};
+
+// MADRS
+testConfigs.madrs = {
+    id: 'madrs',
+    category: 'Депрессия',
+    label: 'Шкала MADRS',
+    icon: '📈',
+    badge: '10 вопросов, 0-6',
+    desc: '<strong>Для кого:</strong> для оценки тяжести депрессии.<br><strong>Что измеряет:</strong> 10 ключевых симптомов депрессии.<br><strong>Интерпретация:</strong> 0-6 — норма, 7-19 — лёгкая, 20-34 — средняя, 35-60 — тяжёлая.<br><strong>Время:</strong> 10-15 минут.',
+    questions: [
+        'Видимая печаль (по выражению лица, позе)',
+        'Сообщаемая печаль (жалобы на настроение)',
+        'Внутреннее напряжение (беспокойство, тревога)',
+        'Снижение сна (трудности засыпания, пробуждения)',
+        'Снижение аппетита (потеря интереса к еде)',
+        'Трудность концентрации (рассеянность, забывчивость)',
+        'Инерция (вялость, медлительность)',
+        'Неспособность чувствовать (эмоциональная отстранённость)',
+        'Пессимистические мысли (безнадёжность, вина)',
+        'Суицидальные мысли (мысли о смерти, попытки)'
+    ],
+    options: [0,1,2,3,4,5,6],
+    interpretation: [
+        { min: 0, max: 6, label: 'норма', level: 'low' },
+        { min: 7, max: 19, label: 'лёгкая', level: 'moderate' },
+        { min: 20, max: 34, label: 'средняя', level: 'moderate' },
+        { min: 35, max: 60, label: 'тяжёлая', level: 'high' }
+    ]
+};
+
+// HCL-33
+testConfigs.hcl33 = {
+    id: 'hcl33',
+    category: 'Биполярный спектр',
+    label: 'Опросник HCL-33',
+    icon: '🧬',
+    badge: '33 пункта, Да/Нет',
+    desc: '<strong>Для кого:</strong> для скрининга биполярного расстройства.<br><strong>Что измеряет:</strong> наличие гипоманиакальных симптомов.<br><strong>Интерпретация:</strong> ≥14 положительных ответов — вероятность биполярного расстройства.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Мне нужно меньше сна', 'Я чувствую себя энергичнее', 'Я более самоуверен',
+        'Мне нравится моя работа больше', 'Я более общителен', 'Я хочу путешествовать',
+        'Я легко отвлекаюсь', 'Я трачу больше денег', 'Я более рисковый',
+        'Я более физически активен', 'Я планирую больше дел', 'У меня больше идей',
+        'Я более творческий', 'Я менее застенчив', 'Я более раздражительный',
+        'Я более нетерпелив', 'Я более критичен', 'Я более импульсивен',
+        'Я чаще употребляю алкоголь', 'Я более оптимистичен', 'Я чувствую себя важнее',
+        'Я больше участвую в жизни', 'Я более весел', 'Я более эмоционален',
+        'Я более чувствителен к шуму', 'Я более вспыльчив', 'Я более склонен к конфликтам',
+        'Я более склонен к флирту', 'У меня больше сексуального желания',
+        'Я более религиозен', 'Я более политически активен', 'Я чаще меняю решения',
+        'Я чувствую, что у меня больше сил'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 13, label: 'низкая вероятность', level: 'low' },
+        { min: 14, max: 33, label: 'вероятность биполярного расстройства', level: 'high' }
+    ]
+};
+
+// MDQ
+testConfigs.mdq = {
+    id: 'mdq',
+    category: 'Биполярный спектр',
+    label: 'Опросник MDQ',
+    icon: '🧬',
+    badge: '13 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для скрининга биполярного расстройства.<br><strong>Что измеряет:</strong> наличие маниакальных/гипоманиакальных эпизодов.<br><strong>Интерпретация:</strong> ≥7 положительных ответов — вероятность биполярного расстройства.<br><strong>Время:</strong> 3-5 минут.',
+    questions: [
+        'Были ли периоды, когда вы чувствовали себя необычно энергичным?',
+        'Были ли периоды, когда вы были необычно раздражительным?',
+        'Были ли периоды, когда вы чувствовали себя необычно уверенным?',
+        'Были ли периоды, когда вам нужно было меньше сна?',
+        'Были ли периоды, когда вы говорили больше обычного?',
+        'Были ли периоды, когда мысли скакали?',
+        'Были ли периоды, когда вы легко отвлекались?',
+        'Были ли периоды, когда вы были более активны?',
+        'Были ли периоды, когда вы делали рискованные вещи?',
+        'Были ли эти периоды проблемой для вас?',
+        'Было ли у вас несколько таких периодов?',
+        'Были ли такие периоды более 4 дней?',
+        'Обращались ли вы за помощью в такие периоды?'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 6, label: 'низкая вероятность', level: 'low' },
+        { min: 7, max: 13, label: 'вероятность биполярного расстройства', level: 'high' }
+    ]
+};
+
+// ISI
+testConfigs.isi = {
+    id: 'isi',
+    category: 'Сон',
+    label: 'Индекс тяжести бессонницы (ISI)',
+    icon: '🌙',
+    badge: '7 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки тяжести бессонницы.<br><strong>Что измеряет:</strong> тяжесть и влияние нарушений сна.<br><strong>Интерпретация:</strong> 0-7 — норма, 8-14 — субклиническая, 15-21 — умеренная, 22-28 — тяжёлая.<br><strong>Время:</strong> 3-5 минут.',
+    questions: [
+        'Трудности с засыпанием',
+        'Трудности с поддержанием сна',
+        'Проблемы с ранним пробуждением',
+        'Насколько вы удовлетворены своим сном?',
+        'Насколько проблемы со сном заметны для других?',
+        'Насколько вы обеспокоены проблемами со сном?',
+        'Насколько проблемы со сном мешают вашей жизни?'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 7, label: 'норма', level: 'low' },
+        { min: 8, max: 14, label: 'субклиническая бессонница', level: 'moderate' },
+        { min: 15, max: 21, label: 'умеренная бессонница', level: 'moderate' },
+        { min: 22, max: 28, label: 'тяжёлая бессонница', level: 'high' }
+    ]
+};
+
+// Эпворт
+testConfigs.epworth = {
+    id: 'epworth',
+    category: 'Сон',
+    label: 'Шкала сонливости Эпворта',
+    icon: '😴',
+    badge: '8 ситуаций, 0-3',
+    desc: '<strong>Для кого:</strong> для оценки дневной сонливости.<br><strong>Что измеряет:</strong> вероятность заснуть в различных ситуациях.<br><strong>Интерпретация:</strong> 0-5 — норма, 6-8 — начальная, 9-12 — умеренная, 13-18 — выраженная, 19-24 — крайняя.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Читая сидя в кресле',
+        'Просматривая телепередачи',
+        'Сидя в общественном месте',
+        'В качестве пассажира в машине',
+        'Отдыхая в кровати днём',
+        'Сидя и разговаривая с кем-либо',
+        'Сидя в спокойной обстановке после обеда',
+        'За рулём, остановившись на светофоре'
+    ],
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 5, label: 'норма', level: 'low' },
+        { min: 6, max: 8, label: 'начальная сонливость', level: 'moderate' },
+        { min: 9, max: 12, label: 'умеренная сонливость', level: 'moderate' },
+        { min: 13, max: 18, label: 'выраженная сонливость', level: 'high' },
+        { min: 19, max: 24, label: 'крайняя сонливость', level: 'high' }
+    ]
+};
+
+// STOP-BANG
+testConfigs.stopbang = {
+    id: 'stopbang',
+    category: 'Сон',
+    label: 'Скрининг апноэ STOP-BANG',
+    icon: '🛑',
+    badge: '8 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для быстрой оценки риска синдрома апноэ сна.<br><strong>Что измеряет:</strong> 8 факторов риска апноэ.<br><strong>Интерпретация:</strong> 0-2 — низкий риск, 3-4 — средний, 5-8 — высокий риск.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Храп (громкий, слышный в соседней комнате)',
+        'Усталость (сонливость в течение дня)',
+        'Остановки дыхания во сне (наблюдаемые)',
+        'Повышенное артериальное давление',
+        'ИМТ > 35 кг/м²',
+        'Возраст > 50 лет',
+        'Окружность шеи > 40 см (муж) или > 35 см (жен)',
+        'Пол мужской'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 2, label: 'низкий риск', level: 'low' },
+        { min: 3, max: 4, label: 'средний риск', level: 'moderate' },
+        { min: 5, max: 8, label: 'высокий риск', level: 'high' }
+    ]
+};
+
+// Тест на апноэ
+testConfigs.sleepapnea = {
+    id: 'sleepapnea',
+    category: 'Сон',
+    label: 'Тест на апноэ сна',
+    icon: '💤',
+    badge: '13 вопросов, 0-5',
+    desc: '<strong>Для кого:</strong> для прогнозирования вероятности синдрома обструктивного апноэ сна.<br><strong>Что измеряет:</strong> наличие ключевых симптомов апноэ.<br><strong>Интерпретация:</strong> менее 20 баллов — низкая вероятность, 20-40 — умеренная, 40 и более — высокая.<br><strong>Время:</strong> 3-5 минут.',
+    questions: [
+        'Увеличение массы тела за последние 3-5 лет',
+        'Выраженная дневная сонливость',
+        'Утренние головные боли',
+        'Указания на ночной храп, на который жалуются близкие люди',
+        'Указания на остановки дыхания во сне',
+        'Затрудненное дыхание, одышка или приступы удушья в ночное время',
+        'Отрыжка и изжога в ночное время',
+        'Учащенное ночное мочеиспускание (>2 раз за ночь)',
+        'Неосвежающий сон (когда после сна чувствуете себя неотдохнувшим, вялым)',
+        'Повышение артериального давления (преимущественно утром и ночью) или нарушения в сердечной деятельности',
+        'Снижение потенции или другие сексуальные расстройства',
+        'Ночная потливость',
+        'Депрессия, апатия, раздражительность, сниженный фон настроения, снижение памяти'
+    ],
+    options: [{value:5, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 19, label: 'низкая вероятность апноэ', level: 'low' },
+        { min: 20, max: 39, label: 'умеренная вероятность апноэ', level: 'moderate' },
+        { min: 40, max: 65, label: 'высокая вероятность апноэ', level: 'high' }
+    ],
+    scoring: {
+        custom: function(scores) {
+            if (!scores || !scores.length) return 'Нет данных';
+            const total = scores.reduce((a,b) => a+b, 0);
+            let level = '';
+            if (total < 20) level = 'низкая вероятность апноэ';
+            else if (total <= 39) level = 'умеренная вероятность апноэ';
+            else level = 'высокая вероятность апноэ';
+            return `${total} баллов — ${level}`;
+        }
+    }
+};
+
+// ASRS
+testConfigs.asrs = {
+    id: 'asrs',
+    category: 'СДВГ',
+    label: 'Шкала СДВГ (ASRS v1.1)',
+    icon: '⚡',
+    badge: '18 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для скрининга синдрома дефицита внимания и гиперактивности.<br><strong>Что измеряет:</strong> симптомы СДВГ у взрослых.<br><strong>Интерпретация:</strong> 0-14 — низкая вероятность, 15-24 — умеренная, 25-72 — высокая.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Как часто вам трудно завершить проект?', 'Как часто вам трудно организовать дела?',
+        'Как часто вы забываете о встречах?', 'Как часто вы избегаете задач, требующих усилий?',
+        'Как часто вам трудно усидеть на месте?', 'Как часто вы чувствуете беспокойство?',
+        'Как часто вы отвечаете, не дослушав вопрос?', 'Как часто вы прерываете других?',
+        'Как часто вам трудно ждать своей очереди?', 'Как часто вы отвлекаетесь на внешние стимулы?',
+        'Как часто вы теряете вещи?', 'Как часто вы замечаете, что делаете несколько дел одновременно?',
+        'Как часто вам трудно завершить задачу?', 'Как часто вы чувствуете, что не можете расслабиться?',
+        'Как часто вы чувствуете себя перегруженным?', 'Как часто вы забываете, что нужно сделать?',
+        'Как часто вы избегаете задач, требующих концентрации?',
+        'Как часто вы чувствуете, что не можете контролировать своё внимание?'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 14, label: 'низкая вероятность', level: 'low' },
+        { min: 15, max: 24, label: 'умеренная вероятность', level: 'moderate' },
+        { min: 25, max: 72, label: 'высокая вероятность', level: 'high' }
+    ]
+};
+
+// AQ-10
+testConfigs.aq10 = {
+    id: 'aq10',
+    category: 'РАС',
+    label: 'Скрининг РАС (AQ-10)',
+    icon: '🧠',
+    badge: '10 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для скрининга расстройств аутистического спектра.<br><strong>Что измеряет:</strong> ключевые признаки РАС.<br><strong>Интерпретация:</strong> 0-5 — низкая вероятность, 6-10 — вероятность РАС.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Я замечаю звуки, которые другие не замечают.',
+        'Мне трудно понимать, что люди имеют в виду, когда они говорят.',
+        'Я предпочитаю заниматься делами в одиночестве.',
+        'Мне трудно поддерживать зрительный контакт.',
+        'Мне трудно понимать эмоции других людей.',
+        'Я замечаю детали, которые другие не замечают.',
+        'Мне трудно понимать иронию или сарказм.',
+        'Я предпочитаю рутину, а не изменения.',
+        'Мне трудно заводить друзей.',
+        'Мне трудно понимать правила поведения в обществе.'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 5, label: 'низкая вероятность', level: 'low' },
+        { min: 6, max: 10, label: 'вероятность РАС', level: 'high' }
+    ]
+};
+
+// AQ-50
+testConfigs.aq50 = {
+    id: 'aq50',
+    category: 'РАС',
+    label: 'Опросник AQ-50',
+    icon: '🧠',
+    badge: '50 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для оценки черт аутистического спектра.<br><strong>Что измеряет:</strong> наличие аутистических черт.<br><strong>Интерпретация:</strong> 0-25 — низкая вероятность, 26-32 — умеренная, 33-50 — высокая.<br><strong>Время:</strong> 10-15 минут.',
+    questions: Array.from({length: 50}, (_, i) => `Вопрос ${i+1}`),
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 25, label: 'низкая вероятность', level: 'low' },
+        { min: 26, max: 32, label: 'умеренная вероятность', level: 'moderate' },
+        { min: 33, max: 50, label: 'высокая вероятность', level: 'high' }
+    ]
+};
+
+// RAADS-R
+testConfigs.raadsr = {
+    id: 'raadsr',
+    category: 'РАС',
+    label: 'Опросник RAADS-R',
+    icon: '🧠',
+    badge: '80 вопросов, 0-3',
+    desc: '<strong>Для кого:</strong> для диагностики РАС у взрослых.<br><strong>Что измеряет:</strong> аутистические черты по 4 шкалам.<br><strong>Интерпретация:</strong> 0-64 — низкая вероятность, 65-94 — умеренная, 95-240 — высокая.<br><strong>Время:</strong> 15-20 минут.',
+    questions: Array.from({length: 80}, (_, i) => `Вопрос ${i+1}`),
+    options: [0,1,2,3],
+    interpretation: [
+        { min: 0, max: 64, label: 'низкая вероятность', level: 'low' },
+        { min: 65, max: 94, label: 'умеренная вероятность', level: 'moderate' },
+        { min: 95, max: 240, label: 'высокая вероятность', level: 'high' }
+    ]
+};
+
+// CAT-Q
+testConfigs.catq = {
+    id: 'catq',
+    category: 'РАС',
+    label: 'Опросник CAT-Q',
+    icon: '🦋',
+    badge: '25 вопросов, 1-7',
+    desc: '<strong>Для кого:</strong> для оценки маскировки при РАС.<br><strong>Что измеряет:</strong> компенсаторные стратегии при социальном взаимодействии.<br><strong>Интерпретация:</strong> 25-75 — низкий уровень, 76-125 — умеренный, 126-175 — высокий.<br><strong>Время:</strong> 5-7 минут.',
+    questions: Array.from({length: 25}, (_, i) => `Вопрос ${i+1}`),
+    options: [1,2,3,4,5,6,7],
+    interpretation: [
+        { min: 25, max: 75, label: 'низкий уровень маскировки', level: 'low' },
+        { min: 76, max: 125, label: 'умеренный уровень', level: 'moderate' },
+        { min: 126, max: 175, label: 'высокий уровень маскировки', level: 'high' }
+    ]
+};
+
+// PCL-5
+testConfigs.pcl5 = {
+    id: 'pcl5',
+    category: 'ПТСР',
+    label: 'Шкала PCL-5',
+    icon: '🧠',
+    badge: '20 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для скрининга ПТСР.<br><strong>Что измеряет:</strong> симптомы посттравматического стрессового расстройства.<br><strong>Интерпретация:</strong> 0-10 — низкий уровень, 11-20 — умеренный, 21-80 — высокий.<br><strong>Время:</strong> 5-10 минут.',
+    questions: [
+        'Повторяющиеся воспоминания о событии', 'Повторяющиеся кошмары о событии',
+        'Ощущение, что событие происходит снова', 'Сильные реакции на напоминания о событии',
+        'Физические реакции на напоминания', 'Избегание мыслей и чувств о событии',
+        'Избегание мест и людей, связанных с событием', 'Трудности с воспоминанием важных деталей',
+        'Негативные убеждения о себе или мире', 'Обвинение себя или других в случившемся',
+        'Чувство отстранённости от других', 'Потеря интереса к деятельности',
+        'Онемение или трудности с чувствами', 'Пессимизм в отношении будущего',
+        'Раздражительность или вспышки гнева', 'Рискованное поведение',
+        'Гипербдительность', 'Чрезмерная реакция на неожиданные звуки',
+        'Трудности с концентрацией', 'Нарушения сна'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 10, label: 'низкий уровень', level: 'low' },
+        { min: 11, max: 20, label: 'умеренный уровень', level: 'moderate' },
+        { min: 21, max: 80, label: 'высокий уровень', level: 'high' }
+    ]
+};
+
+// Y-BOCS
+testConfigs.ybocs = {
+    id: 'ybocs',
+    category: 'ОКР',
+    label: 'Шкала Y-BOCS',
+    icon: '🔄',
+    badge: '10 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки тяжести обсессивно-компульсивного расстройства.<br><strong>Что измеряет:</strong> тяжесть обсессий и компульсий.<br><strong>Интерпретация:</strong> 0-7 — незначительное, 8-15 — слабое, 16-23 — среднее, 24-31 — сильное, 32-40 — чрезвычайное.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Время, занимаемое обсессиями', 'Вмешательство обсессий в жизнь',
+        'Дистресс от обсессий', 'Сопротивление обсессиям',
+        'Контроль над обсессиями', 'Время, занимаемое компульсиями',
+        'Вмешательство компульсий в жизнь', 'Дистресс от компульсий',
+        'Сопротивление компульсиям', 'Контроль над компульсиями'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 7, label: 'незначительное', level: 'low' },
+        { min: 8, max: 15, label: 'слабое', level: 'moderate' },
+        { min: 16, max: 23, label: 'среднее', level: 'moderate' },
+        { min: 24, max: 31, label: 'сильное', level: 'high' },
+        { min: 32, max: 40, label: 'чрезвычайное', level: 'high' }
+    ]
+};
+
+// OCI-R
+testConfigs.ocir = {
+    id: 'ocir',
+    category: 'ОКР',
+    label: 'Шкала OCI-R',
+    icon: '🔄',
+    badge: '18 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для скрининга обсессивно-компульсивного расстройства.<br><strong>Что измеряет:</strong> 6 доменов ОКР.<br><strong>Интерпретация:</strong> 0-18 — норма, 19-36 — умеренный уровень, 37-72 — высокий.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Меня беспокоят неприятные мысли.', 'Я проверяю вещи чаще, чем нужно.',
+        'Я боюсь загрязнения.', 'Я чувствую потребность в симметрии.',
+        'Я пересчитываю вещи.', 'Мне трудно избавиться от ненужных вещей.',
+        'Я беспокоюсь, что могу навредить другим.', 'Я проверяю, не оставил ли я что-то включённым.',
+        'Я мою руки чаще, чем нужно.', 'Мне нужно, чтобы вещи были упорядочены.',
+        'Я повторяю действия определённое количество раз.', 'Мне трудно выбрасывать вещи.',
+        'Я беспокоюсь, что могу потерять контроль.', 'Я проверяю, не сделал ли я ошибку.',
+        'Я боюсь прикасаться к некоторым поверхностям.', 'Мне нужно, чтобы вещи были точно выровнены.',
+        'Я следую определённым ритуалам.', 'Я испытываю тревогу, когда вещи не на своих местах.'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 18, label: 'норма', level: 'low' },
+        { min: 19, max: 36, label: 'умеренный уровень', level: 'moderate' },
+        { min: 37, max: 72, label: 'высокий уровень', level: 'high' }
+    ]
+};
+
+// IIEF-5
+testConfigs.iief5 = {
+    id: 'iief5',
+    category: 'Сексология',
+    label: 'Опросник IIEF-5',
+    icon: '💊',
+    badge: '5 вопросов, 0-5',
+    desc: '<strong>Для кого:</strong> для оценки эректильной функции у мужчин.<br><strong>Что измеряет:</strong> тяжесть эректильной дисфункции.<br><strong>Интерпретация:</strong> 0-5 — тяжёлая, 6-10 — умеренная, 11-15 — лёгкая, 16-20 — лёгкая/умеренная, 21-25 — норма.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Как часто вы могли достичь эрекции?', 'Как часто эрекция была достаточной для проникновения?',
+        'Как часто вы могли поддерживать эрекцию после проникновения?',
+        'Как часто вам было трудно поддерживать эрекцию до завершения?',
+        'Как часто вы были удовлетворены половым актом?'
+    ],
+    options: [0,1,2,3,4,5],
+    interpretation: [
+        { min: 0, max: 5, label: 'тяжёлая ЭД', level: 'high' },
+        { min: 6, max: 10, label: 'умеренная ЭД', level: 'moderate' },
+        { min: 11, max: 15, label: 'лёгкая ЭД', level: 'moderate' },
+        { min: 16, max: 20, label: 'лёгкая/умеренная', level: 'low' },
+        { min: 21, max: 25, label: 'норма', level: 'low' }
+    ]
+};
+
+// PEDT
+testConfigs.pedt = {
+    id: 'pedt',
+    category: 'Сексология',
+    label: 'Шкала PEDT',
+    icon: '💊',
+    badge: '5 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки преждевременной эякуляции.<br><strong>Что измеряет:</strong> тяжесть преждевременной эякуляции.<br><strong>Интерпретация:</strong> 0-4 — норма, 5-8 — лёгкая, 9-12 — умеренная, 13-20 — тяжёлая.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Как часто вы испытываете преждевременную эякуляцию?',
+        'Как часто вы не можете задержать эякуляцию?',
+        'Как часто вы испытываете дистресс из-за эякуляции?',
+        'Как часто ваша эякуляция вызывает проблемы в отношениях?',
+        'Как часто вы чувствуете, что не контролируете эякуляцию?'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 4, label: 'норма', level: 'low' },
+        { min: 5, max: 8, label: 'лёгкая', level: 'moderate' },
+        { min: 9, max: 12, label: 'умеренная', level: 'moderate' },
+        { min: 13, max: 20, label: 'тяжёлая', level: 'high' }
+    ]
+};
+
+// FSFI
+testConfigs.fsfi = {
+    id: 'fsfi',
+    category: 'Сексология',
+    label: 'Опросник FSFI',
+    icon: '💊',
+    badge: '19 вопросов, 0-5',
+    desc: '<strong>Для кого:</strong> для оценки женской сексуальной функции.<br><strong>Что измеряет:</strong> 6 доменов сексуальной функции.<br><strong>Интерпретация:</strong> 0-26 — высокая дисфункция, 27-35 — умеренная, 36-95 — норма.<br><strong>Время:</strong> 5-7 минут.',
+    questions: Array.from({length: 19}, (_, i) => `Вопрос ${i+1}`),
+    options: [0,1,2,3,4,5],
+    interpretation: [
+        { min: 0, max: 26, label: 'высокая дисфункция', level: 'high' },
+        { min: 27, max: 35, label: 'умеренная дисфункция', level: 'moderate' },
+        { min: 36, max: 95, label: 'норма', level: 'low' }
+    ],
+    scoring: {
+        custom: function(scores) {
+            if (!scores || scores.length < 19) return 'Нет данных';
+            let desire = (scores[0]||0) + (scores[1]||0);
+            let arousal = (scores[2]||0) + (scores[3]||0);
+            let lubrication = (scores[4]||0) + (scores[5]||0);
+            let orgasm = (scores[6]||0) + (scores[7]||0);
+            let satisfaction = (scores[8]||0) + (scores[9]||0) + (scores[10]||0) + (scores[11]||0) + (scores[12]||0);
+            let pain = (scores[13]||0) + (scores[14]||0) + (scores[15]||0) + (scores[16]||0) + (scores[17]||0) + (scores[18]||0);
+            let total = desire + arousal + lubrication + orgasm + satisfaction + pain;
+            let level = '';
+            if (total <= 26) level = 'высокая дисфункция';
+            else if (total <= 35) level = 'умеренная дисфункция';
+            else level = 'норма';
+            return `Сумма: ${total} баллов — ${level}`;
+        }
+    }
+};
+
+// ASEX
+testConfigs.asex = {
+    id: 'asex',
+    category: 'Сексология',
+    label: 'Шкала ASEX',
+    icon: '💊',
+    badge: '5 вопросов, 1-6',
+    desc: '<strong>Для кого:</strong> для оценки сексуальной функции.<br><strong>Что измеряет:</strong> ключевые аспекты сексуальной функции.<br><strong>Интерпретация:</strong> 5-10 — норма, 11-16 — умеренная, 17-30 — выраженная дисфункция.<br><strong>Время:</strong> 2-3 минуты.',
+    questions: [
+        'Ваше сексуальное желание?', 'Как легко вы достигаете возбуждения?',
+        'Как часто вы достигаете оргазма?', 'Как сильно вы наслаждаетесь оргазмом?',
+        'Как часто вы испытываете эрекцию/смазку?'
+    ],
+    options: [1,2,3,4,5,6],
+    interpretation: [
+        { min: 5, max: 10, label: 'норма', level: 'low' },
+        { min: 11, max: 16, label: 'умеренная дисфункция', level: 'moderate' },
+        { min: 17, max: 30, label: 'выраженная дисфункция', level: 'high' }
+    ]
+};
+
+// C-SSRS
+testConfigs.cssrs = {
+    id: 'cssrs',
+    category: 'Суицидальный риск',
+    label: 'Колумбийская шкала (C-SSRS)',
+    icon: '⚠️',
+    badge: '6 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для оценки суицидального риска.<br><strong>Что измеряет:</strong> наличие суицидальных мыслей и поведения.<br><strong>Интерпретация:</strong> любой положительный ответ требует оценки.<br><strong>Время:</strong> 3-5 минут.',
+    questions: [
+        'Были ли у вас мысли о желании умереть?',
+        'Были ли у вас мысли о самоубийстве?',
+        'Были ли у вас конкретные планы самоубийства?',
+        'Были ли у вас намерения совершить самоубийство?',
+        'Были ли у вас попытки самоубийства?',
+        'Были ли у вас самоповреждения?'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 0, label: 'риск не выявлен', level: 'low' },
+        { min: 1, max: 6, label: 'выявлен риск суицида', level: 'high' }
+    ]
+};
+
+// Hopeless
+testConfigs.hopeless = {
+    id: 'hopeless',
+    category: 'Суицидальный риск',
+    label: 'Шкала безнадежности',
+    icon: '🔮',
+    badge: '20 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для оценки уровня безнадежности.<br><strong>Что измеряет:</strong> негативные ожидания в отношении будущего.<br><strong>Интерпретация:</strong> 0-3 — норма, 4-8 — лёгкая, 9-14 — умеренная, 15-20 — тяжёлая.<br><strong>Время:</strong> 5-10 минут.',
+    questions: [
+        'Я смотрю в будущее с надеждой и энтузиазмом.',
+        'С тем же успехом я мог бы сдаться, потому что я не смогу сделать свою жизнь лучше.',
+        'Когда дела идут плохо, мне помогает мысль, что так не может продолжаться вечно.',
+        'Я не могу представить, какой будет моя жизнь через 10 лет.',
+        'Мне хватает времени, чтобы успевать делать то, что я хочу.',
+        'В будущем я рассчитываю добиться успеха в том, что больше всего для меня важно.',
+        'Мое будущее кажется мне мрачным.',
+        'Я удачливый и ожидаю от жизни больше хорошего, чем обычный человек.',
+        'Я не могу быть успешным сейчас и не вижу оснований для успеха в будущем.',
+        'Мой прошлый жизненный опыт хорошо подготовил меня к будущему.',
+        'Все, что я вижу впереди, это скорее неприятности, чем удовольствия.',
+        'Я не ожидаю получить то, что действительно хочу.',
+        'Когда я думаю о будущем, я ожидаю, что буду счастливее, чем сейчас.',
+        'Дела идут совсем не так, как я хочу.',
+        'Я очень верю в свое будущее.',
+        'Я никогда не получаю того, чего хочу, поэтому глупо чего-то желать.',
+        'Очень маловероятно, что в будущем меня ждет хоть какое-то реальное удовлетворение.',
+        'Будущее кажется мне туманным и неопределенным.',
+        'В будущем я могу ожидать больше хороших дней, чем плохих.',
+        'Нет смысла пытаться получить что-либо из того, что я хочу, потому что вряд ли я добьюсь этого.'
+    ],
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 3, label: 'норма', level: 'low' },
+        { min: 4, max: 8, label: 'лёгкая безнадежность', level: 'moderate' },
+        { min: 9, max: 14, label: 'умеренная безнадежность', level: 'high' },
+        { min: 15, max: 20, label: 'тяжёлая безнадежность', level: 'high' }
+    ],
+    scoring: {
+        custom: function(scores) {
+            if (!scores || !scores.length) return 'Нет данных';
+            const keys = [false,true,false,true,false,false,true,false,true,false,true,true,false,true,false,true,true,true,false,true];
+            let sum = 0;
+            for (let i = 0; i < 20; i++) {
+                const val = scores[i] || 0;
+                if (keys[i]) {
+                    if (val === 1) sum++;
+                } else {
+                    if (val === 0) sum++;
+                }
+            }
+            let level = '';
+            if (sum <= 3) level = 'норма';
+            else if (sum <= 8) level = 'лёгкая безнадежность';
+            else if (sum <= 14) level = 'умеренная безнадежность';
+            else level = 'тяжёлая безнадежность';
+            return `${sum} баллов — ${level}`;
+        }
+    }
+};
+
+// ASQ
+testConfigs.asq = {
+    id: 'asq',
+    category: 'Суицидальный риск',
+    label: 'Методика скрининга суицидального риска',
+    icon: '⚠️',
+    badge: '4 вопроса + острота',
+    desc: '<strong>Для кого:</strong> для быстрой оценки суицидального риска.<br><strong>Что измеряет:</strong> наличие суицидальных мыслей и попыток.<br><strong>Интерпретация:</strong> любой положительный ответ требует дополнительной оценки.<br><strong>Время:</strong> 2-3 минуты.',
+    type: 'asq'
+};
+
+// PDQ-20
+testConfigs.pdq20 = {
+    id: 'pdq20',
+    category: 'Когнитивные',
+    label: 'Опросник PDQ-20',
+    icon: '🧩',
+    badge: '20 вопросов, 0-4',
+    desc: '<strong>Для кого:</strong> для оценки когнитивных нарушений.<br><strong>Что измеряет:</strong> субъективные когнитивные нарушения.<br><strong>Интерпретация:</strong> 0-30 — норма, 31-80 — отклонение.<br><strong>Время:</strong> 5-7 минут.',
+    questions: [
+        'Трудно сосредоточиться', 'Легко отвлекаетесь', 'Трудно делать несколько дел',
+        'Теряете нить беседы', 'Трудно думать ясно', 'Забываете, что нужно сделать',
+        'Забываете, где положили вещи', 'Забываете о встречах', 'Забываете, что сказали',
+        'Забываете, что прочитали', 'Забываете, что собирались сказать',
+        'Забываете, что делали до прерывания', 'Забываете, что делали вчера',
+        'Забываете, что делали на прошлой неделе', 'Забываете, что делали месяц назад',
+        'Трудно планировать', 'Трудно организовать дела', 'Трудно доводить дела до конца',
+        'Трудно решать проблемы', 'Трудно приспосабливаться к изменениям'
+    ],
+    options: [0,1,2,3,4],
+    interpretation: [
+        { min: 0, max: 30, label: 'норма', level: 'low' },
+        { min: 31, max: 80, label: 'отклонение', level: 'high' }
+    ]
+};
+
+// MoCA
+testConfigs.moca = {
+    id: 'moca',
+    category: 'Когнитивные',
+    label: 'Монреальская шкала (MoCA)',
+    icon: '🧠',
+    badge: '0-30',
+    type: 'text-input',
+    desc: '<strong>Для кого:</strong> для скрининга когнитивных нарушений.<br><strong>Что измеряет:</strong> общий когнитивный статус.<br><strong>Интерпретация:</strong> ≥26 — норма, 18-25 — умеренное снижение, <18 — деменция.<br><strong>Время:</strong> 5-10 минут.',
+    scoring: function(value) {
+        const score = parseInt(value, 10);
+        if (isNaN(score) || score < 0 || score > 30) return 'Введите число от 0 до 30';
+        let level = '';
+        if (score >= 26) level = 'норма';
+        else if (score >= 18) level = 'умеренное когнитивное снижение';
+        else level = 'вероятная деменция';
+        return `${score} баллов — ${level}`;
+    }
+};
+
+// MMSE
+testConfigs.mmse = {
+    id: 'mmse',
+    category: 'Когнитивные',
+    label: 'Краткая шкала (MMSE)',
+    icon: '🧠',
+    badge: '0-30',
+    type: 'text-input',
+    desc: '<strong>Для кого:</strong> для оценки когнитивных функций.<br><strong>Что измеряет:</strong> общий когнитивный статус.<br><strong>Интерпретация:</strong> ≥27 — норма, 20-26 — умеренное снижение, <20 — деменция.<br><strong>Время:</strong> 5-10 минут.',
+    scoring: function(value) {
+        const score = parseInt(value, 10);
+        if (isNaN(score) || score < 0 || score > 30) return 'Введите число от 0 до 30';
+        let level = '';
+        if (score >= 27) level = 'норма';
+        else if (score >= 20) level = 'умеренное когнитивное снижение';
+        else level = 'вероятная деменция';
+        return `${score} баллов — ${level}`;
+    }
+};
+
+// SCL-90 (исправлен: правильные ключи шкал)
+testConfigs.scl90 = {
+    id: 'scl90',
+    category: 'Личностные',
+    label: 'SCL-90-R (симптоматический)',
+    icon: '📋',
+    badge: '90 вопросов, 1-5',
+    desc: '<strong>Для кого:</strong> для оценки психопатологической симптоматики.<br><strong>Что измеряет:</strong> 9 шкал: соматизация, обсессивно-компульсивные, межличностная сенситивность, депрессия, тревога, враждебность, фобическая тревога, параноидные идеи, психотизм.<br><strong>Интерпретация:</strong> GSI < 2.0 — низкий дистресс, 2.0-3.0 — умеренный, >3.0 — высокий.<br><strong>Время:</strong> 15-20 минут.',
+    questions: [
+        'Головные боли', 'Нервозность или внутренняя дрожь', 'Повторяющиеся неприятные мысли',
+        'Слабость или головокружения', 'Потеря сексуального влечения', 'Чувство недовольства другими',
+        'Ощущение, что кто-то управляет вашими мыслями', 'Ощущение, что другие виноваты в ваших проблемах',
+        'Проблемы с памятью', 'Небрежность или неряшливость', 'Легкая раздражительность',
+        'Боли в сердце или груди', 'Страх в открытых местах', 'Упадок сил',
+        'Мысли о самоубийстве', 'Слышите голоса', 'Дрожь', 'Недоверие к людям',
+        'Плохой аппетит', 'Слезливость', 'Застенчивость с лицами другого пола',
+        'Ощущение в западне', 'Внезапный страх', 'Вспышки гнева', 'Боязнь выйти из дома',
+        'Чувство вины', 'Боли в пояснице', 'Ощущение, что что-то мешает', 'Одиночество',
+        'Подавленное настроение', 'Чрезмерное беспокойство', 'Отсутствие интереса', 'Страх',
+        'Легкая ранимость', 'Ощущение, что другие проникают в мысли', 'Непонимание другими',
+        'Враждебность людей', 'Медлительность', 'Учащенное сердцебиение', 'Тошнота',
+        'Ощущение, что вы хуже других', 'Боли в мышцах', 'Наблюдение других', 'Трудности со сном',
+        'Потребность проверять', 'Трудности в принятии решений', 'Страх транспорта', 'Затрудненное дыхание',
+        'Приливы жара', 'Избегание мест', 'Потеря мысли', 'Онемение', 'Комок в горле',
+        'Безнадежность будущего', 'Трудности концентрации', 'Слабость в теле', 'Напряженность',
+        'Тяжесть в конечностях', 'Мысли о смерти', 'Переедание', 'Неловкость на людях',
+        'Чужие мысли в голове', 'Импульсы к насилию', 'Бессонница по утрам', 'Повторяющиеся действия',
+        'Беспокойный сон', 'Импульсы к разрушению', 'Необычные идеи', 'Излишняя застенчивость',
+        'Неловкость в людных местах', 'Всё требует усилий', 'Приступы паники', 'Неловкость при еде',
+        'Частые споры', 'Нервозность в одиночестве', 'Недооценка достижений', 'Одиночество даже с другими',
+        'Беспокойство, не могли усидеть', 'Никчемность', 'Ощущение, что случится плохое', 'Крики или бросание вещей',
+        'Боязнь обморока', 'Злоупотребление доверием', 'Сексуальные мысли', 'Мысли о наказании',
+        'Кошмары', 'Что-то не так с телом', 'Отсутствие близости', 'Чувство вины', 'Проблемы с рассудком'
+    ],
+    type: 'scl90'
+};
+
+// BPI
+testConfigs.bpi = {
+    id: 'bpi',
+    category: 'Личностные',
+    label: 'Опросник ПРЛ (BPI)',
+    icon: '🧩',
+    badge: '52 вопроса, Да/Нет',
+    desc: '<strong>Для кого:</strong> для скрининга пограничного расстройства личности.<br><strong>Что измеряет:</strong> наличие ключевых признаков ПРЛ.<br><strong>Интерпретация:</strong> 0-10 — низкая вероятность, 11-20 — умеренная, 21-30 — высокая, 31-52 — очень высокая.<br><strong>Время:</strong> 10-15 минут.',
+    questions: Array.from({length: 52}, (_, i) => `Утверждение ${i+1}`),
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 10, label: 'низкая вероятность ПРЛ', level: 'low' },
+        { min: 11, max: 20, label: 'умеренная вероятность ПРЛ', level: 'moderate' },
+        { min: 21, max: 30, label: 'высокая вероятность ПРЛ', level: 'high' },
+        { min: 31, max: 52, label: 'очень высокая вероятность ПРЛ', level: 'high' }
+    ]
+};
+
+// TAS-20
+testConfigs.tas20 = {
+    id: 'tas20',
+    category: 'Личностные',
+    label: 'TAS-20 (алекситимия)',
+    icon: '📝',
+    badge: '20 вопросов, 1-5',
+    desc: '<strong>Для кого:</strong> для оценки алекситимии (трудности распознавания и описания эмоций).<br><strong>Что измеряет:</strong> 3 фактора: трудности идентификации чувств, трудности вербализации эмоций, внешнеориентированное мышление.<br><strong>Интерпретация:</strong> ≤51 — низкая алекситимия, 52-60 — средняя, ≥61 — высокая.<br><strong>Время:</strong> 5-7 минут.',
+    questions: Array.from({length: 20}, (_, i) => `Утверждение ${i+1}`),
+    options: [1,2,3,4,5],
+    interpretation: [
+        { min: 20, max: 51, label: 'низкая алекситимия', level: 'low' },
+        { min: 52, max: 60, label: 'средняя алекситимия', level: 'moderate' },
+        { min: 61, max: 100, label: 'высокая алекситимия', level: 'high' }
+    ],
+    scoring: {
+        custom: function(scores) {
+            if (!scores || scores.length < 20) return 'Нет данных';
+            let sum = 0;
+            for (let i = 0; i < 20; i++) {
+                let val = scores[i] || 0;
+                if (i === 3) val = 6 - val;
+                sum += val;
+            }
+            let level = '';
+            if (sum <= 51) level = 'низкая алекситимия';
+            else if (sum <= 60) level = 'средняя алекситимия';
+            else level = 'высокая алекситимия';
+            return `${sum} баллов — ${level}`;
+        }
+    }
+};
+
+// Опросник невротизации
+testConfigs.neuroticism = {
+    id: 'neuroticism',
+    category: 'Личностные',
+    label: 'Опросник невротизации',
+    icon: '🧠',
+    badge: '30 вопросов, Да/Нет',
+    desc: '<strong>Для кого:</strong> для оценки уровня невротизации.<br><strong>Что измеряет:</strong> склонность к невротическим реакциям.<br><strong>Интерпретация:</strong> 0-8 — низкий уровень, 9-15 — средний, 16-22 — повышенный, 23-30 — высокий.<br><strong>Время:</strong> 5-7 минут.',
+    questions: Array.from({length: 30}, (_, i) => `Утверждение ${i+1}`),
+    options: [{value:1, label:'Да'}, {value:0, label:'Нет'}],
+    interpretation: [
+        { min: 0, max: 8, label: 'низкий уровень невротизации', level: 'low' },
+        { min: 9, max: 15, label: 'средний уровень невротизации', level: 'moderate' },
+        { min: 16, max: 22, label: 'повышенный уровень невротизации', level: 'high' },
+        { min: 23, max: 30, label: 'высокий уровень невротизации', level: 'high' }
+    ]
+};
+
+// =============================================================
+// 4. РЕГИСТРАЦИЯ ТЕСТОВ
+// =============================================================
+const testRegistry = {
+    bdi: renderBdi,
+    hamd: renderHamd,
+    madrs: renderMadrs,
+    phq9: renderPhq9,
+    gds15: renderGds15,
+    bai: renderBai,
+    hads: renderHads,
+    gad7: renderGad7,
+    hama: renderHama,
+    hcl33: renderHcl33,
+    mdq: renderMdq,
+    isi: renderIsi,
+    epworth: renderEpworth,
+    stopbang: renderStopbang,
+    sleepapnea: renderSleepapnea,
+    asrs: renderAsrs,
+    aq10: renderAq10,
+    aq50: renderAq50,
+    raadsr: renderRaadsr,
+    catq: renderCatq,
+    pcl5: renderPcl5,
+    ybocs: renderYbocs,
+    ocir: renderOcir,
+    iief5: renderIief5,
+    pedt: renderPedt,
+    fsfi: renderFsfi,
+    asex: renderAsex,
+    cssrs: renderCssrs,
+    hopeless: renderHopeless,
+    asq: renderAsq,
+    pdq20: renderPdq20,
+    moca: renderMoca,
+    mmse: renderMmse,
+    scl90: renderScl90,
+    bpi: renderBpi,
+    tas20: renderTas20,
+    neuroticism: renderNeuroticism
+};
+
+// ---- Вспомогательные функции ----
+function renderGenericRadio(config, container) {
+    const saved = Engine.answers[config.id] || {};
+    const opts = config.options || [0,1,2,3];
+    let html = `<div class="test-title">${config.icon || '📋'} ${config.label} <span class="badge">${config.badge || ''}</span></div>`;
+    if (config.desc) html += `<div class="test-desc">${config.desc}</div>`;
+    html += `<div id="itemsContainer">`;
+    config.questions.forEach((text, idx) => {
+        html += `<div class="question-row"><div class="q-label"><span class="q-num">${idx+1}.</span> ${text}</div><div class="radio-group">`;
+        opts.forEach((opt, oi) => {
+            const val = typeof opt === 'object' ? opt.value : opt;
+            const label = typeof opt === 'object' ? opt.label : String(opt);
+            const checked = saved[idx] === val ? 'checked' : '';
+            html += `<label><input type="radio" name="q_${idx}" value="${val}" ${checked}> ${label}</label>`;
+        });
+        html += `</div></div>`;
+    });
+    html += `</div>`;
+    html += `<div style="margin-top:1rem;"><button class="btn" id="calcBtn">Рассчитать</button><button class="btn btn-danger" id="clearBtn">Очистить</button></div>`;
+    html += `<div class="result-area" id="resultArea">Ожидание расчёта</div>`;
+    container.innerHTML = html;
+
+    document.getElementById('calcBtn').addEventListener('click', () => {
+        let sum = 0;
+        const allValues = [];
+        const count = config.questions.length;
+        for (let i = 0; i < count; i++) {
+            const val = Engine.getRadioValue(`q_${i}`);
+            allValues.push(val);
+            sum += val;
+            Engine.answers[config.id] = Engine.answers[config.id] || {};
+            Engine.answers[config.id][i] = val;
+        }
+        Engine.saveState();
+        if (config.scoring && config.scoring.custom) {
+            const result = config.scoring.custom(allValues);
+            Engine.showResult(config, result);
+            Engine.updateGlobalResult(config.id, config.label, result);
+        } else {
+            const result = Engine.interpretScore(config, sum);
+            Engine.showResult(config, result, sum);
+            Engine.updateGlobalResult(config.id, config.label, result);
+        }
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => Engine.clearTest(config));
+
+    for (let i = 0; i < config.questions.length; i++) {
+        const radios = document.getElementsByName(`q_${i}`);
+        for (const r of radios) {
+            r.addEventListener('change', () => {
+                Engine.answers[config.id] = Engine.answers[config.id] || {};
+                Engine.answers[config.id][i] = parseInt(r.value, 10);
+                Engine.saveState();
+                const btn = document.getElementById('calcBtn');
+                if (btn) btn.click();
+            });
+        }
+    }
+    if (Object.keys(saved).length > 0) setTimeout(() => { const btn = document.getElementById('calcBtn'); if (btn) btn.click(); }, 50);
+}
+
+// ---- Функции-обёртки ----
+function renderBdi(container) { Engine.loadTest('bdi'); }
+function renderAsq(container) { Engine.loadTest('asq'); }
+function renderScl90(container) { Engine.loadTest('scl90'); }
+function renderHads(container) { Engine.loadTest('hads'); }
+function renderHamd(container) { renderGenericRadio(testConfigs.hamd, container); }
+function renderMadrs(container) { renderGenericRadio(testConfigs.madrs, container); }
+function renderPhq9(container) { renderGenericRadio(testConfigs.phq9, container); }
+function renderGds15(container) { renderGenericRadio(testConfigs.gds15, container); }
+function renderBai(container) { renderGenericRadio(testConfigs.bai, container); }
+function renderGad7(container) { renderGenericRadio(testConfigs.gad7, container); }
+function renderHama(container) { renderGenericRadio(testConfigs.hama, container); }
+function renderHcl33(container) { renderGenericRadio(testConfigs.hcl33, container); }
+function renderMdq(container) { renderGenericRadio(testConfigs.mdq, container); }
+function renderIsi(container) { renderGenericRadio(testConfigs.isi, container); }
+function renderEpworth(container) { renderGenericRadio(testConfigs.epworth, container); }
+function renderStopbang(container) { renderGenericRadio(testConfigs.stopbang, container); }
+function renderSleepapnea(container) { renderGenericRadio(testConfigs.sleepapnea, container); }
+function renderAsrs(container) { renderGenericRadio(testConfigs.asrs, container); }
+function renderAq10(container) { renderGenericRadio(testConfigs.aq10, container); }
+function renderAq50(container) { renderGenericRadio(testConfigs.aq50, container); }
+function renderRaadsr(container) { renderGenericRadio(testConfigs.raadsr, container); }
+function renderCatq(container) { renderGenericRadio(testConfigs.catq, container); }
+function renderPcl5(container) { renderGenericRadio(testConfigs.pcl5, container); }
+function renderYbocs(container) { renderGenericRadio(testConfigs.ybocs, container); }
+function renderOcir(container) { renderGenericRadio(testConfigs.ocir, container); }
+function renderIief5(container) { renderGenericRadio(testConfigs.iief5, container); }
+function renderPedt(container) { renderGenericRadio(testConfigs.pedt, container); }
+function renderFsfi(container) { renderGenericRadio(testConfigs.fsfi, container); }
+function renderAsex(container) { renderGenericRadio(testConfigs.asex, container); }
+function renderCssrs(container) { renderGenericRadio(testConfigs.cssrs, container); }
+function renderHopeless(container) { renderGenericRadio(testConfigs.hopeless, container); }
+function renderPdq20(container) { renderGenericRadio(testConfigs.pdq20, container); }
+function renderBpi(container) { renderGenericRadio(testConfigs.bpi, container); }
+function renderTas20(container) { renderGenericRadio(testConfigs.tas20, container); }
+function renderNeuroticism(container) { renderGenericRadio(testConfigs.neuroticism, container); }
+
+function renderMoca(container) {
+    const config = testConfigs.moca;
+    container.innerHTML = `<div class="test-title">${config.icon} ${config.label} <span class="badge">${config.badge}</span></div>
+        <div class="test-desc">${config.desc}</div>
+        <div style="margin-bottom:10px;"><input type="text" id="textInput" style="width:100%;padding:8px 14px;border-radius:1rem;border:2px solid var(--border);font-size:1rem;background:var(--card);color:var(--text);" placeholder="Введите сумму баллов (0-30)"></div>
+        <div style="margin-top:1rem;"><button class="btn" id="calcBtn">Рассчитать</button><button class="btn btn-danger" id="clearBtn">Очистить</button></div>
+        <div class="result-area" id="resultArea">Ожидание расчёта</div>`;
+    const input = document.getElementById('textInput');
+    const saved = Engine.answers['moca'] || '';
+    input.value = saved;
+    input.addEventListener('input', () => {
+        Engine.answers['moca'] = input.value;
+        Engine.saveState();
+        const result = config.scoring(input.value);
+        Engine.showResult(config, result);
+        Engine.updateGlobalResult('moca', config.label, result);
+    });
+    document.getElementById('calcBtn').addEventListener('click', () => {
+        const result = config.scoring(input.value);
+        Engine.showResult(config, result);
+        Engine.updateGlobalResult('moca', config.label, result);
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        input.value = '';
+        delete Engine.answers['moca'];
+        Engine.saveState();
+        document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+        Engine.clearGlobalResult('moca');
+        Engine.showToast('MoCA очищен');
+    });
+    if (saved) setTimeout(() => { const result = config.scoring(saved); Engine.showResult(config, result); Engine.updateGlobalResult('moca', config.label, result); }, 50);
+}
+
+function renderMmse(container) {
+    const config = testConfigs.mmse;
+    container.innerHTML = `<div class="test-title">${config.icon} ${config.label} <span class="badge">${config.badge}</span></div>
+        <div class="test-desc">${config.desc}</div>
+        <div style="margin-bottom:10px;"><input type="text" id="textInput" style="width:100%;padding:8px 14px;border-radius:1rem;border:2px solid var(--border);font-size:1rem;background:var(--card);color:var(--text);" placeholder="Введите сумму баллов (0-30)"></div>
+        <div style="margin-top:1rem;"><button class="btn" id="calcBtn">Рассчитать</button><button class="btn btn-danger" id="clearBtn">Очистить</button></div>
+        <div class="result-area" id="resultArea">Ожидание расчёта</div>`;
+    const input = document.getElementById('textInput');
+    const saved = Engine.answers['mmse'] || '';
+    input.value = saved;
+    input.addEventListener('input', () => {
+        Engine.answers['mmse'] = input.value;
+        Engine.saveState();
+        const result = config.scoring(input.value);
+        Engine.showResult(config, result);
+        Engine.updateGlobalResult('mmse', config.label, result);
+    });
+    document.getElementById('calcBtn').addEventListener('click', () => {
+        const result = config.scoring(input.value);
+        Engine.showResult(config, result);
+        Engine.updateGlobalResult('mmse', config.label, result);
+    });
+    document.getElementById('clearBtn').addEventListener('click', () => {
+        input.value = '';
+        delete Engine.answers['mmse'];
+        Engine.saveState();
+        document.getElementById('resultArea').innerHTML = 'Ожидание расчёта';
+        Engine.clearGlobalResult('mmse');
+        Engine.showToast('MMSE очищен');
+    });
+    if (saved) setTimeout(() => { const result = config.scoring(saved); Engine.showResult(config, result); Engine.updateGlobalResult('mmse', config.label, result); }, 50);
+}
+
+// =============================================================
+// 5. ЗАПУСК
+// =============================================================
+document.addEventListener('DOMContentLoaded', () => Engine.init());
+</script>
+</body>
+</html>
