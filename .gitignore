@@ -1,0 +1,21 @@
+# Dependencies & build junk
+psycho-app/node_modules/
+psycho-app/dist/
+*.log
+*.local
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Cursor local
+.cursor/
+
+# Regenerable portable zip (index.html in «Расчет тестов» is the deliverable)
+*.zip
+
+# Legacy one-offs
+*Шкалы*
+*шкалы*
