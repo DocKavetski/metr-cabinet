@@ -57,7 +57,7 @@ export function SupportPhrases() {
     }
 
     spawn()
-    const timer = window.setInterval(spawn, 1800)
+    const timer = window.setInterval(spawn, 30000)
     return () => window.clearInterval(timer)
   }, [])
 
