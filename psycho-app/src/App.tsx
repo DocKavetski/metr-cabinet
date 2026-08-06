@@ -249,7 +249,7 @@ export default function App() {
             {(test.kind === 'text' || state.inputMode === 'string') && (
               <div className="instrument no-print">
                 <div className="instrument-label">
-                  <span>{test.kind === 'text' ? 'Ввод балла' : 'Строка ответов с бланка'}</span>
+                  <span>{test.kind === 'text' ? 'Ввод балла' : 'Строка ответов'}</span>
                   {test.kind !== 'text' && (
                     <span>
                       {displayString.length}/{len}
@@ -265,7 +265,7 @@ export default function App() {
                         ? test.clinicianDomains?.length
                           ? 'Итог 0–30 или домены через пробел'
                           : 'Итоговый балл 0–30'
-                        : `${len} цифр (${range.min}–${range.max}), можно с пробелами`
+                        : `${len} цифр (${range.min}–${range.max})`
                     }
                     className={
                       !displayString && test.kind !== 'text' ? '' : stringComplete ? 'valid' : 'error'
