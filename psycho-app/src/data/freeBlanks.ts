@@ -1,15 +1,15 @@
-/** Свободные бланки: можно воспроизводить официальную форму */
+/** Свободные бланки: можно воспроизводить официальную форму (только русский) */
 
 export interface FreeBlankInfo {
   id: string
   /** Краткая метка в UI */
   badge: string
-  /** Строка авторства на бланке (как требует источник) */
+  /** Строка авторства на бланке */
   attribution: string
   /** Откуда форма */
   source: string
-  /** Файлы PDF в public/original-blanks/ (эталон) */
-  pdfFiles?: { file: string; lang: 'ru' | 'en'; label: string }[]
+  /** PDF-эталон на русском в public/original-blanks/ */
+  pdfFiles?: { file: string; label: string }[]
 }
 
 export const freeBlanks: FreeBlankInfo[] = [
@@ -17,77 +17,72 @@ export const freeBlanks: FreeBlankInfo[] = [
     id: 'phq9',
     badge: 'свободный оригинал',
     attribution:
-      'Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues, with an educational grant from Pfizer Inc. No permission required to reproduce, translate, display or distribute.',
+      'PHQ-9: Spitzer, Williams, Kroenke и соавт.; образовательный грант Pfizer Inc. Воспроизведение, перевод и распространение разрешены без отдельного разрешения (phqscreeners.com).',
     source: 'phqscreeners.com',
-    pdfFiles: [
-      { file: 'phq9.ru.pdf', lang: 'ru', label: 'PDF · RU' },
-      { file: 'phq9.en.pdf', lang: 'en', label: 'PDF · EN' },
-    ],
+    pdfFiles: [{ file: 'phq9.pdf', label: 'Скачать PDF' }],
   },
   {
     id: 'gad7',
     badge: 'свободный оригинал',
     attribution:
-      'Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues, with an educational grant from Pfizer Inc. No permission required to reproduce, translate, display or distribute.',
+      'GAD-7: Spitzer, Williams, Kroenke и соавт.; образовательный грант Pfizer Inc. Воспроизведение, перевод и распространение разрешены без отдельного разрешения (phqscreeners.com).',
     source: 'phqscreeners.com',
-    pdfFiles: [{ file: 'gad7.en.pdf', lang: 'en', label: 'PDF · EN' }],
   },
   {
     id: 'audit',
     badge: 'свободный оригинал',
     attribution:
-      'AUDIT © World Health Organization. May be reproduced in full for non-commercial clinical use; not for sale.',
-    source: 'WHO / auditscreen.org',
-    pdfFiles: [{ file: 'audit.ru.pdf', lang: 'ru', label: 'PDF · RU' }],
+      'AUDIT © Всемирная организация здравоохранения. Допускается полное воспроизведение для некоммерческого клинического применения; не для продажи.',
+    source: 'ВОЗ / auditscreen.org',
+    pdfFiles: [{ file: 'audit.pdf', label: 'Скачать PDF' }],
   },
   {
     id: 'pcl5',
     badge: 'свободный оригинал',
     attribution:
-      'PCL-5 © Weathers et al.; available from the National Center for PTSD (public domain). www.ptsd.va.gov',
-    source: 'VA National Center for PTSD',
-    pdfFiles: [{ file: 'pcl5.en.pdf', lang: 'en', label: 'PDF · EN' }],
+      'PCL-5: Weathers и соавт.; National Center for PTSD (общественное достояние). Русская печатная форма — по тексту шкалы в МЕТР.',
+    source: 'National Center for PTSD',
   },
   {
     id: 'asq',
     badge: 'свободный оригинал',
     attribution:
-      'Ask Suicide-Screening Questions (ASQ) © National Institute of Mental Health (NIMH). Free for clinical use.',
-    source: 'NIMH ASQ Toolkit',
+      'ASQ (Ask Suicide-Screening Questions) © Национальный институт психического здоровья США (NIMH). Бесплатно для клинического применения.',
+    source: 'NIMH ASQ',
   },
   {
     id: 'asrs',
     badge: 'свободный оригинал',
     attribution:
-      'Adult ADHD Self-Report Scale (ASRS v1.1) © WHO / Kessler et al. Free to use; do not alter response options or scoring. Cite Kessler et al., Psychological Medicine, 2005.',
-    source: 'Harvard NCS / WHO ASRS',
+      'ASRS v1.1 © ВОЗ / Kessler и соавт. Свободное использование; не изменять варианты ответа и алгоритм. Цитировать: Kessler et al., Psychological Medicine, 2005.',
+    source: 'ВОЗ / ASRS',
   },
   {
     id: 'ace',
     badge: 'свободный оригинал',
     attribution:
-      'Adverse Childhood Experiences (ACE) questionnaire — public health screening form (CDC/WHO lineage). For clinical screening use.',
-    source: 'CDC / WHO ACE forms',
+      'Опросник неблагоприятного детского опыта (ACE) — скрининговая форма общественного здравоохранения (линия CDC/ВОЗ). Для клинического скрининга.',
+    source: 'CDC / ВОЗ · ACE',
   },
   {
     id: 'stopbang',
     badge: 'свободный оригинал',
     attribution:
-      'STOP-BANG questionnaire — clinical screening for obstructive sleep apnea. Use with citation to Chung et al.',
+      'STOP-BANG — клинический скрининг обструктивного апноэ сна. При цитировании указывайте Chung и соавт.',
     source: 'STOP-BANG',
   },
   {
     id: 'whodas',
     badge: 'свободный оригинал',
     attribution:
-      'WHODAS 2.0 © World Health Organization. Free for clinical use under WHO terms; electronic implementations may need separate permission.',
-    source: 'WHO WHODAS 2.0',
+      'WHODAS 2.0 © Всемирная организация здравоохранения. Бесплатно для клинического применения по условиям ВОЗ; электронные внедрения могут требовать отдельного разрешения.',
+    source: 'ВОЗ · WHODAS 2.0',
   },
   {
     id: 'aq10',
     badge: 'свободный оригинал',
     attribution:
-      'AQ-10 © SBC/CA/BA/ARC/Cambridge University. Autism Spectrum Quotient short form (Allison, Auyeung & Baron-Cohen, 2012).',
+      'AQ-10 © SBC/CA/BA/ARC / Кембриджский университет. Краткая форма коэффициента аутистического спектра (Allison, Auyeung и Baron-Cohen, 2012).',
     source: 'Cambridge Autism Research Centre',
   },
 ]

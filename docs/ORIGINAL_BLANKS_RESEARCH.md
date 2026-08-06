@@ -10,8 +10,9 @@
 `phq9`, `gad7`, `audit`, `pcl5`, `asq`, `asrs`, `ace`, `stopbang`, `whodas`, `aq10`
 
 - Печать: HTML в официальной вёрстке + attribution + ФИО специалиста внизу (в пакете — под каждым).
-- PDF-эталоны в `psycho-app/public/original-blanks/` (и в `docs/original-blanks/` после сборки): PHQ-9 RU/EN, GAD-7 EN, AUDIT RU, PCL-5 EN.
+- PDF-эталоны (только русский) в `psycho-app/public/original-blanks/`: PHQ-9, AUDIT.
 - Реестр: `psycho-app/src/data/freeBlanks.ts`.
+- Английские PDF не подключаются.
 
 Коммерческие (BDI, HADS, MoCA, DIVA, SCL-90-R…) по-прежнему только рабочие HTML — без издательских PDF.
 
