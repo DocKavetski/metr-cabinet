@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { DigitMapHint } from './components/DigitMapHint'
 import { GlobalSummary } from './components/GlobalSummary'
 import { RadioQuestions } from './components/RadioQuestions'
+import { SupportPhrases } from './components/SupportPhrases'
 import { allTests, getFreeBlank, getSpecialist, getTest, originalBlankHref } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
 import { isAnswerComplete, normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
@@ -219,160 +220,166 @@ export default function App() {
         </div>
 
         <div className="stage-body">
-          <div className="test-panel" key={test.id}>
-            <div className="test-meta">
-              <span className="badge">{test.badge}</span>
-              {freeBlank && <span className="badge badge-free">{freeBlank.badge}</span>}
-            </div>
-            <div className="test-desc" dangerouslySetInnerHTML={{ __html: test.desc }} />
-            {freeBlank && (
-              <p className="free-blank-note no-print">
-                Печать — официальная свободная форма ({freeBlank.source}), внизу бланка — выбранный
-                специалист.
-                {freeBlank.pdfFiles?.length ? (
-                  <>
-                    {' '}
-                    Эталон PDF:{' '}
-                    {freeBlank.pdfFiles.map((p, i) => (
-                      <span key={p.file}>
-                        {i > 0 ? ' · ' : ''}
-                        <a href={originalBlankHref(p.file)} target="_blank" rel="noreferrer">
-                          {p.label}
-                        </a>
-                      </span>
-                    ))}
-                  </>
-                ) : null}
-              </p>
-            )}
+          <div className="stage-grid">
+            <div className="stage-primary">
+              <div className="test-panel" key={test.id}>
+                <div className="test-meta">
+                  <span className="badge">{test.badge}</span>
+                  {freeBlank && <span className="badge badge-free">{freeBlank.badge}</span>}
+                </div>
+                <div className="test-desc" dangerouslySetInnerHTML={{ __html: test.desc }} />
+                {freeBlank && (
+                  <p className="free-blank-note no-print">
+                    Печать — официальная свободная форма ({freeBlank.source}), внизу бланка —
+                    выбранный специалист.
+                    {freeBlank.pdfFiles?.length ? (
+                      <>
+                        {' '}
+                        Эталон PDF:{' '}
+                        {freeBlank.pdfFiles.map((p, i) => (
+                          <span key={p.file}>
+                            {i > 0 ? ' · ' : ''}
+                            <a href={originalBlankHref(p.file)} target="_blank" rel="noreferrer">
+                              {p.label}
+                            </a>
+                          </span>
+                        ))}
+                      </>
+                    ) : null}
+                  </p>
+                )}
 
-            {(test.kind === 'text' || state.inputMode === 'string') && (
-              <div className="instrument no-print">
-                <div className="instrument-label">
-                  <span>{test.kind === 'text' ? 'Ввод балла' : 'Строка ответов'}</span>
-                  {test.kind !== 'text' && (
-                    <span>
-                      {displayString.length}/{len}
-                    </span>
-                  )}
-                </div>
-                <div className="string-input-group">
-                  <input
-                    type="text"
-                    value={test.kind === 'text' ? answer : displayString}
-                    placeholder={
-                      test.kind === 'text'
-                        ? test.clinicianDomains?.length
-                          ? 'Итог 0–30 или домены через пробел'
-                          : 'Итоговый балл 0–30'
-                        : `${len} цифр (${range.min}–${range.max})`
-                    }
-                    className={
-                      !displayString && test.kind !== 'text' ? '' : stringComplete ? 'valid' : 'error'
-                    }
-                    onChange={(e) => {
-                      setAnswer(e.target.value)
-                      setCursorPos(e.target.selectionStart ?? e.target.value.replace(/\D/g, '').length)
-                    }}
-                    onSelect={(e) => {
-                      const el = e.target as HTMLInputElement
-                      const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                      setCursorPos(before.length)
-                    }}
-                    onClick={(e) => {
-                      const el = e.target as HTMLInputElement
-                      const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                      setCursorPos(before.length)
-                    }}
-                    onKeyUp={(e) => {
-                      const el = e.target as HTMLInputElement
-                      const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                      setCursorPos(before.length)
-                    }}
-                  />
-                  {test.kind !== 'text' && (
-                    <span
-                      className={`counter${stringComplete ? ' valid' : displayString ? ' error' : ''}`}
-                    >
-                      {displayString.length} / {len}
-                    </span>
-                  )}
-                </div>
-                {test.kind !== 'text' && len > 0 && (
-                  <div className="fill-bar" aria-hidden>
-                    <i style={{ width: `${Math.min(100, (displayString.length / len) * 100)}%` }} />
+                {(test.kind === 'text' || state.inputMode === 'string') && (
+                  <div className="instrument no-print">
+                    <div className="instrument-label">
+                      <span>{test.kind === 'text' ? 'Ввод балла' : 'Строка ответов'}</span>
+                      {test.kind !== 'text' && (
+                        <span>
+                          {displayString.length}/{len}
+                        </span>
+                      )}
+                    </div>
+                    <div className="string-input-group">
+                      <input
+                        type="text"
+                        value={test.kind === 'text' ? answer : displayString}
+                        placeholder={
+                          test.kind === 'text'
+                            ? test.clinicianDomains?.length
+                              ? 'Итог 0–30 или домены через пробел'
+                              : 'Итоговый балл 0–30'
+                            : `${len} цифр (${range.min}–${range.max})`
+                        }
+                        className={
+                          !displayString && test.kind !== 'text' ? '' : stringComplete ? 'valid' : 'error'
+                        }
+                        onChange={(e) => {
+                          setAnswer(e.target.value)
+                          setCursorPos(e.target.selectionStart ?? e.target.value.replace(/\D/g, '').length)
+                        }}
+                        onSelect={(e) => {
+                          const el = e.target as HTMLInputElement
+                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
+                          setCursorPos(before.length)
+                        }}
+                        onClick={(e) => {
+                          const el = e.target as HTMLInputElement
+                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
+                          setCursorPos(before.length)
+                        }}
+                        onKeyUp={(e) => {
+                          const el = e.target as HTMLInputElement
+                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
+                          setCursorPos(before.length)
+                        }}
+                      />
+                      {test.kind !== 'text' && (
+                        <span
+                          className={`counter${stringComplete ? ' valid' : displayString ? ' error' : ''}`}
+                        >
+                          {displayString.length} / {len}
+                        </span>
+                      )}
+                    </div>
+                    {test.kind !== 'text' && len > 0 && (
+                      <div className="fill-bar" aria-hidden>
+                        <i style={{ width: `${Math.min(100, (displayString.length / len) * 100)}%` }} />
+                      </div>
+                    )}
+                    {test.kind !== 'text' && (
+                      <DigitMapHint digits={displayString} len={len} cursorPos={cursorPos} />
+                    )}
                   </div>
                 )}
-                {test.kind !== 'text' && (
-                  <DigitMapHint digits={displayString} len={len} cursorPos={cursorPos} />
+
+                {test.kind !== 'text' && state.inputMode === 'radio' && (
+                  <RadioQuestions
+                    test={test}
+                    answer={answer}
+                    onPick={pickRadio}
+                    missing={missing}
+                    showMissing={showMissing || (missing.length > 0 && answer.length > 0)}
+                  />
                 )}
+
+                <div className="btn-row no-print">
+                  <button type="button" className="btn btn-secondary" onClick={runCalculate}>
+                    {stringComplete ? 'Пересчитать' : 'Рассчитать'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      printBlank(test, specialist)
+                      showToast('Диалог печати')
+                    }}
+                  >
+                    Печать бланка
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => {
+                      setState((s) => {
+                        const answers = { ...s.answers }
+                        delete answers[test.id]
+                        return {
+                          ...s,
+                          answers,
+                          globalResults: s.globalResults.filter((g) => g.testId !== test.id),
+                        }
+                      })
+                      setLiveResult('Ожидание расчёта')
+                      setShowMissing(false)
+                      showToast('Тест очищен')
+                    }}
+                  >
+                    Очистить
+                  </button>
+                </div>
+
+                <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
               </div>
-            )}
 
-            {test.kind !== 'text' && state.inputMode === 'radio' && (
-              <RadioQuestions
-                test={test}
-                answer={answer}
-                onPick={pickRadio}
-                missing={missing}
-                showMissing={showMissing || (missing.length > 0 && answer.length > 0)}
-              />
-            )}
-
-            <div className="btn-row no-print">
-              <button type="button" className="btn btn-secondary" onClick={runCalculate}>
-                {stringComplete ? 'Пересчитать' : 'Рассчитать'}
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => {
-                  printBlank(test, specialist)
-                  showToast('Диалог печати')
+              <GlobalSummary
+                items={state.globalResults}
+                onCopy={(text) => {
+                  if (!text) return
+                  navigator.clipboard.writeText(text).then(
+                    () => showToast('Скопировано'),
+                    () => showToast('Не удалось скопировать'),
+                  )
                 }}
-              >
-                Печать бланка
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => {
-                  setState((s) => {
-                    const answers = { ...s.answers }
-                    delete answers[test.id]
-                    return {
-                      ...s,
-                      answers,
-                      globalResults: s.globalResults.filter((g) => g.testId !== test.id),
-                    }
-                  })
+                onClear={() => {
+                  setState((s) => ({ ...s, answers: {}, globalResults: [] }))
                   setLiveResult('Ожидание расчёта')
-                  setShowMissing(false)
-                  showToast('Тест очищен')
+                  showToast('Всё очищено')
                 }}
-              >
-                Очистить
-              </button>
+              />
             </div>
 
-            <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
+            <SupportPhrases />
           </div>
-
-          <GlobalSummary
-            items={state.globalResults}
-            onCopy={(text) => {
-              if (!text) return
-              navigator.clipboard.writeText(text).then(
-                () => showToast('Скопировано'),
-                () => showToast('Не удалось скопировать'),
-              )
-            }}
-            onClear={() => {
-              setState((s) => ({ ...s, answers: {}, globalResults: [] }))
-              setLiveResult('Ожидание расчёта')
-              showToast('Всё очищено')
-            }}
-          />
         </div>
       </main>
       <div id="print-root" />
