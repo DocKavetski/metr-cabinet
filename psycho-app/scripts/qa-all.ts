@@ -3,7 +3,6 @@
  * Запуск: npx tsx scripts/qa-all.ts
  */
 import { allTests } from '../src/data'
-import { screeningBatteries } from '../src/data/batteries'
 import { buildBlankHtml } from '../src/lib/blank'
 import { isFreeOfficialBlank } from '../src/data/freeBlanks'
 import { getSpecialist, specialists } from '../src/data/specialists'
@@ -324,13 +323,6 @@ mustOk('lsas', '3'.repeat(48), '144/144')
     'ASQ:',
   ]) {
     if (!summary.includes(needle)) fail(`summary missing «${needle}»\n${summary}`)
-  }
-
-  for (const b of screeningBatteries) {
-    if (!b.testIds.length) fail(`battery ${b.id} empty`)
-    for (const id of b.testIds) {
-      if (!allTests.some((t) => t.id === id)) fail(`battery ${b.id}: unknown test ${id}`)
-    }
   }
 }
 

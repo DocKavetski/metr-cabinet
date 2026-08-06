@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+/* —— МЕТР: кабинетный клинометр —— */
+:root {
+  --font-display: 'Bricolage Grotesque', 'Avenir Next Condensed', sans-serif;
+  --font-ui: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Mono', monospace;
+
+  --ink: #12151c;
+  --ink-soft: #2a3140;
+  --chalk: #e8edf2;
+  --paper: #f7f9fb;
+  --steel: #c5ced8;
+  --signal: #e23d2a;
+  --signal-deep: #c43222;
+  --measure: #0d6e6e;
+  --measure-soft: #148080;
+  --warn: #b8860b;
+  --ok: #1f7a4d;
+  --danger: #c0392b;
+
+  --bg: var(--chalk);
+  --bg2: #dde4ec;
+  --bg3: #d0d9e3;
+  --surface: var(--paper);
+  --rail: #141820;
+  --rail-text: #e8edf2;
+  --rail-muted: #8b95a5;
+  --rail-line: #2a3344;
+  --border: #b8c2ce;
+  --text: var(--ink);
+  --text2: #5a6678;
+  --primary: var(--signal);
+  --primary-hover: var(--signal-deep);
+  --success: var(--ok);
+  --warning: var(--warn);
+  --accent: var(--measure);
+  --shadow: 0 18px 50px rgba(18, 21, 28, 0.1);
+  --radius: 2px;
+  --radius-sm: 2px;
+  --grid: rgba(18, 21, 28, 0.045);
+}
+
+[data-theme='dark'] {
+  --bg: #0e1117;
+  --bg2: #161b24;
+  --bg3: #1e2530;
+  --surface: #1a212c;
+  --rail: #07090d;
+  --rail-text: #eef2f6;
+  --rail-muted: #7d8796;
+  --rail-line: #2a3340;
+  --border: #343e4d;
+  --text: #eef2f6;
+  --text2: #9aa5b5;
+  --primary: #ff5a45;
+  --primary-hover: #ff7a6a;
+  --success: #3d9b6a;
+  --warning: #d4a017;
+  --accent: #2aa8a8;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --grid: rgba(255, 255, 255, 0.03);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: -1px -1px;
+}

@@ -53,8 +53,6 @@ export const allTests: TestConfig[] = [
   ...personalityTests,
 ]
 
-export { screeningBatteries, batteryTests, getBattery } from './batteries'
-export type { ScreeningBattery } from './batteries'
 export { specialists, defaultSpecialistId, getSpecialist } from './specialists'
 export type { Specialist } from './specialists'
 export { freeBlanks, getFreeBlank, isFreeOfficialBlank, originalBlankHref } from './freeBlanks'

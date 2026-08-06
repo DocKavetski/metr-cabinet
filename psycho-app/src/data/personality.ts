@@ -1,4 +1,5 @@
 import type { TestConfig } from '../types'
+import { scoreScl90 } from '../lib/scorers'
 import { yesNo } from './options'
 
 /** PID-5-BF: домены (0-based индексы пунктов) */
@@ -133,6 +134,7 @@ export const personalityTests: TestConfig[] = [
       'Чувство вины.',
       'Мысль, что с Вашим рассудком что-то не в порядке.',
     ],
+    score: scoreScl90,
   },
   {
     id: 'bpi',

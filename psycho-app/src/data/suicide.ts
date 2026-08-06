@@ -1,4 +1,5 @@
 ﻿import type { TestConfig } from '../types'
+import { scoreAsq } from '../lib/scorers'
 import { yesNo } from './options'
 
 export const suicideTests: TestConfig[] = [
@@ -64,5 +65,6 @@ export const suicideTests: TestConfig[] = [
       'Если на любой из вопросов выше ответ «Да»: есть ли у Вас мысли о том, чтобы покончить с собой, прямо сейчас?',
     ]),
     blankInstruction: 'Отметьте «Нет» или «Да» на каждый вопрос. Последний вопрос — про мысли прямо сейчас.',
+    score: scoreAsq,
   },
 ]

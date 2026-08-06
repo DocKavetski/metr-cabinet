@@ -39,25 +39,23 @@
 ### Сделано в этом проходе
 
 - Удалён мёртвый DigitMapHint и CSS
-- Общие опции `yesNo` / частоты PHQ‑GAD
-- Единая константа остроты ASQ для печати; радио берёт текст из данных
-- `tsx` в `devDependencies`
-- CI на PR: lint + qa + build
-- Убраны неиспользуемые ассеты Vite
+- Общие опции `yesNo` / константа остроты ASQ; `tsx`; CI
+- Убраны неиспользуемые ассеты Vite и модуль батарей (`batteries.ts`)
+- `App.css` → `styles/{theme,sidebar,stage,support,print,responsive}.css`
+- Из `App.tsx` вынесены `TestPanel` и `StageToolbar`
+- `blank.ts` → `blankHtml.ts` + `blankPack.ts`
+- Специальные scorers (SCL/ASQ/FSFI/AQ) через `TestConfig.score` (`lib/scorers.ts`)
 
 ### Дальше (по желанию)
 
 | Шаг | Ценность | Риск |
 |-----|----------|------|
 | Сборка Pages в CI из `npm run build` | Целостность деплоя | Средний (процесс) |
-| Разбить `App.css` (theme / stage / print) | Читаемость | Средний (каскад) |
-| Вынести куски из `App.tsx` (TestPanel) | Ревью | Низкий–средний |
-| Унифицировать scorers (`test.score` vs id‑ветки) | Находимость | Средний (QA) |
-| Разделить `blank.ts` (html vs pack) | Печатные баги | Средний |
 | Self‑host шрифтов | Offline / `file://` | Средний |
+| Больше золотых кейсов QA (HADS, PSQI, CTQ…) | Надёжность расчёта | Низкий |
 
 ## Метрики (ориентир)
 
 - Шкал: 49  
 - Свободных официальных бланков: 10  
-- Крупнейшие файлы: `App.css`, `blank.ts`, `App.tsx`, `qa-all.ts`, `personality.ts`
+- Крупные модули: `styles/print.css`, `blankHtml.ts`, `qa-all.ts`, `personality.ts`

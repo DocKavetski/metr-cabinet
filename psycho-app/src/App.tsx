@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Sidebar } from './components/Sidebar'
 import { GlobalSummary } from './components/GlobalSummary'
-import { RadioQuestions } from './components/RadioQuestions'
+import { StageToolbar } from './components/StageToolbar'
 import { SupportPhrases } from './components/SupportPhrases'
-import { allTests, getFreeBlank, getSpecialist, getTest, originalBlankHref } from './data'
+import { TestPanel } from './components/TestPanel'
+import { allTests, getSpecialist, getTest } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
-import { isAnswerComplete, normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
-import { printBlank, printBlanks } from './lib/blank'
+import { normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
 import { calculateFromString, missingRadioIndexes } from './lib/scoring'
 import { pushRecent } from './lib/storage'
-import { expectedLength, getDigitRange } from './lib/utils'
+import { expectedLength } from './lib/utils'
 import './App.css'
 
 export default function App() {
@@ -24,10 +24,9 @@ export default function App() {
   const test = getTest(state.currentTestId) || allTests[0]
   const answer = state.answers[test.id] || ''
   const len = expectedLength(test)
-  const range = getDigitRange(test)
   const missing = missingRadioIndexes(answer, len)
   const specialist = getSpecialist(state.specialistId)
-  const freeBlank = getFreeBlank(test.id)
+  const displayString = answer.replace(/x/g, '')
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -103,9 +102,6 @@ export default function App() {
     setState((s) => ({ ...s, answers: { ...s.answers, [test.id]: next } }))
   }
 
-  const displayString = answer.replace(/x/g, '')
-  const stringComplete = isAnswerComplete(test, answer)
-
   const runCalculate = () => {
     if (test.kind === 'text') {
       applyCalc(answer)
@@ -166,179 +162,57 @@ export default function App() {
         onSpecialistChange={(id) => setState((s) => ({ ...s, specialistId: id }))}
       />
       <main className="main">
-        <div className="stage-top no-print">
-          <div>
-            <div className="stage-kicker">{test.category}</div>
-            <h1 className="stage-title">{test.label}</h1>
-          </div>
-          <div className="controls">
-            <button
-              type="button"
-              className={`btn btn-secondary${packMode ? ' active-toggle' : ''}`}
-              onClick={() => setPackMode((v) => !v)}
-            >
-              {packMode ? 'Пакет · готово' : 'Пакет'}
-            </button>
-            {packMode && (
-              <button
-                type="button"
-                className="btn"
-                disabled={packIds.size === 0}
-                onClick={() => {
-                  const list = [...packIds].map((id) => getTest(id)!).filter(Boolean)
-                  printBlanks(list, specialist)
-                  showToast(`Печать: ${list.length}`)
-                }}
-              >
-                Печать ({packIds.size})
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => setState((s) => ({ ...s, theme: s.theme === 'dark' ? 'light' : 'dark' }))}
-            >
-              {state.theme === 'dark' ? 'День' : 'Ночь'}
-            </button>
-            {test.kind !== 'text' && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() =>
-                  setState((s) => ({
-                    ...s,
-                    inputMode: s.inputMode === 'string' ? 'radio' : 'string',
-                  }))
-                }
-              >
-                {state.inputMode === 'string' ? 'Строка' : 'Варианты'}
-              </button>
-            )}
-          </div>
-        </div>
+        <StageToolbar
+          test={test}
+          theme={state.theme}
+          inputMode={state.inputMode}
+          packMode={packMode}
+          packIds={packIds}
+          specialist={specialist}
+          onTogglePackMode={() => setPackMode((v) => !v)}
+          onToast={showToast}
+          onToggleTheme={() =>
+            setState((s) => ({ ...s, theme: s.theme === 'dark' ? 'light' : 'dark' }))
+          }
+          onToggleInputMode={() =>
+            setState((s) => ({
+              ...s,
+              inputMode: s.inputMode === 'string' ? 'radio' : 'string',
+            }))
+          }
+        />
 
         <div className="stage-body">
           <div className="stage-grid">
             <div className="stage-primary">
-              <div className="test-panel" key={test.id}>
-                <div className="test-meta">
-                  <span className="badge">{test.badge}</span>
-                  {freeBlank && <span className="badge badge-free">{freeBlank.badge}</span>}
-                </div>
-                <div className="test-desc" dangerouslySetInnerHTML={{ __html: test.desc }} />
-                {freeBlank && (
-                  <p className="free-blank-note no-print">
-                    Печать — официальная свободная форма ({freeBlank.source}), внизу бланка —
-                    выбранный специалист.
-                    {freeBlank.pdfFiles?.length ? (
-                      <>
-                        {' '}
-                        Эталон PDF:{' '}
-                        {freeBlank.pdfFiles.map((p, i) => (
-                          <span key={p.file}>
-                            {i > 0 ? ' · ' : ''}
-                            <a href={originalBlankHref(p.file)} target="_blank" rel="noreferrer">
-                              {p.label}
-                            </a>
-                          </span>
-                        ))}
-                      </>
-                    ) : null}
-                  </p>
-                )}
-
-                {(test.kind === 'text' || state.inputMode === 'string') && (
-                  <div className="instrument no-print">
-                    <div className="instrument-label">
-                      <span>{test.kind === 'text' ? 'Ввод балла' : 'Строка ответов'}</span>
-                      {test.kind !== 'text' && (
-                        <span>
-                          {displayString.length}/{len}
-                        </span>
-                      )}
-                    </div>
-                    <div className="string-input-group">
-                      <input
-                        type="text"
-                        value={test.kind === 'text' ? answer : displayString}
-                        placeholder={
-                          test.kind === 'text'
-                            ? test.clinicianDomains?.length
-                              ? 'Итог 0–30 или домены через пробел'
-                              : 'Итоговый балл 0–30'
-                            : `${len} цифр (${range.min}–${range.max})`
-                        }
-                        className={
-                          !displayString && test.kind !== 'text' ? '' : stringComplete ? 'valid' : 'error'
-                        }
-                        onChange={(e) => {
-                          setAnswer(e.target.value)
-                        }}
-                      />
-                      {test.kind !== 'text' && (
-                        <span
-                          className={`counter${stringComplete ? ' valid' : displayString ? ' error' : ''}`}
-                        >
-                          {displayString.length} / {len}
-                        </span>
-                      )}
-                    </div>
-                    {test.kind !== 'text' && len > 0 && (
-                      <div className="fill-bar" aria-hidden>
-                        <i style={{ width: `${Math.min(100, (displayString.length / len) * 100)}%` }} />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {test.kind !== 'text' && state.inputMode === 'radio' && (
-                  <RadioQuestions
-                    test={test}
-                    answer={answer}
-                    onPick={pickRadio}
-                    missing={missing}
-                    showMissing={showMissing || (missing.length > 0 && answer.length > 0)}
-                  />
-                )}
-
-                <div className="btn-row no-print">
-                  <button type="button" className="btn btn-secondary" onClick={runCalculate}>
-                    {stringComplete ? 'Пересчитать' : 'Рассчитать'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      printBlank(test, specialist)
-                      showToast('Диалог печати')
-                    }}
-                  >
-                    Печать бланка
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => {
-                      setState((s) => {
-                        const answers = { ...s.answers }
-                        delete answers[test.id]
-                        return {
-                          ...s,
-                          answers,
-                          globalResults: s.globalResults.filter((g) => g.testId !== test.id),
-                        }
-                      })
-                      setLiveResult('Ожидание расчёта')
-                      setShowMissing(false)
-                      showToast('Тест очищен')
-                    }}
-                  >
-                    Очистить
-                  </button>
-                </div>
-
-                <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
-              </div>
+              <TestPanel
+                test={test}
+                answer={answer}
+                inputMode={state.inputMode}
+                missing={missing}
+                showMissing={showMissing}
+                liveResult={liveResult}
+                liveLevel={liveLevel}
+                specialist={specialist}
+                onAnswerChange={setAnswer}
+                onPickRadio={pickRadio}
+                onCalculate={runCalculate}
+                onClear={() => {
+                  setState((s) => {
+                    const answers = { ...s.answers }
+                    delete answers[test.id]
+                    return {
+                      ...s,
+                      answers,
+                      globalResults: s.globalResults.filter((g) => g.testId !== test.id),
+                    }
+                  })
+                  setLiveResult('Ожидание расчёта')
+                  setShowMissing(false)
+                  showToast('Тест очищен')
+                }}
+                onToast={showToast}
+              />
 
               <GlobalSummary
                 items={state.globalResults}
