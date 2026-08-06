@@ -1057,6 +1057,16 @@ body {
   }
 }
 
+@media (max-width: 1360px) {
+  .stage-grid {
+    grid-template-columns: minmax(0, 920px);
+  }
+
+  .support-phrases {
+    display: none;
+  }
+}
+
 .toast {
   position: fixed;
   bottom: 1.5rem;
