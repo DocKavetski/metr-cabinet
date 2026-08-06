@@ -2,6 +2,8 @@ import { defaultSpecialistId, specialists } from '../data/specialists'
 import type { AppState } from '../types'
 
 const KEY = 'psych_tests_react_v2'
+/** One-time: pin HADS + ASQ in «Частые» for existing localStorage users */
+const STAR_HADS_ASQ_KEY = 'psych_tests_star_hads_asq_v1'
 
 const defaults: AppState = {
   answers: {},
@@ -9,9 +11,23 @@ const defaults: AppState = {
   inputMode: 'string',
   theme: 'light',
   currentTestId: 'bdi',
-  favoriteIds: ['phq9', 'gad7', 'asrs', 'aq10', 'asq'],
+  favoriteIds: ['hads', 'asq', 'phq9', 'gad7', 'asrs', 'aq10'],
   recentIds: [],
   specialistId: defaultSpecialistId,
+}
+
+function pinHadsAsqOnce(ids: string[]): string[] {
+  try {
+    if (localStorage.getItem(STAR_HADS_ASQ_KEY) === '1') return ids
+    localStorage.setItem(STAR_HADS_ASQ_KEY, '1')
+  } catch {
+    /* private mode */
+  }
+  const out = [...ids]
+  for (const id of ['hads', 'asq'] as const) {
+    if (!out.includes(id)) out.unshift(id)
+  }
+  return out.slice(0, 24)
 }
 
 function uniqIds(ids: unknown, max = 24): string[] {
@@ -41,15 +57,16 @@ export function loadState(): AppState {
       inputMode: parsed.inputMode === 'radio' ? 'radio' : 'string',
       theme: parsed.theme === 'dark' ? 'dark' : 'light',
       currentTestId: parsed.currentTestId || 'bdi',
-      favoriteIds:
+      favoriteIds: pinHadsAsqOnce(
         parsed.favoriteIds !== undefined
           ? uniqIds(parsed.favoriteIds)
           : [...defaults.favoriteIds],
+      ),
       recentIds: uniqIds(parsed.recentIds, 8),
       specialistId: resolveSpecialistId(parsed.specialistId),
     }
   } catch {
-    return { ...defaults, favoriteIds: [...defaults.favoriteIds] }
+    return { ...defaults, favoriteIds: pinHadsAsqOnce([...defaults.favoriteIds]) }
   }
 }
 
