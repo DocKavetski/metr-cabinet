@@ -360,6 +360,7 @@ export default function App() {
 
           <GlobalSummary
             items={state.globalResults}
+            activeBatteryId={state.activeBatteryId}
             onCopy={(text) => {
               if (!text) return
               navigator.clipboard.writeText(text).then(

@@ -3,8 +3,10 @@
  * Запуск: npx tsx scripts/qa-all.ts
  */
 import { allTests } from '../src/data'
+import { screeningBatteries } from '../src/data/batteries'
 import { buildBlankHtml } from '../src/lib/blank'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
+import { defaultTemplateForBattery, formatSummary } from '../src/lib/summaryTemplates'
 import { expectedLength, getDigitRange, optionValue } from '../src/lib/utils'
 import type { TestConfig } from '../src/types'
 
@@ -284,6 +286,51 @@ mustOk('lsas', '3'.repeat(48), '144/144')
   const t = allTests.find((x) => x.id === 'ctq')!
   const r = calculateFromString(t, '1'.repeat(28))
   if (!r.ok) fail(`ctq: ${r.text}`)
+}
+
+// —— Клинические шаблоны сводки ——
+{
+  if (defaultTemplateForBattery('intake') !== 'intake') fail('defaultTemplate intake')
+  if (defaultTemplateForBattery(null) !== 'all') fail('defaultTemplate null → all')
+
+  const items = [
+    { testId: 'phq9', label: 'PHQ-9', result: '10 баллов — умеренная' },
+    { testId: 'gad7', label: 'GAD-7', result: '8 баллов' },
+    { testId: 'asq', label: 'ASQ', result: 'ASQ: ответов «Да» — 1/5 (скрининг 1/4, острота 0/1).' },
+  ]
+
+  const intake = formatSummary(items, 'intake')
+  for (const needle of [
+    'Первичный скрининг',
+    'PHQ-9:',
+    'GAD-7:',
+    'ASQ:',
+    'ISI: — не заполнен',
+    'AUDIT: — не заполнен',
+    'Комментарий:',
+  ]) {
+    if (!intake.includes(needle)) fail(`intake template missing «${needle}»\n${intake}`)
+  }
+
+  const adhd = formatSummary(
+    [{ testId: 'asrs', label: 'ASRS', result: 'ASRS: сумма 12/72' }],
+    'adhd',
+  )
+  if (!adhd.includes('Скрининг СДВГ') || !adhd.includes('ASRS:') || !adhd.includes('DIVA-5: — не заполнен')) {
+    fail(`adhd template:\n${adhd}`)
+  }
+
+  const asd = formatSummary([], 'asd')
+  if (!asd.includes('AQ-10: — не заполнен') || !asd.includes('RAADS-R:') || !asd.includes('CAT-Q:')) {
+    fail(`asd empty template:\n${asd}`)
+  }
+
+  for (const b of screeningBatteries) {
+    if (!b.testIds.length) fail(`battery ${b.id} empty`)
+    for (const id of b.testIds) {
+      if (!allTests.some((t) => t.id === id)) fail(`battery ${b.id}: unknown test ${id}`)
+    }
+  }
 }
 
 // options digit range consistency for likert
