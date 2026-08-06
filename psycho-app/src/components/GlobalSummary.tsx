@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
-  defaultTemplateForBattery,
   formatSummary,
   summaryTemplates,
   type SummaryTemplateId,
@@ -9,23 +8,14 @@ import type { GlobalResultItem } from '../types'
 
 export function GlobalSummary({
   items,
-  activeBatteryId,
   onCopy,
   onClear,
 }: {
   items: GlobalResultItem[]
-  activeBatteryId: string | null
   onCopy: (text: string) => void
   onClear: () => void
 }) {
-  const [templateId, setTemplateId] = useState<SummaryTemplateId>(() =>
-    defaultTemplateForBattery(activeBatteryId),
-  )
-
-  useEffect(() => {
-    setTemplateId(defaultTemplateForBattery(activeBatteryId))
-  }, [activeBatteryId])
-
+  const [templateId, setTemplateId] = useState<SummaryTemplateId>('all')
   const text = useMemo(() => formatSummary(items, templateId), [items, templateId])
 
   return (

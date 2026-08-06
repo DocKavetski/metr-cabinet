@@ -1,6 +1,6 @@
 import type { TestConfig } from '../types'
 
-/** Готовая батарея / сценарий приёма */
+/** Набор шкал для шаблона сводки */
 export interface ScreeningBattery {
   id: string
   label: string

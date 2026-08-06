@@ -10,7 +10,6 @@ const defaults: AppState = {
   currentTestId: 'bdi',
   favoriteIds: ['phq9', 'gad7', 'asrs', 'aq10', 'asq'],
   recentIds: [],
-  activeBatteryId: null,
 }
 
 function uniqIds(ids: unknown, max = 24): string[] {
@@ -40,8 +39,6 @@ export function loadState(): AppState {
           ? uniqIds(parsed.favoriteIds)
           : [...defaults.favoriteIds],
       recentIds: uniqIds(parsed.recentIds, 8),
-      activeBatteryId:
-        typeof parsed.activeBatteryId === 'string' ? parsed.activeBatteryId : null,
     }
   } catch {
     return { ...defaults, favoriteIds: [...defaults.favoriteIds] }
@@ -60,7 +57,6 @@ export function saveState(state: AppState): void {
         currentTestId: state.currentTestId,
         favoriteIds: state.favoriteIds,
         recentIds: state.recentIds,
-        activeBatteryId: state.activeBatteryId,
       }),
     )
   } catch {

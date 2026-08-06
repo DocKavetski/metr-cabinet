@@ -76,6 +76,4 @@ export interface AppState {
   favoriteIds: string[]
   /** Последние открытые (новые в начале) */
   recentIds: string[]
-  /** Активный сценарий / батарея */
-  activeBatteryId: string | null
 }
