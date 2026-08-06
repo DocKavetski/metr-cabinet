@@ -55,6 +55,8 @@ export const allTests: TestConfig[] = [
 
 export { screeningBatteries, batteryTests, getBattery } from './batteries'
 export type { ScreeningBattery } from './batteries'
+export { specialists, defaultSpecialistId, getSpecialist } from './specialists'
+export type { Specialist } from './specialists'
 export { testMatchesQuery } from './search'
 
 export const testsById: Record<string, TestConfig> = Object.fromEntries(

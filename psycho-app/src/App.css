@@ -153,6 +153,38 @@ body {
   line-height: 1.4;
 }
 
+.sidebar-specialist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.85rem;
+}
+
+.sidebar-specialist-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--measure-soft);
+}
+
+.sidebar-specialist select {
+  width: 100%;
+  background: color-mix(in srgb, var(--rail-text) 6%, transparent);
+  border: 1px solid var(--rail-line);
+  color: var(--rail-text);
+  padding: 0.5rem 0.65rem;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.sidebar-specialist select:focus {
+  outline: 2px solid color-mix(in srgb, var(--signal) 55%, transparent);
+  outline-offset: 1px;
+}
+
 .sidebar-search {
   margin-top: 0.85rem;
 }

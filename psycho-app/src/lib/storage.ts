@@ -1,3 +1,4 @@
+import { defaultSpecialistId, specialists } from '../data/specialists'
 import type { AppState } from '../types'
 
 const KEY = 'psych_tests_react_v2'
@@ -10,6 +11,7 @@ const defaults: AppState = {
   currentTestId: 'bdi',
   favoriteIds: ['phq9', 'gad7', 'asrs', 'aq10', 'asq'],
   recentIds: [],
+  specialistId: defaultSpecialistId,
 }
 
 function uniqIds(ids: unknown, max = 24): string[] {
@@ -21,6 +23,11 @@ function uniqIds(ids: unknown, max = 24): string[] {
     if (out.length >= max) break
   }
   return out
+}
+
+function resolveSpecialistId(id: unknown): string {
+  if (typeof id === 'string' && specialists.some((s) => s.id === id)) return id
+  return defaultSpecialistId
 }
 
 export function loadState(): AppState {
@@ -39,6 +46,7 @@ export function loadState(): AppState {
           ? uniqIds(parsed.favoriteIds)
           : [...defaults.favoriteIds],
       recentIds: uniqIds(parsed.recentIds, 8),
+      specialistId: resolveSpecialistId(parsed.specialistId),
     }
   } catch {
     return { ...defaults, favoriteIds: [...defaults.favoriteIds] }
@@ -57,6 +65,7 @@ export function saveState(state: AppState): void {
         currentTestId: state.currentTestId,
         favoriteIds: state.favoriteIds,
         recentIds: state.recentIds,
+        specialistId: state.specialistId,
       }),
     )
   } catch {

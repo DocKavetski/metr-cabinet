@@ -3,7 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { DigitMapHint } from './components/DigitMapHint'
 import { GlobalSummary } from './components/GlobalSummary'
 import { RadioQuestions } from './components/RadioQuestions'
-import { allTests, getTest } from './data'
+import { allTests, getSpecialist, getTest } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
 import { isAnswerComplete, normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
 import { printBlank, printBlanks } from './lib/blank'
@@ -27,6 +27,7 @@ export default function App() {
   const len = expectedLength(test)
   const range = getDigitRange(test)
   const missing = missingRadioIndexes(answer, len)
+  const specialist = getSpecialist(state.specialistId)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -161,6 +162,8 @@ export default function App() {
         onToggleFavorite={toggleFavorite}
         recentIds={state.recentIds}
         answers={state.answers}
+        specialistId={state.specialistId}
+        onSpecialistChange={(id) => setState((s) => ({ ...s, specialistId: id }))}
       />
       <main className="main">
         <div className="stage-top no-print">
@@ -183,7 +186,7 @@ export default function App() {
                 disabled={packIds.size === 0}
                 onClick={() => {
                   const list = [...packIds].map((id) => getTest(id)!).filter(Boolean)
-                  printBlanks(list)
+                  printBlanks(list, specialist)
                   showToast(`Печать: ${list.length}`)
                 }}
               >
@@ -302,7 +305,7 @@ export default function App() {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
-                  printBlank(test)
+                  printBlank(test, specialist)
                   showToast('Диалог печати')
                 }}
               >

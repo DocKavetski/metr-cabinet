@@ -76,4 +76,6 @@ export interface AppState {
   favoriteIds: string[]
   /** Последние открытые (новые в начале) */
   recentIds: string[]
+  /** Специалист для печати на бланках */
+  specialistId: string
 }

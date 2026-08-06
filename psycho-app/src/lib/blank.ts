@@ -1,10 +1,12 @@
+import type { Specialist } from '../data/specialists'
+import { getSpecialist } from '../data/specialists'
 import type { Option, TestConfig } from '../types'
 import { escapeHtml, optionLabel, optionValue, todayRu } from './utils'
 
-function doctorFooter(): string {
+function doctorFooter(specialist: Specialist): string {
   return `<div class="blank-footer">
   <span>${escapeHtml(todayRu())}</span>
-  <span>Врач-психотерапевт ________ Кавецкий А.С.</span>
+  <span>${escapeHtml(specialist.title)} ________ ${escapeHtml(specialist.fullName)}</span>
 </div>`
 }
 
@@ -100,12 +102,12 @@ function halfPageHtml(topHtml: string, bottomHtml?: string): string {
 }
 
 /** Короткие тесты — парами на лист с линией разреза посередине */
-function renderCompactBlock(tests: TestConfig[]): string {
+function renderCompactBlock(tests: TestConfig[], specialist: Specialist): string {
   const pages: string[] = []
   for (let i = 0; i < tests.length; i += 2) {
     const a = tests[i]!
     const b = tests[i + 1]
-    pages.push(halfPageHtml(buildBlankHtml(a), b ? buildBlankHtml(b) : undefined))
+    pages.push(halfPageHtml(buildBlankHtml(a, specialist), b ? buildBlankHtml(b, specialist) : undefined))
     if (i + 2 < tests.length) {
       pages.push(`<div class="blank-page-break"></div>`)
     }
@@ -171,18 +173,18 @@ function matrixRows(questions: string[], opts: Option[], startIndex: number): st
     .join('')
 }
 
-function buildMatrixBlank(test: TestConfig, questions: string[], opts: Option[]): string {
+function buildMatrixBlank(test: TestConfig, questions: string[], opts: Option[], specialist: Specialist): string {
   return `<div class="blank-sheet blank-sheet-matrix">
     ${header(test, 'matrix')}
     <table class="blank-matrix">
       ${matrixThead(opts)}
       <tbody>${matrixRows(questions, opts, 0)}</tbody>
     </table>
-    ${doctorFooter()}
+    ${doctorFooter(specialist)}
   </div>`
 }
 
-function clinicianProtocol(test: TestConfig): string {
+function clinicianProtocol(test: TestConfig, specialist: Specialist): string {
   const domains = test.clinicianDomains || []
   const rows = domains
     .map((d) => {
@@ -204,7 +206,7 @@ function clinicianProtocol(test: TestConfig): string {
     <p class="blank-scoreline">Сумма ____ / ${maxSum}${
       test.id === 'moca' ? ' · при ≤12 лет обр. +1 → итог ____ / 30' : ' · итог ____ / 30'
     }</p>
-    ${doctorFooter()}
+    ${doctorFooter(specialist)}
   </div>`
 }
 
@@ -234,13 +236,13 @@ function scaleLegend(test: TestConfig, opts: Option[]): string {
   return `<p class="blank-legend">Шкала ${values[0]}–${values[values.length - 1]}.</p>`
 }
 
-export function buildBlankHtml(test: TestConfig): string {
+export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): string {
   if (test.printable === false) {
-    return `<div class="blank-sheet">${header(test, 'list')}<p>Бланк не предусмотрен.</p>${doctorFooter()}</div>`
+    return `<div class="blank-sheet">${header(test, 'list')}<p>Бланк не предусмотрен.</p>${doctorFooter(specialist)}</div>`
   }
 
   if (test.kind === 'text' || test.clinicianDomains?.length) {
-    return clinicianProtocol(test)
+    return clinicianProtocol(test, specialist)
   }
 
   if (test.items?.length) {
@@ -271,7 +273,7 @@ export function buildBlankHtml(test: TestConfig): string {
         <div class="blank-page-break"></div>
         <p class="blank-continued">${escapeHtml(test.label)} · продолжение (12–21)</p>
         ${page2}
-        ${doctorFooter()}
+        ${doctorFooter(specialist)}
       </div>`
     }
 
@@ -279,7 +281,7 @@ export function buildBlankHtml(test: TestConfig): string {
     return `<div class="blank-sheet blank-sheet-bdi">
       ${header(test, 'items')}
       ${rows}
-      ${doctorFooter()}
+      ${doctorFooter(specialist)}
     </div>`
   }
 
@@ -309,7 +311,7 @@ export function buildBlankHtml(test: TestConfig): string {
       ${header(test, 'list')}
       ${legend}
       ${rows}${acuity}
-      ${doctorFooter()}
+      ${doctorFooter(specialist)}
     </div>`
   }
 
@@ -317,7 +319,7 @@ export function buildBlankHtml(test: TestConfig): string {
   const opts = test.options || [0, 1, 2, 3]
 
   if (useMatrixLayout(test, questions.length, opts.length)) {
-    return buildMatrixBlank(test, questions, opts)
+    return buildMatrixBlank(test, questions, opts, specialist)
   }
 
   const values = opts.map(optionValue)
@@ -335,19 +337,19 @@ export function buildBlankHtml(test: TestConfig): string {
     ${header(test, 'list')}
     ${scaleLegend(test, opts)}
     ${rows}
-    ${doctorFooter()}
+    ${doctorFooter(specialist)}
   </div>`
 }
 
-export function printBlanks(tests: TestConfig[]): void {
+export function printBlanks(tests: TestConfig[], specialist: Specialist = getSpecialist(undefined)): void {
   if (!tests.length) return
 
   const blocks = groupPackBlocks(tests)
   const html = blocks
     .map((block, i) => {
       const unit = block.compact
-        ? `<div class="blank-pack-block blank-pack-block-compact">${renderCompactBlock(block.tests)}</div>`
-        : `<div class="blank-pack-block"><div class="blank-pack-unit">${buildBlankHtml(block.tests[0]!)}</div></div>`
+        ? `<div class="blank-pack-block blank-pack-block-compact">${renderCompactBlock(block.tests, specialist)}</div>`
+        : `<div class="blank-pack-block"><div class="blank-pack-unit">${buildBlankHtml(block.tests[0]!, specialist)}</div></div>`
 
       if (i >= blocks.length - 1) return unit
 
@@ -371,6 +373,6 @@ export function printBlanks(tests: TestConfig[]): void {
   setTimeout(cleanup, 1500)
 }
 
-export function printBlank(test: TestConfig): void {
-  printBlanks([test])
+export function printBlank(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): void {
+  printBlanks([test], specialist)
 }

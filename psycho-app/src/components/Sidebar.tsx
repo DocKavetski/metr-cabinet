@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { allTests, categoryOrder, getTest } from '../data'
+import { allTests, categoryOrder, getTest, specialists } from '../data'
 import { testMatchesQuery } from '../data/search'
 import { isAnswerComplete } from '../lib/answers'
 import type { TestConfig } from '../types'
@@ -14,6 +14,8 @@ export function Sidebar({
   onToggleFavorite,
   recentIds,
   answers,
+  specialistId,
+  onSpecialistChange,
 }: {
   currentId: string
   onSelect: (id: string) => void
@@ -24,6 +26,8 @@ export function Sidebar({
   onToggleFavorite: (id: string) => void
   recentIds: string[]
   answers: Record<string, string>
+  specialistId: string
+  onSpecialistChange: (id: string) => void
 }) {
   const [query, setQuery] = useState('')
   const q = query.trim()
@@ -126,6 +130,20 @@ export function Sidebar({
           МЕТР <em>кабинет</em>
         </div>
         <p className="sidebar-tag">Шкалы · бланки · расчёт для приёма</p>
+        <label className="sidebar-specialist">
+          <span className="sidebar-specialist-label">Специалист</span>
+          <select
+            value={specialistId}
+            onChange={(e) => onSpecialistChange(e.target.value)}
+            aria-label="Специалист для бланков"
+          >
+            {specialists.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.fullName}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="sidebar-search">
           <input
             type="search"
