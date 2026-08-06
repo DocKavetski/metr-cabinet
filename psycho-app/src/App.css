@@ -435,12 +435,12 @@ body {
 
 .stage-body {
   padding: 1.35rem 1.75rem 2.75rem;
-  max-width: 960px;
+  max-width: 1320px;
 }
 
 .stage-grid {
   display: grid;
-  grid-template-columns: minmax(0, 920px) minmax(240px, 300px);
+  grid-template-columns: minmax(0, 980px) minmax(240px, 300px);
   gap: 1.35rem;
   align-items: start;
 }
@@ -450,7 +450,7 @@ body {
 }
 
 .test-panel {
-  max-width: 920px;
+  max-width: 980px;
   animation: stageIn 0.35s ease;
 }
 
@@ -1108,9 +1108,9 @@ body {
   }
 }
 
-@media (max-width: 1360px) {
+@media (max-width: 1260px) {
   .stage-grid {
-    grid-template-columns: minmax(0, 920px);
+    grid-template-columns: minmax(0, 1040px);
   }
 
   .support-phrases {
