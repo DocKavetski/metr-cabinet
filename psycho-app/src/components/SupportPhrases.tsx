@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const PHRASES = [
   'Ты — космос.',
@@ -9,36 +9,72 @@ const PHRASES = [
   'Ты справляешься лучше, чем кажется.',
   'Спокойно: шаг за шагом, и всё сложится.',
   'У тебя уже многое получилось.',
+ ] as const
+
+const SLOTS = [
+  { top: '2%', left: '4%', width: '78%' },
+  { top: '16%', left: '18%', width: '72%' },
+  { top: '31%', left: '2%', width: '74%' },
+  { top: '48%', left: '14%', width: '76%' },
+  { top: '65%', left: '6%', width: '70%' },
+  { top: '79%', left: '20%', width: '68%' },
 ] as const
 
+interface Bubble {
+  id: number
+  phrase: string
+  slot: (typeof SLOTS)[number]
+  tone: 'signal' | 'measure' | 'accent'
+  tail: 'left' | 'right'
+}
+
 export function SupportPhrases() {
-  const [index, setIndex] = useState(0)
+  const [bubbles, setBubbles] = useState<Bubble[]>([])
+  const phraseIndex = useRef(0)
+  const slotIndex = useRef(0)
+  const nextId = useRef(1)
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setIndex((prev) => (prev + 1) % PHRASES.length)
-    }, 4200)
+    const tones: Bubble['tone'][] = ['signal', 'measure', 'accent']
+
+    const spawn = () => {
+      const id = nextId.current++
+      const phrase = PHRASES[phraseIndex.current % PHRASES.length]
+      const slot = SLOTS[slotIndex.current % SLOTS.length]
+      const tone = tones[id % tones.length]
+      const tail: Bubble['tail'] = id % 2 === 0 ? 'right' : 'left'
+
+      phraseIndex.current += 1
+      slotIndex.current += 1
+
+      setBubbles((prev) => [...prev.slice(-3), { id, phrase, slot, tone, tail }])
+
+      window.setTimeout(() => {
+        setBubbles((prev) => prev.filter((bubble) => bubble.id !== id))
+      }, 6400)
+    }
+
+    spawn()
+    const timer = window.setInterval(spawn, 1800)
     return () => window.clearInterval(timer)
   }, [])
 
-  const active = PHRASES[index]
-  const preview = useMemo(
-    () => [PHRASES[(index + 1) % PHRASES.length], PHRASES[(index + 2) % PHRASES.length]],
-    [index],
-  )
-
   return (
     <aside className="support-phrases no-print" aria-label="Поддерживающие фразы">
-      <div className="support-phrases-card">
-        <div className="support-phrases-kicker">Поддержка</div>
-        <div className="support-phrases-quote">“{active}”</div>
-        <div className="support-phrases-list">
-          {preview.map((phrase) => (
-            <div key={phrase} className="support-phrases-item">
-              {phrase}
-            </div>
-          ))}
-        </div>
+      <div className="support-phrases-stage">
+        {bubbles.map((bubble) => (
+          <div
+            key={bubble.id}
+            className={`support-bubble support-bubble-${bubble.tone} support-bubble-tail-${bubble.tail}`}
+            style={{
+              top: bubble.slot.top,
+              left: bubble.slot.left,
+              width: bubble.slot.width,
+            }}
+          >
+            {bubble.phrase}
+          </div>
+        ))}
       </div>
     </aside>
   )
