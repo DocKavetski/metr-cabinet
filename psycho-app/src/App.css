@@ -1118,6 +1118,33 @@ body {
   }
 }
 
+@media (max-width: 1420px) and (min-width: 1261px) {
+  .stage-top {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  .stage-body {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  .stage-grid {
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 0.9rem;
+  }
+
+  .support-phrases,
+  .support-phrases-stage {
+    min-height: 26rem;
+  }
+
+  .support-bubble {
+    font-size: 0.94rem;
+    padding: 0.78rem 0.88rem;
+  }
+}
+
 .toast {
   position: fixed;
   bottom: 1.5rem;
