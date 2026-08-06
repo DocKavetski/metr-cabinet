@@ -1118,6 +1118,33 @@ body {
   }
 }
 
+@media (min-width: 1700px) {
+  .stage-top {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .stage-body {
+    max-width: 1580px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .stage-grid {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 1.6rem;
+  }
+
+  .test-panel {
+    max-width: 1120px;
+  }
+
+  .support-phrases,
+  .support-phrases-stage {
+    min-height: 32rem;
+  }
+}
+
 @media (max-width: 1420px) and (min-width: 1261px) {
   .stage-top {
     padding-left: 1.2rem;
