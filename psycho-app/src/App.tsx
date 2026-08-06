@@ -3,7 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { DigitMapHint } from './components/DigitMapHint'
 import { GlobalSummary } from './components/GlobalSummary'
 import { RadioQuestions } from './components/RadioQuestions'
-import { allTests, getSpecialist, getTest } from './data'
+import { allTests, getFreeBlank, getSpecialist, getTest, originalBlankHref } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
 import { isAnswerComplete, normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
 import { printBlank, printBlanks } from './lib/blank'
@@ -28,6 +28,7 @@ export default function App() {
   const range = getDigitRange(test)
   const missing = missingRadioIndexes(answer, len)
   const specialist = getSpecialist(state.specialistId)
+  const freeBlank = getFreeBlank(test.id)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -221,8 +222,29 @@ export default function App() {
           <div className="test-panel" key={test.id}>
             <div className="test-meta">
               <span className="badge">{test.badge}</span>
+              {freeBlank && <span className="badge badge-free">{freeBlank.badge}</span>}
             </div>
             <div className="test-desc" dangerouslySetInnerHTML={{ __html: test.desc }} />
+            {freeBlank && (
+              <p className="free-blank-note no-print">
+                Печать — официальная свободная форма ({freeBlank.source}), внизу бланка — выбранный
+                специалист.
+                {freeBlank.pdfFiles?.length ? (
+                  <>
+                    {' '}
+                    Эталон PDF:{' '}
+                    {freeBlank.pdfFiles.map((p, i) => (
+                      <span key={p.file}>
+                        {i > 0 ? ' · ' : ''}
+                        <a href={originalBlankHref(p.file)} target="_blank" rel="noreferrer">
+                          {p.label}
+                        </a>
+                      </span>
+                    ))}
+                  </>
+                ) : null}
+              </p>
+            )}
 
             {(test.kind === 'text' || state.inputMode === 'string') && (
               <div className="instrument no-print">

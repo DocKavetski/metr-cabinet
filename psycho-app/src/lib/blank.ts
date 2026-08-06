@@ -1,6 +1,12 @@
+import { getFreeBlank, isFreeOfficialBlank } from '../data/freeBlanks'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { Option, TestConfig } from '../types'
+import {
+  buildFreeAsqBlank,
+  buildFreeOfficialTableBlank,
+  phqDifficultyExtra,
+} from './officialBlank'
 import { escapeHtml, optionLabel, optionValue, todayRu } from './utils'
 
 function doctorFooter(specialist: Specialist): string {
@@ -23,6 +29,12 @@ function useMatrixLayout(test: TestConfig, questionCount: number, optionCount: n
  */
 function isCompactBlank(test: TestConfig): boolean {
   if (test.id === 'bdi') return false
+  // Свободные официальные таблицы: короткие — в пакет пополам
+  if (isFreeOfficialBlank(test.id)) {
+    if (test.id === 'pcl5' || test.id === 'asrs' || test.id === 'whodas') return false
+    const q = test.questions?.length ?? 0
+    return q > 0 && q <= 12
+  }
   if (test.kind === 'text' || test.clinicianDomains?.length) {
     // протокол MoCA/MMSE короткий
     return (test.clinicianDomains?.length ?? 0) <= 8
@@ -237,6 +249,16 @@ function scaleLegend(test: TestConfig, opts: Option[]): string {
 }
 
 export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): string {
+  const free = getFreeBlank(test.id)
+  if (free) {
+    const foot = doctorFooter(specialist)
+    if (test.kind === 'asq' || test.id === 'asq') {
+      return buildFreeAsqBlank(test, foot, free)
+    }
+    const extras = test.id === 'phq9' ? phqDifficultyExtra() : ''
+    return buildFreeOfficialTableBlank(test, foot, free, extras)
+  }
+
   if (test.printable === false) {
     return `<div class="blank-sheet">${header(test, 'list')}<p>Бланк не предусмотрен.</p>${doctorFooter(specialist)}</div>`
   }
