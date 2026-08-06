@@ -987,22 +987,53 @@ body {
 .support-phrases-stage {
   position: relative;
   min-height: 30rem;
+  isolation: isolate;
+}
+
+.support-phrases-glow {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(26px);
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.support-phrases-glow-1 {
+  top: 3%;
+  right: 8%;
+  width: 8rem;
+  height: 8rem;
+  background: color-mix(in srgb, #ffc9e7 72%, transparent);
+}
+
+.support-phrases-glow-2 {
+  top: 56%;
+  left: 6%;
+  width: 6.5rem;
+  height: 6.5rem;
+  background: color-mix(in srgb, #d8ccff 68%, transparent);
 }
 
 .support-bubble {
   position: absolute;
-  padding: 0.8rem 0.95rem;
-  border-radius: 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
-  background: color-mix(in srgb, var(--surface) 94%, white);
+  z-index: 1;
+  padding: 0.9rem 1rem;
+  border-radius: 1.35rem;
+  border: 1px solid color-mix(in srgb, #ffffff 55%, var(--border));
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, #ffffff 92%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 80%, white), color-mix(in srgb, var(--surface) 92%, white));
   color: var(--text);
   font-family: var(--font-display);
-  font-size: 1rem;
-  line-height: 1.28;
+  font-size: 1.03rem;
+  line-height: 1.32;
   letter-spacing: -0.02em;
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 10%, transparent);
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--ink) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 75%, transparent);
   opacity: 0;
-  transform: translateY(18px) scale(0.95);
+  transform: translateY(18px) rotate(var(--bubble-tilt, 0deg)) scale(0.95);
   animation: supportBubbleLife 6.4s ease-in-out forwards;
 }
 
@@ -1018,6 +1049,20 @@ body {
   transform: rotate(35deg);
 }
 
+.support-bubble span {
+  position: relative;
+  z-index: 1;
+}
+
+.support-bubble span::before {
+  content: '✦';
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-size: 0.78em;
+  vertical-align: 0.08em;
+  opacity: 0.72;
+}
+
 .support-bubble-tail-left::after {
   left: 1.35rem;
 }
@@ -1027,33 +1072,39 @@ body {
 }
 
 .support-bubble-signal {
-  background: color-mix(in srgb, var(--signal) 12%, white);
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, #ffffff 92%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, #ffe1ef 82%, white), color-mix(in srgb, #fff2f7 88%, white));
 }
 
 .support-bubble-measure {
-  background: color-mix(in srgb, var(--measure) 11%, white);
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, #ffffff 92%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, #efe5ff 82%, white), color-mix(in srgb, #faf5ff 88%, white));
 }
 
 .support-bubble-accent {
-  background: color-mix(in srgb, var(--accent) 12%, white);
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, #ffffff 92%, transparent), transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, #e6f7ff 82%, white), color-mix(in srgb, #f4fbff 88%, white));
 }
 
 @keyframes supportBubbleLife {
   0% {
     opacity: 0;
-    transform: translateY(18px) scale(0.95);
+    transform: translateY(18px) rotate(var(--bubble-tilt, 0deg)) scale(0.95);
   }
   12% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) rotate(var(--bubble-tilt, 0deg)) scale(1);
   }
   76% {
     opacity: 1;
-    transform: translateY(-6px) scale(1);
+    transform: translateY(-6px) rotate(var(--bubble-tilt, 0deg)) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-18px) scale(0.96);
+    transform: translateY(-18px) rotate(var(--bubble-tilt, 0deg)) scale(0.96);
   }
 }
 
