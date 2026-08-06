@@ -1,9 +1,5 @@
 import type { TestConfig } from '../types'
-
-const yesNo = [
-  { value: 0, label: 'Нет' },
-  { value: 1, label: 'Да' },
-]
+import { yesNo } from './options'
 
 /** PID-5-BF: домены (0-based индексы пунктов) */
 function scorePid5bf(a: number[]): string {

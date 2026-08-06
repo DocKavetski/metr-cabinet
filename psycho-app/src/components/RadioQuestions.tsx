@@ -55,13 +55,7 @@ export function RadioQuestions({
   }
 
   const len = expectedLength(test)
-  const questions =
-    test.kind === 'asq'
-      ? [
-          ...(test.questions || []).slice(0, 4),
-          'Есть ли у вас мысли покончить с собой прямо сейчас? (острота)',
-        ]
-      : test.questions || []
+  const questions = test.questions || []
   const opts = test.kind === 'asq' ? [0, 1] : test.options || [0, 1, 2, 3]
 
   return (
