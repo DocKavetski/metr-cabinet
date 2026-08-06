@@ -1,9 +1,5 @@
-import { useMemo, useState } from 'react'
-import {
-  formatSummary,
-  summaryTemplates,
-  type SummaryTemplateId,
-} from '../lib/summaryTemplates'
+import { useMemo } from 'react'
+import { formatSummary } from '../lib/summaryTemplates'
 import type { GlobalResultItem } from '../types'
 
 export function GlobalSummary({
@@ -15,8 +11,7 @@ export function GlobalSummary({
   onCopy: (text: string) => void
   onClear: () => void
 }) {
-  const [templateId, setTemplateId] = useState<SummaryTemplateId>('all')
-  const text = useMemo(() => formatSummary(items, templateId), [items, templateId])
+  const text = useMemo(() => formatSummary(items), [items])
 
   return (
     <div className="global-result no-print">
@@ -34,18 +29,6 @@ export function GlobalSummary({
           Очистить всё
         </button>
       </h3>
-      <div className="summary-templates" role="group" aria-label="Шаблон сводки">
-        {summaryTemplates.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`summary-template-btn${templateId === t.id ? ' active' : ''}`}
-            onClick={() => setTemplateId(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
       <textarea
         readOnly
         value={text}

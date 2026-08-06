@@ -14,7 +14,7 @@ export function DigitMapHint({
   return (
     <div className="digit-map no-print">
       <div>
-        Пункт бланка <strong>№{Math.min(focusItem, len)}</strong> ={' '}
+        Пункт <strong>№{Math.min(focusItem, len)}</strong> ={' '}
         <strong>{Math.min(focusItem, len)}-я</strong> цифра в строке.
         {filled > 0 && filled < len && (
           <>

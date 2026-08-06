@@ -54,7 +54,7 @@ export const suicideTests: TestConfig[] = [
     },
   },
   {
-    id: 'asq', category: 'Суицидальный риск', label: 'ASQ', icon: '⚠', badge: 'Подростки и молодёжь',
+    id: 'asq', category: 'Суицидальный риск', label: 'ASQ', icon: '⚠', badge: '5 вопросов',
     desc: 'Ask Suicide-Screening Questions: 4 вопроса скрининга и вопрос о текущей остроте риска.',
     kind: 'asq', options: yesNo,
     questions: ([

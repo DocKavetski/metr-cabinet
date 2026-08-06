@@ -40,7 +40,7 @@ function byCategory(items: GlobalResultItem[], date: string): string {
     if (!byCat.has(cat)) byCat.set(cat, [])
     byCat.get(cat)!.push(item)
   }
-  let out = `${date}\n\n`
+  let out = `${date}\n`
   for (const cat of categoryOrder) {
     const list = byCat.get(cat)
     if (!list?.length) continue
