@@ -5,6 +5,7 @@
 import { allTests } from '../src/data'
 import { screeningBatteries } from '../src/data/batteries'
 import { buildBlankHtml } from '../src/lib/blank'
+import { isFreeOfficialBlank } from '../src/data/freeBlanks'
 import { getSpecialist, specialists } from '../src/data/specialists'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
 import { defaultTemplateForBattery, formatSummary } from '../src/lib/summaryTemplates'
@@ -91,6 +92,16 @@ for (const t of allTests) {
   const alt = buildBlankHtml(t, otherDoctor)
   if (!alt.includes(otherDoctor.fullName)) fail(`${t.id}: смена специалиста не попала в бланк`)
   if (alt.includes(defaultDoctor.fullName)) fail(`${t.id}: старый специалист остался на бланке`)
+
+  if (isFreeOfficialBlank(t.id)) {
+    if (!html.includes('blank-official') && t.id !== 'asq' && !html.includes('Официальная свободная форма')) {
+      // asq also uses blank-official
+    }
+    if (!html.includes('Официальная свободная форма')) {
+      fail(`${t.id}: свободный бланк без баннера оригинала`)
+    }
+    if (!html.includes('blank-attribution')) fail(`${t.id}: нет attribution на свободном бланке`)
+  }
 
   const text = stripHtml(html)
   const instr = (t.blankInstruction || '').trim()
