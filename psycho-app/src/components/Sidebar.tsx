@@ -1,13 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { allTests, categoryOrder, getTest, screeningBatteries, type ScreeningBattery } from '../data'
+import { allTests, categoryOrder, getTest, specialists } from '../data'
 import { testMatchesQuery } from '../data/search'
 import { isAnswerComplete } from '../lib/answers'
 import type { TestConfig } from '../types'
-
-function shortLabel(t: TestConfig): string {
-  const m = t.label.match(/^([A-ZА-Я0-9][A-ZА-Я0-9\-.]*)/i)
-  return m ? m[1] : t.label.slice(0, 18)
-}
 
 export function Sidebar({
   currentId,
@@ -15,24 +10,24 @@ export function Sidebar({
   packMode,
   packIds,
   onTogglePack,
-  onStartBattery,
   favoriteIds,
   onToggleFavorite,
   recentIds,
   answers,
-  activeBatteryId,
+  specialistId,
+  onSpecialistChange,
 }: {
   currentId: string
   onSelect: (id: string) => void
   packMode: boolean
   packIds: Set<string>
   onTogglePack: (id: string) => void
-  onStartBattery: (b: ScreeningBattery) => void
   favoriteIds: string[]
   onToggleFavorite: (id: string) => void
   recentIds: string[]
   answers: Record<string, string>
-  activeBatteryId: string | null
+  specialistId: string
+  onSpecialistChange: (id: string) => void
 }) {
   const [query, setQuery] = useState('')
   const q = query.trim()
@@ -135,21 +130,20 @@ export function Sidebar({
           МЕТР <em>кабинет</em>
         </div>
         <p className="sidebar-tag">Шкалы · бланки · расчёт для приёма</p>
-        <div className="sidebar-batteries">
-          <div className="sidebar-batteries-label">Сценарии</div>
-          {screeningBatteries.map((b) => (
-            <button
-              key={b.id}
-              type="button"
-              className={`sidebar-battery${activeBatteryId === b.id ? ' active' : ''}`}
-              title={b.desc}
-              onClick={() => onStartBattery(b)}
-            >
-              <strong>{b.short}</strong>
-              <span>{b.testIds.length} шкал</span>
-            </button>
-          ))}
-        </div>
+        <label className="sidebar-specialist">
+          <span className="sidebar-specialist-label">Специалист</span>
+          <select
+            value={specialistId}
+            onChange={(e) => onSpecialistChange(e.target.value)}
+            aria-label="Специалист для бланков"
+          >
+            {specialists.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.fullName}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="sidebar-search">
           <input
             type="search"
@@ -203,72 +197,5 @@ export function Sidebar({
         {searching ? `${totalShown} из ${allTests.length}` : `${allTests.length} шкал · свёртка категорий`}
       </div>
     </aside>
-  )
-}
-
-export function BatteryStrip({
-  battery,
-  currentId,
-  answers,
-  onSelect,
-  onClear,
-}: {
-  battery: ScreeningBattery
-  currentId: string
-  answers: Record<string, string>
-  onSelect: (id: string) => void
-  onClear: () => void
-}) {
-  const tests = battery.testIds.map((id) => getTest(id)).filter(Boolean) as TestConfig[]
-  const doneCount = tests.filter((t) => isAnswerComplete(t, answers[t.id] || '')).length
-  const idx = tests.findIndex((t) => t.id === currentId)
-  const nextIncomplete = tests.find((t) => !isAnswerComplete(t, answers[t.id] || ''))
-
-  return (
-    <div className="battery-strip no-print">
-      <div className="battery-strip-head">
-        <div>
-          <div className="battery-strip-kicker">Сценарий</div>
-          <strong>{battery.label}</strong>
-          <span className="battery-strip-progress">
-            {doneCount}/{tests.length}
-          </span>
-        </div>
-        <div className="battery-strip-actions">
-          {nextIncomplete && nextIncomplete.id !== currentId && (
-            <button type="button" className="btn btn-secondary" onClick={() => onSelect(nextIncomplete.id)}>
-              Далее: {shortLabel(nextIncomplete)}
-            </button>
-          )}
-          <button type="button" className="btn btn-ghost" onClick={onClear}>
-            Сбросить сценарий
-          </button>
-        </div>
-      </div>
-      <div className="battery-strip-steps">
-        {tests.map((t, i) => {
-          const done = isAnswerComplete(t, answers[t.id] || '')
-          const active = t.id === currentId
-          return (
-            <button
-              key={t.id}
-              type="button"
-              className={`battery-step${active ? ' active' : ''}${done ? ' done' : ''}`}
-              onClick={() => onSelect(t.id)}
-              title={t.label}
-            >
-              <span className="battery-step-n">{done ? '✓' : i + 1}</span>
-              <span className="battery-step-label">{shortLabel(t)}</span>
-            </button>
-          )
-        })}
-      </div>
-      {idx >= 0 && (
-        <p className="battery-strip-hint">
-          Шаг {idx + 1} из {tests.length}
-          {doneCount === tests.length ? ' — сценарий заполнен, смотрите сводку' : ''}
-        </p>
-      )}
-    </div>
   )
 }

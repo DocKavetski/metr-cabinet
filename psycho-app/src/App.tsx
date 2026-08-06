@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { BatteryStrip, Sidebar } from './components/Sidebar'
+import { Sidebar } from './components/Sidebar'
 import { DigitMapHint } from './components/DigitMapHint'
 import { GlobalSummary } from './components/GlobalSummary'
 import { RadioQuestions } from './components/RadioQuestions'
-import { allTests, getBattery, getTest, type ScreeningBattery } from './data'
+import { allTests, getSpecialist, getTest } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
 import { isAnswerComplete, normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
 import { printBlank, printBlanks } from './lib/blank'
@@ -27,7 +27,7 @@ export default function App() {
   const len = expectedLength(test)
   const range = getDigitRange(test)
   const missing = missingRadioIndexes(answer, len)
-  const activeBattery = getBattery(state.activeBatteryId)
+  const specialist = getSpecialist(state.specialistId)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -91,18 +91,6 @@ export default function App() {
       currentTestId: id,
       recentIds: pushRecent(s.recentIds, id),
     }))
-  }
-
-  const startBattery = (b: ScreeningBattery) => {
-    setPackMode(true)
-    setPackIds(new Set(b.testIds))
-    setState((s) => ({
-      ...s,
-      activeBatteryId: b.id,
-      currentTestId: b.testIds[0] || s.currentTestId,
-      recentIds: pushRecent(s.recentIds, b.testIds[0] || s.currentTestId),
-    }))
-    showToast(`${b.label}: ${b.testIds.length} шкал · сценарий + пакет печати`)
   }
 
   const setAnswer = (v: string) => {
@@ -170,12 +158,12 @@ export default function App() {
         packMode={packMode}
         packIds={packIds}
         onTogglePack={togglePack}
-        onStartBattery={startBattery}
         favoriteIds={state.favoriteIds}
         onToggleFavorite={toggleFavorite}
         recentIds={state.recentIds}
         answers={state.answers}
-        activeBatteryId={state.activeBatteryId}
+        specialistId={state.specialistId}
+        onSpecialistChange={(id) => setState((s) => ({ ...s, specialistId: id }))}
       />
       <main className="main">
         <div className="stage-top no-print">
@@ -198,7 +186,7 @@ export default function App() {
                 disabled={packIds.size === 0}
                 onClick={() => {
                   const list = [...packIds].map((id) => getTest(id)!).filter(Boolean)
-                  printBlanks(list)
+                  printBlanks(list, specialist)
                   showToast(`Печать: ${list.length}`)
                 }}
               >
@@ -230,16 +218,6 @@ export default function App() {
         </div>
 
         <div className="stage-body">
-          {activeBattery && (
-            <BatteryStrip
-              battery={activeBattery}
-              currentId={test.id}
-              answers={state.answers}
-              onSelect={selectTest}
-              onClear={() => setState((s) => ({ ...s, activeBatteryId: null }))}
-            />
-          )}
-
           <div className="test-panel" key={test.id}>
             <div className="test-meta">
               <span className="badge">{test.badge}</span>
@@ -327,7 +305,7 @@ export default function App() {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
-                  printBlank(test)
+                  printBlank(test, specialist)
                   showToast('Диалог печати')
                 }}
               >
@@ -360,7 +338,6 @@ export default function App() {
 
           <GlobalSummary
             items={state.globalResults}
-            activeBatteryId={state.activeBatteryId}
             onCopy={(text) => {
               if (!text) return
               navigator.clipboard.writeText(text).then(

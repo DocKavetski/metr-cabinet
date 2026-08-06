@@ -5,6 +5,7 @@
 import { allTests } from '../src/data'
 import { screeningBatteries } from '../src/data/batteries'
 import { buildBlankHtml } from '../src/lib/blank'
+import { getSpecialist, specialists } from '../src/data/specialists'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
 import { defaultTemplateForBattery, formatSummary } from '../src/lib/summaryTemplates'
 import { expectedLength, getDigitRange, optionValue } from '../src/lib/utils'
@@ -73,18 +74,24 @@ for (const t of allTests) {
 }
 
 // —— 3. Бланки: печать + дубли инструкций ——
+const defaultDoctor = getSpecialist(undefined)
+const otherDoctor = specialists.find((s) => s.id !== defaultDoctor.id)!
 for (const t of allTests) {
   let html = ''
   try {
-    html = buildBlankHtml(t)
+    html = buildBlankHtml(t, defaultDoctor)
   } catch (e) {
     fail(`${t.id}: buildBlankHtml упал: ${e}`)
     continue
   }
-  if (!html.includes('Кавецкий')) fail(`${t.id}: нет футера врача`)
-  if (!html.includes(t.label.split('—')[0].trim().slice(0, 8))) {
-    // soft: label may be escaped same
-  }
+  if (!html.includes('blank-footer')) fail(`${t.id}: нет футера`)
+  if (!html.includes(defaultDoctor.fullName)) fail(`${t.id}: нет ФИО специалиста`)
+  if (!html.includes(defaultDoctor.title)) fail(`${t.id}: нет должности специалиста`)
+
+  const alt = buildBlankHtml(t, otherDoctor)
+  if (!alt.includes(otherDoctor.fullName)) fail(`${t.id}: смена специалиста не попала в бланк`)
+  if (alt.includes(defaultDoctor.fullName)) fail(`${t.id}: старый специалист остался на бланке`)
+
   const text = stripHtml(html)
   const instr = (t.blankInstruction || '').trim()
   if (instr) {
