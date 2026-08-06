@@ -1,4 +1,5 @@
 import type { TestConfig } from '../types'
+import { scoreAq10, scoreAq50 } from '../lib/scorers'
 
 const yesNo = [{ value: 1, label: 'Да' }, { value: 0, label: 'Нет' }]
 
@@ -23,7 +24,7 @@ export const autismTests: TestConfig[] = [
       'Мне трудно предугадать намерения других людей.',
     ],
     options: yesNo,
-    // score выполняется в scoring.ts (scoreAq10)
+    score: (a) => String(scoreAq10(a)),
     interpretation: [
       { min: 0, max: 5, label: 'Скрининговый порог не достигнут', level: 'low' },
       { min: 6, max: 10, label: 'Скрининговый результат ≥6 — обсуждение со специалистом', level: 'high' },
@@ -90,7 +91,7 @@ export const autismTests: TestConfig[] = [
       'Когда я маленьким играл, мне нравилось притворяться персонажами.',
     ],
     options: yesNo,
-    // score выполняется в scoring.ts (scoreAq50)
+    score: (a) => String(scoreAq50(a)),
     interpretation: [
       { min: 0, max: 25, label: 'невысокая выраженность аутистических черт', level: 'low' },
       { min: 26, max: 31, label: 'повышенные аутистические черты', level: 'moderate' },

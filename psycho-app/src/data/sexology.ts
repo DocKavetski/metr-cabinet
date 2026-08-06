@@ -1,4 +1,5 @@
 ﻿import type { TestConfig } from '../types'
+import { scoreFsfi } from '../lib/scorers'
 
 /** IIEF-5: ответы 1–5 */
 const iiefOpts = [
@@ -86,5 +87,6 @@ export const sexologyTests: TestConfig[] = [
       { value: 4, label: '4' },
       { value: 5, label: '5' },
     ],
+    score: scoreFsfi,
   },
 ]
