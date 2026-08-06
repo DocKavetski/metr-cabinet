@@ -440,7 +440,7 @@ body {
 
 .stage-grid {
   display: grid;
-  grid-template-columns: minmax(0, 980px) minmax(240px, 300px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
   gap: 1.35rem;
   align-items: start;
 }
@@ -1110,7 +1110,7 @@ body {
 
 @media (max-width: 1260px) {
   .stage-grid {
-    grid-template-columns: minmax(0, 1040px);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .support-phrases {
