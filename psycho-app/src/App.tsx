@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Sidebar } from './components/Sidebar'
-import { DigitMapHint } from './components/DigitMapHint'
 import { GlobalSummary } from './components/GlobalSummary'
 import { RadioQuestions } from './components/RadioQuestions'
 import { SupportPhrases } from './components/SupportPhrases'
@@ -21,7 +20,6 @@ export default function App() {
   const [packMode, setPackMode] = useState(false)
   const [packIds, setPackIds] = useState<Set<string>>(() => new Set())
   const [showMissing, setShowMissing] = useState(false)
-  const [cursorPos, setCursorPos] = useState(0)
 
   const test = getTest(state.currentTestId) || allTests[0]
   const answer = state.answers[test.id] || ''
@@ -275,22 +273,6 @@ export default function App() {
                         }
                         onChange={(e) => {
                           setAnswer(e.target.value)
-                          setCursorPos(e.target.selectionStart ?? e.target.value.replace(/\D/g, '').length)
-                        }}
-                        onSelect={(e) => {
-                          const el = e.target as HTMLInputElement
-                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                          setCursorPos(before.length)
-                        }}
-                        onClick={(e) => {
-                          const el = e.target as HTMLInputElement
-                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                          setCursorPos(before.length)
-                        }}
-                        onKeyUp={(e) => {
-                          const el = e.target as HTMLInputElement
-                          const before = el.value.slice(0, el.selectionStart ?? 0).replace(/\D/g, '')
-                          setCursorPos(before.length)
                         }}
                       />
                       {test.kind !== 'text' && (
@@ -305,9 +287,6 @@ export default function App() {
                       <div className="fill-bar" aria-hidden>
                         <i style={{ width: `${Math.min(100, (displayString.length / len) * 100)}%` }} />
                       </div>
-                    )}
-                    {test.kind !== 'text' && (
-                      <DigitMapHint digits={displayString} len={len} cursorPos={cursorPos} />
                     )}
                   </div>
                 )}
