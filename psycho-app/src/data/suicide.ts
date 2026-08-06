@@ -1,6 +1,5 @@
 ﻿import type { TestConfig } from '../types'
-
-const yesNo = [{ value: 0, label: 'Нет' }, { value: 1, label: 'Да' }]
+import { yesNo } from './options'
 
 export const suicideTests: TestConfig[] = [
   {

@@ -1,9 +1,5 @@
 import type { TestConfig } from '../types'
-
-const yesNo = [
-  { value: 0, label: 'Нет' },
-  { value: 1, label: 'Да' },
-]
+import { yesNo } from './options'
 
 const ctqOpts = [
   { value: 1, label: '1 — никогда' },

@@ -59,6 +59,7 @@ export { specialists, defaultSpecialistId, getSpecialist } from './specialists'
 export type { Specialist } from './specialists'
 export { freeBlanks, getFreeBlank, isFreeOfficialBlank, originalBlankHref } from './freeBlanks'
 export type { FreeBlankInfo } from './freeBlanks'
+export { yesNo, ASQ_ACUITY_BLANK } from './options'
 export { testMatchesQuery } from './search'
 
 export const testsById: Record<string, TestConfig> = Object.fromEntries(

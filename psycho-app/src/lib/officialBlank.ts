@@ -1,4 +1,5 @@
 import type { FreeBlankInfo } from '../data/freeBlanks'
+import { ASQ_ACUITY_BLANK } from '../data/options'
 import type { Option, TestConfig } from '../types'
 import { escapeHtml, optionLabel, optionValue } from './utils'
 
@@ -88,7 +89,7 @@ export function buildFreeAsqBlank(
     .join('')
   const acuity = `<div class="blank-item blank-acute">
     <div class="blank-qnum">5.</div>
-    <div class="blank-qtext">Острота: мысли покончить с собой прямо сейчас?</div>
+    <div class="blank-qtext">${escapeHtml(ASQ_ACUITY_BLANK)}</div>
     <div class="blank-opts">${yn}</div>
   </div>`
 

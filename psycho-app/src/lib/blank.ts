@@ -1,4 +1,5 @@
 import { getFreeBlank, isFreeOfficialBlank } from '../data/freeBlanks'
+import { ASQ_ACUITY_BLANK } from '../data/options'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { Option, TestConfig } from '../types'
@@ -16,7 +17,7 @@ function doctorFooter(specialist: Specialist): string {
 </div>`
 }
 
-function useMatrixLayout(test: TestConfig, questionCount: number, optionCount: number): boolean {
+function prefersMatrixLayout(test: TestConfig, questionCount: number, optionCount: number): boolean {
   if (test.blankLayout === 'matrix') return true
   if (test.blankLayout === 'list') return false
   if (test.kind === 'scl90') return true
@@ -44,7 +45,7 @@ function isCompactBlank(test: TestConfig): boolean {
   const q = test.questions?.length ?? 0
   if (!q) return true
   const optCount = test.options?.length ?? 4
-  if (useMatrixLayout(test, q, optCount)) return q <= 16
+  if (prefersMatrixLayout(test, q, optCount)) return q <= 16
   return q <= 12
 }
 
@@ -61,7 +62,7 @@ function estimatePrintPages(test: TestConfig): number {
   const q = test.questions?.length ?? 0
   if (!q) return 1
   const optCount = test.options?.length ?? 4
-  if (useMatrixLayout(test, q, optCount)) {
+  if (prefersMatrixLayout(test, q, optCount)) {
     const perPage = test.id === 'scl90' ? 40 : optCount >= 7 ? 30 : 36
     return Math.max(1, Math.ceil(q / perPage))
   }
@@ -322,7 +323,7 @@ export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpe
       .join('')
     const acuity = `<div class="blank-item blank-acute">
       <div class="blank-qnum">5.</div>
-      <div class="blank-qtext">Острота: мысли покончить с собой прямо сейчас?</div>
+      <div class="blank-qtext">${escapeHtml(ASQ_ACUITY_BLANK)}</div>
       <div class="blank-opts">${yn}</div>
     </div>`
     // легенда 0/1 только если нет своей инструкции
@@ -340,7 +341,7 @@ export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpe
   const questions = test.questions || []
   const opts = test.options || [0, 1, 2, 3]
 
-  if (useMatrixLayout(test, questions.length, opts.length)) {
+  if (prefersMatrixLayout(test, questions.length, opts.length)) {
     return buildMatrixBlank(test, questions, opts, specialist)
   }
 

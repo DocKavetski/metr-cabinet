@@ -617,34 +617,6 @@ body {
   transition: width 0.2s ease;
 }
 
-.digit-map {
-  font-size: 0.82rem;
-  color: var(--text2);
-  margin: 0 0 1.15rem;
-  line-height: 1.45;
-  padding: 0.7rem 0.85rem;
-  background: color-mix(in srgb, var(--bg2) 80%, transparent);
-  border-left: 3px solid var(--accent);
-}
-
-.digit-map strong {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.digit-map-hint {
-  margin-top: 0.25rem;
-  opacity: 0.9;
-}
-
-.digit-map code {
-  font-family: var(--font-mono);
-  background: var(--surface);
-  padding: 0.08rem 0.4rem;
-  border-radius: 2px;
-  font-size: 0.8rem;
-  border: 1px solid var(--border);
-}
 
 .btn-row {
   display: flex;
