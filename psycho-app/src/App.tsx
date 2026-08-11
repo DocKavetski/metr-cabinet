@@ -216,7 +216,7 @@ export default function App() {
               />
             </div>
 
-            {state.specialistId === 'bubnova' && <SupportPhrases />}
+            {specialist.showSupportPhrases && <SupportPhrases />}
           </div>
         </div>
       </main>

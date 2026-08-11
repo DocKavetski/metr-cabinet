@@ -7,6 +7,8 @@ export interface Specialist {
   shortName: string
   /** Должность на бланке */
   title: string
+  /** Всплывающие поддерживающие фразы справа */
+  showSupportPhrases?: boolean
 }
 
 export const specialists: Specialist[] = [
@@ -21,12 +23,14 @@ export const specialists: Specialist[] = [
     fullName: 'Бубнова Вероника Геннадьевна',
     shortName: 'Бубнова В.Г.',
     title: 'Врач-психотерапевт',
+    showSupportPhrases: true,
   },
   {
     id: 'vishnevskaya',
     fullName: 'Вишневская Виолетта Иосифовна',
     shortName: 'Вишневская В.И.',
     title: 'Врач-психотерапевт',
+    showSupportPhrases: true,
   },
 ]
 
