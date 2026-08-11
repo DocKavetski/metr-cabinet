@@ -22,6 +22,12 @@ export const specialists: Specialist[] = [
     shortName: 'Бубнова В.Г.',
     title: 'Врач-психотерапевт',
   },
+  {
+    id: 'vishnevskaya',
+    fullName: 'Вишневская Виолетта Иосифовна',
+    shortName: 'Вишневская В.И.',
+    title: 'Врач-психотерапевт',
+  },
 ]
 
 export const defaultSpecialistId = specialists[0]!.id
