@@ -82,13 +82,32 @@ function matrixRows(questions: string[], opts: Option[], startIndex: number): st
 }
 
 function buildMatrixBlank(test: TestConfig, questions: string[], opts: Option[], specialist: Specialist): string {
+  const scoreKey = test.id === 'pdq20' ? pdq20BlankScoreKey() : ''
   return `<div class="blank-sheet blank-sheet-matrix">
     ${header(test, 'matrix')}
     <table class="blank-matrix">
       ${matrixThead(opts)}
       <tbody>${matrixRows(questions, opts, 0)}</tbody>
     </table>
+    ${scoreKey}
     ${doctorFooter(specialist)}
+  </div>`
+}
+
+/** Ключ подсчёта PDQ-20 как в оригинальном бланке */
+function pdq20BlankScoreKey(): string {
+  return `<div class="blank-scorebox blank-pdq-key">
+    <p><strong>Подсчёт баллов</strong> (каждый пункт 0–4)</p>
+    <table class="blank-domain-table">
+      <tbody>
+        <tr><td>Концентрация внимания</td><td class="blank-domain-score">1+5+9+13+17 = ____ / 20</td></tr>
+        <tr><td>Ретроспективная память</td><td class="blank-domain-score">2+6+10+14+18 = ____ / 20</td></tr>
+        <tr><td>Проспективная память</td><td class="blank-domain-score">3+7+11+15+19 = ____ / 20</td></tr>
+        <tr><td>Планирование и организация</td><td class="blank-domain-score">4+8+12+16+20 = ____ / 20</td></tr>
+        <tr><td>Общая оценка воспринимаемого дефицита</td><td class="blank-domain-score">сумма всех пунктов = ____ / 80</td></tr>
+      </tbody>
+    </table>
+    <p class="blank-legend">Пояснение: чем выше сумма баллов, тем более выражены когнитивные нарушения.</p>
   </div>`
 }
 
