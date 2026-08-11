@@ -32,6 +32,13 @@ export const specialists: Specialist[] = [
     title: 'Врач-психотерапевт',
     showSupportPhrases: true,
   },
+  {
+    id: 'schall',
+    fullName: 'Шалль Диана Яновна',
+    shortName: 'Шалль Д.Я.',
+    title: 'Врач-психотерапевт',
+    showSupportPhrases: true,
+  },
 ]
 
 export const defaultSpecialistId = specialists[0]!.id
