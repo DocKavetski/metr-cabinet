@@ -119,3 +119,33 @@ export function scoreAq10(answers: number[]): number {
   }
   return total
 }
+
+/**
+ * PDQ-20 (Sullivan et al. / MSQLI): 4 подшкалы по 5 пунктов (0–20) + итог 0–80.
+ * Индексы 0-based: внимание 1,5,9,13,17; ретроспективная 2,6,10,14,18;
+ * проспективная 3,7,11,15,19; планирование 4,8,12,16,20.
+ */
+export function scorePdq20(a: number[]): string {
+  const sumIdx = (idxs: number[]) => idxs.reduce((s, i) => s + (a[i] ?? 0), 0)
+  const attention = sumIdx([0, 4, 8, 12, 16])
+  const retrospective = sumIdx([1, 5, 9, 13, 17])
+  const prospective = sumIdx([2, 6, 10, 14, 18])
+  const planning = sumIdx([3, 7, 11, 15, 19])
+  const total = attention + retrospective + prospective + planning
+
+  let label = 'низкая выраженность воспринимаемого дефицита'
+  if (total >= 35) label = 'ориентир клинически значимого воспринимаемого дефицита (≥35)'
+  else if (total >= 24) label = 'высокая выраженность воспринимаемого дефицита'
+  else if (total >= 18) label = 'умеренно-высокая выраженность'
+  else if (total >= 12) label = 'умеренная выраженность'
+
+  return (
+    `PDQ-20: итог ${total}/80 — ${label}. ` +
+    `Подшкалы (0–20): концентрация внимания ${attention}; ` +
+    `ретроспективная память ${retrospective}; ` +
+    `проспективная память ${prospective}; ` +
+    `планирование и организация ${planning}. ` +
+    `Чем выше балл, тем более выражены субъективные когнитивные трудности; ` +
+    `опросник не заменяет нейропсихологическое обследование.`
+  )
+}
