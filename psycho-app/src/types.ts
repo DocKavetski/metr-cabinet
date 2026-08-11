@@ -72,10 +72,6 @@ export interface AppState {
   inputMode: 'string' | 'radio'
   theme: 'dark' | 'light'
   currentTestId: string
-  /** Закреплённые шкалы в сайдбаре */
-  favoriteIds: string[]
-  /** Последние открытые (новые в начале) */
-  recentIds: string[]
   /** Специалист для печати на бланках */
   specialistId: string
 }

@@ -8,7 +8,6 @@ import { allTests, getSpecialist, getTest } from './data'
 import { usePersistedState } from './hooks/usePersistedState'
 import { normalizeAnswer, pickRadioValue, tryCalc } from './lib/answers'
 import { calculateFromString, missingRadioIndexes } from './lib/scoring'
-import { pushRecent } from './lib/storage'
 import { expectedLength } from './lib/utils'
 import './App.css'
 
@@ -88,7 +87,6 @@ export default function App() {
     setState((s) => ({
       ...s,
       currentTestId: id,
-      recentIds: pushRecent(s.recentIds, id),
     }))
   }
 
@@ -136,16 +134,6 @@ export default function App() {
     })
   }
 
-  const toggleFavorite = (id: string) => {
-    setState((s) => {
-      const has = s.favoriteIds.includes(id)
-      return {
-        ...s,
-        favoriteIds: has ? s.favoriteIds.filter((x) => x !== id) : [...s.favoriteIds, id],
-      }
-    })
-  }
-
   return (
     <div className="app">
       <Sidebar
@@ -154,9 +142,6 @@ export default function App() {
         packMode={packMode}
         packIds={packIds}
         onTogglePack={togglePack}
-        favoriteIds={state.favoriteIds}
-        onToggleFavorite={toggleFavorite}
-        recentIds={state.recentIds}
         answers={state.answers}
         specialistId={state.specialistId}
         onSpecialistChange={(id) => setState((s) => ({ ...s, specialistId: id }))}

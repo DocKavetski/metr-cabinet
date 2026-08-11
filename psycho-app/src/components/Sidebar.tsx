@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { allTests, categoryOrder, getTest, specialists } from '../data'
+import { allTests, categoryOrder, getTest, primaryIntakeTests, specialists } from '../data'
 import { testMatchesQuery } from '../data/search'
 import { isAnswerComplete } from '../lib/answers'
 import type { TestConfig } from '../types'
@@ -10,9 +10,6 @@ export function Sidebar({
   packMode,
   packIds,
   onTogglePack,
-  favoriteIds,
-  onToggleFavorite,
-  recentIds,
   answers,
   specialistId,
   onSpecialistChange,
@@ -22,9 +19,6 @@ export function Sidebar({
   packMode: boolean
   packIds: Set<string>
   onTogglePack: (id: string) => void
-  favoriteIds: string[]
-  onToggleFavorite: (id: string) => void
-  recentIds: string[]
   answers: Record<string, string>
   specialistId: string
   onSpecialistChange: (id: string) => void
@@ -47,18 +41,7 @@ export function Sidebar({
     })
   }, [currentCat, q])
 
-  const favorites = useMemo(
-    () => favoriteIds.map((id) => getTest(id)).filter(Boolean) as TestConfig[],
-    [favoriteIds],
-  )
-  const recents = useMemo(
-    () =>
-      recentIds
-        .filter((id) => id !== currentId && !favoriteIds.includes(id))
-        .map((id) => getTest(id))
-        .filter(Boolean) as TestConfig[],
-    [recentIds, currentId, favoriteIds],
-  )
+  const intake = useMemo(() => primaryIntakeTests(), [])
 
   const grouped = useMemo(() => {
     const map = new Map<string, TestConfig[]>()
@@ -80,6 +63,9 @@ export function Sidebar({
 
   const totalShown = grouped.reduce((n, g) => n + g.tests.length, 0)
   const searching = q.length > 0
+  const intakeShown = searching
+    ? intake.filter((t) => testMatchesQuery(t, q))
+    : intake
 
   const toggleCat = (cat: string) => {
     setOpenCats((prev) => {
@@ -92,7 +78,6 @@ export function Sidebar({
 
   const renderRow = (t: TestConfig) => {
     const done = isAnswerComplete(t, answers[t.id] || '')
-    const fav = favoriteIds.includes(t.id)
     return (
       <div key={t.id} className={`sidebar-row${t.id === currentId ? ' active' : ''}${done ? ' done' : ''}`}>
         {packMode && (
@@ -104,17 +89,6 @@ export function Sidebar({
             title="В пакет печати"
           />
         )}
-        <button
-          type="button"
-          className={`sidebar-fav${fav ? ' on' : ''}`}
-          title={fav ? 'Убрать из частых' : 'В частые'}
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleFavorite(t.id)
-          }}
-        >
-          ★
-        </button>
         <button type="button" className="sidebar-item" onClick={() => onSelect(t.id)}>
           <span className="sidebar-item-label">{t.label}</span>
           {done && <span className="sidebar-done">✓</span>}
@@ -158,20 +132,16 @@ export function Sidebar({
         <p className="sidebar-note">Пакет: отметьте методики слева, затем «Печать» сверху.</p>
       )}
       <div className="sidebar-scroll">
-        {!searching && favorites.length > 0 && (
+        {intakeShown.length > 0 && (
           <div className="sidebar-group">
-            <div className="sidebar-category sidebar-category-static">Частые</div>
-            {favorites.map(renderRow)}
-          </div>
-        )}
-        {!searching && recents.length > 0 && (
-          <div className="sidebar-group">
-            <div className="sidebar-category sidebar-category-static">Недавние</div>
-            {recents.map(renderRow)}
+            <div className="sidebar-category sidebar-category-static">Первичный приём</div>
+            {intakeShown.map(renderRow)}
           </div>
         )}
 
-        {totalShown === 0 && <p className="sidebar-note">Ничего не найдено.</p>}
+        {totalShown === 0 && intakeShown.length === 0 && (
+          <p className="sidebar-note">Ничего не найдено.</p>
+        )}
         {grouped.map((g) => {
           const open = searching || openCats.has(g.category)
           return (

@@ -67,3 +67,10 @@ export const testsById: Record<string, TestConfig> = Object.fromEntries(
 export function getTest(id: string): TestConfig | undefined {
   return testsById[id]
 }
+
+/** Блок «Первичный приём» — всегда первый в сайдбаре */
+export const primaryIntakeIds = ['hads', 'asq'] as const
+
+export function primaryIntakeTests(): TestConfig[] {
+  return primaryIntakeIds.map((id) => getTest(id)).filter(Boolean) as TestConfig[]
+}
