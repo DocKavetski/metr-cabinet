@@ -50,10 +50,19 @@ function shortOptLabel(o: Option): string {
   return optionLabel(o).replace(/^\d+\s*[—–-]\s*/, '').trim()
 }
 
-function matrixThead(opts: Option[]): string {
+/** Широкая матрица (много столбцов) — компактная печать, без длинных подписей в шапке */
+function prefersDenseMatrix(test: TestConfig, optionCount: number): boolean {
+  if (test.id === 'des') return true
+  return optionCount >= 8
+}
+
+function matrixThead(opts: Option[], dense: boolean): string {
   const cols = opts
     .map((o) => {
       const v = optionValue(o)
+      if (dense) {
+        return `<th class="mx-opt"><span class="mx-val">${v}</span></th>`
+      }
       const lab = shortOptLabel(o)
       return `<th class="mx-opt"><span class="mx-val">${v}</span><span class="mx-lab">${escapeHtml(lab)}</span></th>`
     })
@@ -82,11 +91,22 @@ function matrixRows(questions: string[], opts: Option[], startIndex: number): st
 }
 
 function buildMatrixBlank(test: TestConfig, questions: string[], opts: Option[], specialist: Specialist): string {
+  const dense = prefersDenseMatrix(test, opts.length)
+  const sheetClass = dense
+    ? 'blank-sheet blank-sheet-matrix blank-sheet-matrix-dense'
+    : 'blank-sheet blank-sheet-matrix'
   const scoreKey = test.id === 'pdq20' ? pdq20BlankScoreKey() : ''
-  return `<div class="blank-sheet blank-sheet-matrix">
+  const denseLegend =
+    dense && test.id === 'des'
+      ? `<p class="blank-legend">Шкала: 0 = никогда (0%) · 1 = 10% · … · 9 ≈ всегда (90–100%). Среднее ×10 ≈ балл 0–100.</p>`
+      : dense
+        ? `<p class="blank-legend">В каждой строке один крестик ✕ в столбце с нужным баллом.</p>`
+        : ''
+  return `<div class="${sheetClass}">
     ${header(test, 'matrix')}
+    ${denseLegend}
     <table class="blank-matrix">
-      ${matrixThead(opts)}
+      ${matrixThead(opts, dense)}
       <tbody>${matrixRows(questions, opts, 0)}</tbody>
     </table>
     ${scoreKey}

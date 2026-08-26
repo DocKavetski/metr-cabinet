@@ -186,6 +186,66 @@
     font-size: 10.5pt;
   }
 
+  /* DES и другие шкалы с многими столбцами — уместить на меньшем числе листов */
+  .blank-sheet-matrix-dense .blank-header {
+    margin-bottom: 0.25rem;
+  }
+
+  .blank-sheet-matrix-dense .blank-header h1 {
+    font-size: 12pt;
+    margin: 0 0 0.15rem;
+  }
+
+  .blank-sheet-matrix-dense .blank-instruction,
+  .blank-sheet-matrix-dense .blank-legend {
+    font-size: 8.5pt;
+    margin: 0.1rem 0 0.25rem;
+    line-height: 1.25;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix {
+    font-size: 8.5pt;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix thead th {
+    font-size: 8pt;
+    padding: 0.15rem 0.05rem;
+    line-height: 1.1;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix .mx-num {
+    width: 1.35rem;
+    font-size: 8.5pt;
+    padding: 0.08rem 0.05rem;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix .mx-q {
+    font-size: 8.5pt;
+    line-height: 1.18;
+    padding: 0.1rem 0.28rem;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix .mx-opt,
+  .blank-sheet-matrix-dense .blank-matrix .mx-cell {
+    width: 1.55rem;
+    height: 1rem;
+    padding: 0.05rem;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix .mx-val {
+    font-size: 9.5pt;
+  }
+
+  .blank-sheet-matrix-dense .blank-matrix .mx-lab {
+    display: none;
+  }
+
+  .blank-sheet-matrix-dense .blank-footer {
+    margin-top: 0.35rem;
+    padding-top: 0.25rem;
+    font-size: 9pt;
+  }
+
   .blank-item {
     display: grid;
     grid-template-columns: 1.6rem 1fr auto;
