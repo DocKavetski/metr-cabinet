@@ -38,7 +38,7 @@ function estimatePrintPages(test: TestConfig): number {
   if (!q) return 1
   const optCount = test.options?.length ?? 4
   if (prefersMatrixLayout(test, q, optCount)) {
-    const perPage = test.id === 'scl90' ? 40 : optCount >= 7 ? 30 : 36
+    const perPage = test.id === 'scl90' ? 40 : test.id === 'des' || optCount >= 8 ? 28 : 36
     return Math.max(1, Math.ceil(q / perPage))
   }
   return Math.max(1, Math.ceil(q / 20))

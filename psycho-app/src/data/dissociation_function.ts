@@ -1,16 +1,16 @@
 import type { TestConfig } from '../types'
 
 const desOpts = [
-  { value: 0, label: 'Никогда (0%)' },
-  { value: 1, label: 'Редко' },
-  { value: 2, label: 'Иногда' },
-  { value: 3, label: 'Нередко' },
-  { value: 4, label: 'Часто' },
-  { value: 5, label: 'Очень часто' },
-  { value: 6, label: 'Почти всегда' },
-  { value: 7, label: 'Очень часто / почти постоянно' },
-  { value: 8, label: 'Постоянно почти' },
-  { value: 9, label: 'Всегда (100%)' },
+  { value: 0, label: '0%' },
+  { value: 1, label: '10%' },
+  { value: 2, label: '20%' },
+  { value: 3, label: '30%' },
+  { value: 4, label: '40%' },
+  { value: 5, label: '50%' },
+  { value: 6, label: '60%' },
+  { value: 7, label: '70%' },
+  { value: 8, label: '80%' },
+  { value: 9, label: '90–100%' },
 ]
 
 export const dissociationFunctionTests: TestConfig[] = [
@@ -18,13 +18,17 @@ export const dissociationFunctionTests: TestConfig[] = [
     id: 'des',
     category: 'Диссоциация',
     label: 'DES — шкала диссоциативных переживаний',
-    badge: '28 вопросов, 0-9',
-    desc: 'Как часто с вами происходит описанное (0 = никогда, 9 = постоянно). Средний балл ×10 даёт ориентир к классической шкале 0–100; порог настороженности часто около 30.',
+    badge: '28 вопросов, 0–9',
+    desc:
+      'Как часто с вами происходит описанное. Ввод <strong>0–9</strong> (как в классическом DES: 0%…≈100%). ' +
+      'Средний балл ×10 ≈ шкала 0–100; порог настороженности часто около 30.',
     kind: 'likert',
     printable: true,
+    blankLayout: 'matrix',
     digitMin: 0,
     digitMax: 9,
-    blankInstruction: 'Отметьте, как часто это с вами бывает. В каждой строке крестик ✕ в одном столбце (0 — никогда, 9 — почти всегда).',
+    blankInstruction:
+      'Как часто это бывает. В каждой строке ✕ в одном столбце: 0 = никогда (0%), 9 ≈ всегда (90–100%).',
     questions: [
       'За рулём или в транспорте внезапно понимаете, что не помните часть пути.',
       'Слушая кого‑то, вдруг понимаете, что не слышали часть сказанного.',
