@@ -1,10 +1,11 @@
 import { RadioQuestions } from './RadioQuestions'
-import { Scl90Result } from './Scl90Result'
+import { VisualResult } from './VisualResult'
 import { getFreeBlank, originalBlankHref } from '../data'
 import type { Specialist } from '../data'
 import { isAnswerComplete } from '../lib/answers'
 import { printBlank } from '../lib/blank'
-import { computeScl90 } from '../lib/scl90'
+import { calculateFromString } from '../lib/scoring'
+import { deriveVisualResult, isPendingResultText } from '../lib/visualResult'
 import { expectedLength, getDigitRange, parseAnswerString } from '../lib/utils'
 import type { TestConfig } from '../types'
 
@@ -43,13 +44,16 @@ export function TestPanel({
   const displayString = answer.replace(/x/g, '')
   const stringComplete = isAnswerComplete(test, answer)
 
-  const scl90Report =
-    test.id === 'scl90' && stringComplete
-      ? (() => {
-          const nums = parseAnswerString(displayString, len, range.min, range.max)
-          return nums ? computeScl90(nums) : null
-        })()
-      : null
+  const visualModel = (() => {
+    if (isPendingResultText(liveResult)) return null
+    const calc = calculateFromString(test, test.kind === 'text' ? answer : displayString)
+    if (!calc.ok) return null
+    const nums =
+      test.kind === 'text'
+        ? undefined
+        : parseAnswerString(displayString, len, range.min, range.max) || undefined
+    return deriveVisualResult(test, calc, nums ?? undefined)
+  })()
 
   return (
     <div className="test-panel" key={test.id}>
@@ -146,8 +150,8 @@ export function TestPanel({
         </button>
       </div>
 
-      {scl90Report ? (
-        <Scl90Result report={scl90Report} />
+      {visualModel ? (
+        <VisualResult model={visualModel} />
       ) : (
         <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
       )}
