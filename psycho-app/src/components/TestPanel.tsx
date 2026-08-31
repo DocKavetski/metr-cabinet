@@ -1,9 +1,11 @@
 import { RadioQuestions } from './RadioQuestions'
+import { Scl90Result } from './Scl90Result'
 import { getFreeBlank, originalBlankHref } from '../data'
 import type { Specialist } from '../data'
 import { isAnswerComplete } from '../lib/answers'
 import { printBlank } from '../lib/blank'
-import { expectedLength, getDigitRange } from '../lib/utils'
+import { computeScl90 } from '../lib/scl90'
+import { expectedLength, getDigitRange, parseAnswerString } from '../lib/utils'
 import type { TestConfig } from '../types'
 
 export function TestPanel({
@@ -40,6 +42,14 @@ export function TestPanel({
   const freeBlank = getFreeBlank(test.id)
   const displayString = answer.replace(/x/g, '')
   const stringComplete = isAnswerComplete(test, answer)
+
+  const scl90Report =
+    test.id === 'scl90' && stringComplete
+      ? (() => {
+          const nums = parseAnswerString(displayString, len, range.min, range.max)
+          return nums ? computeScl90(nums) : null
+        })()
+      : null
 
   return (
     <div className="test-panel" key={test.id}>
@@ -136,7 +146,11 @@ export function TestPanel({
         </button>
       </div>
 
-      <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
+      {scl90Report ? (
+        <Scl90Result report={scl90Report} />
+      ) : (
+        <div className={`result-area level-${liveLevel || 'none'}`}>{liveResult}</div>
+      )}
     </div>
   )
 }

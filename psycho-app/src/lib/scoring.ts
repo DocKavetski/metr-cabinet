@@ -65,7 +65,11 @@ export function calculateFromString(test: TestConfig, raw: string): CalcResult {
   }
 
   if (test.score) {
-    const text = test.score(nums)
+    const out = test.score(nums)
+    if (typeof out === 'object' && out && 'text' in out) {
+      return { ok: true, text: out.text, level: out.level, score: out.score }
+    }
+    const text = out
     const asNum = Number(text)
     if (Number.isFinite(asNum) && String(asNum) === text.trim() && test.interpretation) {
       return interpret(test, asNum)

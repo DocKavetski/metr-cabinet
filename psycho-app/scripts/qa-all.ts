@@ -213,9 +213,15 @@ mustOk('bdi', '3'.repeat(21), /63/)
   if (!r.ok) fail(`hads: ${r.text}`)
 }
 
-// SCL all 1 → all 0 on 0-4 scale → GSI 0
+// SCL all 1 → all 0 on 0-4 scale → GSI 0 — норма
+mustOk('scl90', '1'.repeat(90), 'Существенных проблем не видно')
 mustOk('scl90', '1'.repeat(90), 'GSI 0.00')
+mustOk('scl90', '5'.repeat(90), 'Выраженный психологический дистресс')
 mustOk('scl90', '5'.repeat(90), 'GSI 4.00')
+// умеренный: все ответы «3» → 0–4 балл = 2 → GSI 2.0 → high actually
+// ответы «2» → балл 1 → GSI 1.0 → moderate
+mustOk('scl90', '2'.repeat(90), 'Есть признаки умеренного дистресса')
+mustOk('scl90', '2'.repeat(90), 'GSI 1.00')
 
 // FSFI all 0
 {

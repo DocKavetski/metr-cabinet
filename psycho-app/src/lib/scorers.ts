@@ -1,58 +1,7 @@
 /** Специализированные ключи подсчёта — подключаются через TestConfig.score */
 
-/**
- * SCL-90-R (Derogatis): ключи 0-based.
- * Ввод в программе 1–5 (русская адаптация) → переводим в 0–4 (ответ−1),
- * затем классические GSI / PST / PSDI и средние по шкалам.
- */
-export function scoreScl90(raw1to5: number[]): string {
-  const scores = raw1to5.map((v) => v - 1) // 0–4
-  const sclKeys: Record<string, number[]> = {
-    som: [0, 3, 11, 26, 39, 41, 47, 48, 51, 52, 55, 57],
-    oc: [2, 8, 9, 27, 37, 44, 45, 50, 54, 64],
-    int: [5, 20, 33, 35, 36, 40, 60, 68, 72],
-    dep: [4, 13, 14, 19, 21, 25, 28, 29, 30, 31, 53, 70, 78],
-    anx: [1, 16, 22, 32, 38, 56, 71, 77, 79, 85],
-    hos: [10, 23, 62, 66, 73, 80],
-    phob: [12, 24, 46, 49, 69, 74, 81],
-    par: [7, 17, 42, 67, 75, 82],
-    psy: [6, 15, 34, 61, 76, 83, 84, 86, 87, 89],
-  }
-  const names: Record<string, string> = {
-    som: 'СОМ (соматизация)',
-    oc: 'ОК (обсессивно-компульсивные)',
-    int: 'МС (межличностная сенситивность)',
-    dep: 'ДЕП (депрессия)',
-    anx: 'ТР (тревога)',
-    hos: 'ВР (враждебность)',
-    phob: 'ФТ (фобическая тревога)',
-    par: 'ПИ (параноидные идеи)',
-    psy: 'ПС (психотизм)',
-  }
-
-  const lines: string[] = []
-  for (const key of Object.keys(sclKeys)) {
-    const idxs = sclKeys[key]!
-    const sum = idxs.reduce((a, i) => a + (scores[i] ?? 0), 0)
-    const avg = sum / idxs.length
-    lines.push(`${names[key]}: ср. ${avg.toFixed(2)}`)
-  }
-
-  const totalSum = scores.reduce((a, b) => a + b, 0)
-  const gsi = totalSum / 90
-  const positive = scores.filter((s) => s > 0)
-  const pst = positive.length
-  const psdi = pst > 0 ? positive.reduce((a, b) => a + b, 0) / pst : 0
-
-  let overall = 'ориентировочно низкий уровень дистресса'
-  if (gsi >= 1.5) overall = 'ориентировочно высокий уровень дистресса'
-  else if (gsi >= 0.7) overall = 'ориентировочно умеренный уровень дистресса'
-
-  return (
-    `SCL-90-R (шкала 0–4 после перевода с 1–5): GSI ${gsi.toFixed(2)}; PST ${pst}/90; PSDI ${psdi.toFixed(2)}. ` +
-    `${overall}. ${lines.join('; ')}. Интерпретация GSI ориентировочная; опирайтесь на нормы вашей адаптации.`
-  )
-}
+/** SCL-90-R — отдельный модуль с вердиктом и разбором шкал */
+export { scoreScl90 } from './scl90'
 
 export function scoreAsq(answers: number[]): string {
   const screenYes = answers.slice(0, 4).filter((v) => v === 1).length
