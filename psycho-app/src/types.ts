@@ -43,7 +43,8 @@ export interface TestConfig {
   options?: Option[]
   items?: BdiItem[]
   interpretation?: InterpretationRule[]
-  score?: (answers: number[]) => string
+  /** Строка или объект с текстом и уровнем (для цветной полоски результата) */
+  score?: (answers: number[]) => string | { text: string; level?: Level; score?: number }
   scoreText?: (value: string) => string
   digitMin?: number
   digitMax?: number
