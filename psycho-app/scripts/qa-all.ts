@@ -267,6 +267,24 @@ mustOk('asq', '11111', '5/5')
 mustOk('iief5', '11111', '5/25')
 mustOk('iief5', '55555', '25/25')
 
+// CSBD-DI: только ответ «2» даёт текущий симптом
+mustOk('csbddi', '0'.repeat(7), '0/7')
+mustOk('csbddi', '1'.repeat(7), '0/7')
+mustOk('csbddi', '2'.repeat(7), '7/7')
+mustOk('csbddi', '2000000', '1/7')
+
+// HBI-19: min 19, max 95, порог 53
+mustOk('hbi19', '1'.repeat(19), '19/95')
+mustOk('hbi19', '5'.repeat(19), '95/95')
+
+// CSBI-13: min 13, max 65, порог 35
+mustOk('csbi13', '1'.repeat(13), '13/65')
+mustOk('csbi13', '5'.repeat(13), '65/65')
+
+// CYPAT: min 11, max 55
+mustOk('cypat', '1'.repeat(11), '11/55')
+mustOk('cypat', '5'.repeat(11), '55/55')
+
 // ACE
 mustOk('ace', '0'.repeat(10), '0/10')
 mustOk('ace', '1'.repeat(10), '10/10')
