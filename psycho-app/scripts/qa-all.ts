@@ -8,6 +8,7 @@ import { isFreeOfficialBlank } from '../src/data/freeBlanks'
 import { getSpecialist, specialists } from '../src/data/specialists'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
 import { formatSummary } from '../src/lib/summaryTemplates'
+import { deriveVisualResult } from '../src/lib/visualResult'
 import { expectedLength, getDigitRange, optionValue } from '../src/lib/utils'
 import type { TestConfig } from '../src/types'
 
@@ -222,6 +223,18 @@ mustOk('scl90', '5'.repeat(90), 'GSI 4.00')
 // ответы «2» → балл 1 → GSI 1.0 → moderate
 mustOk('scl90', '2'.repeat(90), 'Есть признаки умеренного дистресса')
 mustOk('scl90', '2'.repeat(90), 'GSI 1.00')
+
+// Визуальный блок не меняет текст сводки
+{
+  const t = allTests.find((x) => x.id === 'phq9')!
+  const r = calculateFromString(t, '3'.repeat(9))
+  if (!r.ok) fail(`phq9 visual: ${r.text}`)
+  else {
+    if (r.text !== '27 баллов — Тяжёлые симптомы') fail(`phq9 copy text changed: ${r.text}`)
+    const v = deriveVisualResult(t, r)
+    if (v.verdict !== 'Тяжёлые симптомы') fail(`phq9 visual verdict: ${v.verdict}`)
+  }
+}
 
 // FSFI all 0
 {
