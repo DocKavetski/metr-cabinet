@@ -19,7 +19,10 @@ export {
   scoreAq10,
   scoreAq50,
   scoreAsq,
+  scoreCsbdDi,
+  scoreCypat,
   scoreFsfi,
+  scoreHbi19,
   scoreScl90,
 } from './scorers'
 

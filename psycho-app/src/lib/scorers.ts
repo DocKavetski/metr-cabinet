@@ -149,3 +149,52 @@ export function scorePdq20(a: number[]): string {
     `опросник не заменяет нейропсихологическое обследование.`
   )
 }
+
+/**
+ * CSBD-DI (Grubbs et al., 2023): ответы 0/1/2, в сумму идёт только «2» (текущий симптом) как 1.
+ * Диапазон 0–7; ≥1 — повод для дальнейшей оценки.
+ */
+export function scoreCsbdDi(a: number[]): string {
+  const current = a.reduce((sum, v) => sum + (v === 2 ? 1 : 0), 0)
+  const label =
+    current >= 2
+      ? '≥2 текущих симптома — повышенная специфичность скрининга CSBD; нужна клиническая оценка'
+      : current >= 1
+        ? '≥1 текущий симптом — повод для углублённой клинической оценки CSBD (ICD-11)'
+        : 'текущих симптомов не отмечено'
+  return `CSBD-DI: ${current}/7 текущих симптомов — ${label}.`
+}
+
+/**
+ * HBI-19 (Reid et al., 2011): 1–5, сумма 19–95; порог ≥53.
+ * Подшкалы (1-based): Coping 1,3,6,8,13,16,18; Control 2,4,7,10,11,12,15,17; Consequences 5,9,14,19.
+ */
+export function scoreHbi19(a: number[]): string {
+  const sumIdx = (idxs: number[]) => idxs.reduce((s, i) => s + (a[i] ?? 0), 0)
+  const coping = sumIdx([0, 2, 5, 7, 12, 15, 17])
+  const control = sumIdx([1, 3, 6, 9, 10, 11, 14, 16])
+  const consequences = sumIdx([4, 8, 13, 18])
+  const total = coping + control + consequences
+  const label =
+    total >= 53
+      ? '≥53 — клинически значимое гиперсексуальное поведение (ориентир для мужчин в исходной валидации)'
+      : 'ниже порога клинической значимости (<53)'
+  return (
+    `HBI-19: ${total}/95 — ${label}. ` +
+    `Подшкалы: Coping (совладание) ${coping}/35; Control (контроль) ${control}/40; ` +
+    `Consequences (последствия) ${consequences}/20.`
+  )
+}
+
+/** CYPAT (Cacioppo et al., 2018): сумма 11–55; официального cut-off нет. */
+export function scoreCypat(a: number[]): string {
+  const total = a.reduce((sum, v) => sum + v, 0)
+  let band = 'низкая выраженность'
+  if (total >= 33) band = 'высокая выраженность (верхняя треть шкалы; ориентир, не официальный порог)'
+  else if (total >= 22) band = 'умеренная выраженность (ориентир по диапазону шкалы)'
+  return (
+    `CYPAT: ${total}/55 — ${band}. ` +
+    `Чем выше балл, тем более выражено проблемное употребление онлайн-порнографии; ` +
+    `официального диагностического cut-off нет.`
+  )
+}
