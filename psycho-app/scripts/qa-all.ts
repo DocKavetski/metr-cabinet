@@ -94,13 +94,15 @@ for (const t of allTests) {
   if (alt.includes(defaultDoctor.fullName)) fail(`${t.id}: старый специалист остался на бланке`)
 
   if (isFreeOfficialBlank(t.id)) {
-    if (!html.includes('blank-official') && t.id !== 'asq' && !html.includes('Официальная свободная форма')) {
-      // asq also uses blank-official
+    if (t.id === 'asq') {
+      if (!html.includes('blank-asq-screening')) fail(`${t.id}: нет официальной формы скрининга`)
+      if (!html.includes('Министерства здравоохранения')) fail(`${t.id}: нет шапки приказа Минздрава`)
+    } else {
+      if (!html.includes('Официальная свободная форма')) {
+        fail(`${t.id}: свободный бланк без баннера оригинала`)
+      }
+      if (!html.includes('blank-attribution')) fail(`${t.id}: нет attribution на свободном бланке`)
     }
-    if (!html.includes('Официальная свободная форма')) {
-      fail(`${t.id}: свободный бланк без баннера оригинала`)
-    }
-    if (!html.includes('blank-attribution')) fail(`${t.id}: нет attribution на свободном бланке`)
   }
 
   const text = stripHtml(html)

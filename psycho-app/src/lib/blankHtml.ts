@@ -1,10 +1,9 @@
 import { getFreeBlank } from '../data/freeBlanks'
-import { ASQ_ACUITY_BLANK } from '../data/options'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { Option, TestConfig } from '../types'
+import { buildAsqScreeningDocHtml } from './asqScreeningDoc'
 import {
-  buildFreeAsqBlank,
   buildFreeOfficialTableBlank,
   phqDifficultyExtra,
 } from './officialBlank'
@@ -184,12 +183,13 @@ function scaleLegend(test: TestConfig, opts: Option[]): string {
 }
 
 export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): string {
+  if (test.kind === 'asq' || test.id === 'asq') {
+    return buildAsqScreeningDocHtml(specialist)
+  }
+
   const free = getFreeBlank(test.id)
   if (free) {
     const foot = doctorFooter(specialist)
-    if (test.kind === 'asq' || test.id === 'asq') {
-      return buildFreeAsqBlank(test, foot, free)
-    }
     const extras = test.id === 'phq9' ? phqDifficultyExtra() : ''
     return buildFreeOfficialTableBlank(test, foot, free, extras)
   }
@@ -238,36 +238,6 @@ export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpe
     return `<div class="blank-sheet blank-sheet-bdi">
       ${header(test, 'items')}
       ${rows}
-      ${doctorFooter(specialist)}
-    </div>`
-  }
-
-  if (test.kind === 'asq') {
-    const qs = (test.questions || []).slice(0, 4)
-    const yn = circles([0, 1])
-    const rows = qs
-      .map(
-        (q, i) =>
-          `<div class="blank-item">
-            <div class="blank-qnum">${i + 1}.</div>
-            <div class="blank-qtext">${escapeHtml(q)}</div>
-            <div class="blank-opts">${yn}</div>
-          </div>`,
-      )
-      .join('')
-    const acuity = `<div class="blank-item blank-acute">
-      <div class="blank-qnum">5.</div>
-      <div class="blank-qtext">${escapeHtml(ASQ_ACUITY_BLANK)}</div>
-      <div class="blank-opts">${yn}</div>
-    </div>`
-    // легенда 0/1 только если нет своей инструкции
-    const legend = test.blankInstruction
-      ? ''
-      : `<p class="blank-legend">0 — Нет · 1 — Да</p>`
-    return `<div class="blank-sheet">
-      ${header(test, 'list')}
-      ${legend}
-      ${rows}${acuity}
       ${doctorFooter(specialist)}
     </div>`
   }

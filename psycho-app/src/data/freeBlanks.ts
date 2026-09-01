@@ -45,10 +45,11 @@ export const freeBlanks: FreeBlankInfo[] = [
   },
   {
     id: 'asq',
-    badge: 'свободный оригинал',
+    badge: 'официальная форма',
     attribution:
-      'ASQ (Ask Suicide-Screening Questions) © Национальный институт психического здоровья США (NIMH). Бесплатно для клинического применения.',
-    source: 'NIMH ASQ',
+      'ASQ (Ask Suicide-Screening Questions) — методика скрининга по приказу Минздрава РБ от 11.11.2025 №1351.',
+    source: 'Минздрав РБ · ASQ',
+    pdfFiles: [{ file: 'asq-screening.docx', label: 'Скачать бланк' }],
   },
   {
     id: 'asrs',
