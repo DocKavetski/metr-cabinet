@@ -2,7 +2,23 @@ import { isFreeOfficialBlank } from '../data/freeBlanks'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { TestConfig } from '../types'
+import { buildConsentDocHtml } from './consentDoc'
 import { buildBlankHtml, prefersMatrixLayout } from './blankHtml'
+
+function runPrint(html: string): void {
+  const area = document.getElementById('print-root')
+  if (!area) return
+  area.innerHTML = html
+  document.body.classList.add('printing')
+  window.print()
+  const cleanup = () => {
+    document.body.classList.remove('printing')
+    area.innerHTML = ''
+    window.removeEventListener('afterprint', cleanup)
+  }
+  window.addEventListener('afterprint', cleanup)
+  setTimeout(cleanup, 1500)
+}
 
 /**
  * Короткий бланк (примерно ≤ половины листа A4) — в пакете можно ставить
@@ -10,6 +26,7 @@ import { buildBlankHtml, prefersMatrixLayout } from './blankHtml'
  */
 function isCompactBlank(test: TestConfig): boolean {
   if (test.id === 'bdi') return false
+  if (test.kind === 'asq' || test.id === 'asq') return false
   if (isFreeOfficialBlank(test.id)) {
     if (test.id === 'pcl5' || test.id === 'asrs' || test.id === 'whodas') return false
     const q = test.questions?.length ?? 0
@@ -18,7 +35,6 @@ function isCompactBlank(test: TestConfig): boolean {
   if (test.kind === 'text' || test.clinicianDomains?.length) {
     return (test.clinicianDomains?.length ?? 0) <= 8
   }
-  if (test.kind === 'asq') return true
   if (test.items?.length) return test.items.length <= 8
   const q = test.questions?.length ?? 0
   if (!q) return true
@@ -30,7 +46,7 @@ function isCompactBlank(test: TestConfig): boolean {
 function estimatePrintPages(test: TestConfig): number {
   if (test.id === 'bdi') return 2
   if (test.kind === 'text' || test.clinicianDomains?.length) return 1
-  if (test.kind === 'asq') return 1
+  if (test.kind === 'asq') return 2
   if (test.items?.length) {
     return Math.max(1, Math.ceil(test.items.length / 11))
   }
@@ -119,16 +135,11 @@ export function printBlanks(tests: TestConfig[], specialist: Specialist = getSpe
 
   const area = document.getElementById('print-root')
   if (!area) return
-  area.innerHTML = html
-  document.body.classList.add('printing')
-  window.print()
-  const cleanup = () => {
-    document.body.classList.remove('printing')
-    area.innerHTML = ''
-    window.removeEventListener('afterprint', cleanup)
-  }
-  window.addEventListener('afterprint', cleanup)
-  setTimeout(cleanup, 1500)
+  runPrint(html)
+}
+
+export function printConsent(specialist: Specialist = getSpecialist(undefined)): void {
+  runPrint(buildConsentDocHtml(specialist))
 }
 
 export function printBlank(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): void {
