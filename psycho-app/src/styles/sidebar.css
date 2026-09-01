@@ -257,4 +257,32 @@
   font-size: 0.68rem;
   color: var(--rail-muted);
   border-top: 1px solid var(--rail-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.sidebar-consent-btn {
+  flex-shrink: 0;
+  padding: 0.28rem 0.55rem;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--rail-text);
+  background: color-mix(in srgb, var(--measure) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--measure) 45%, var(--rail-line));
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.sidebar-consent-btn:hover {
+  background: color-mix(in srgb, var(--measure) 28%, transparent);
+  color: #fff;
+}
+
+.sidebar-foot-meta {
+  text-align: right;
+  line-height: 1.35;
 }

@@ -2,7 +2,23 @@ import { isFreeOfficialBlank } from '../data/freeBlanks'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { TestConfig } from '../types'
+import { buildConsentDocHtml } from './consentDoc'
 import { buildBlankHtml, prefersMatrixLayout } from './blankHtml'
+
+function runPrint(html: string): void {
+  const area = document.getElementById('print-root')
+  if (!area) return
+  area.innerHTML = html
+  document.body.classList.add('printing')
+  window.print()
+  const cleanup = () => {
+    document.body.classList.remove('printing')
+    area.innerHTML = ''
+    window.removeEventListener('afterprint', cleanup)
+  }
+  window.addEventListener('afterprint', cleanup)
+  setTimeout(cleanup, 1500)
+}
 
 /**
  * Короткий бланк (примерно ≤ половины листа A4) — в пакете можно ставить
@@ -119,16 +135,11 @@ export function printBlanks(tests: TestConfig[], specialist: Specialist = getSpe
 
   const area = document.getElementById('print-root')
   if (!area) return
-  area.innerHTML = html
-  document.body.classList.add('printing')
-  window.print()
-  const cleanup = () => {
-    document.body.classList.remove('printing')
-    area.innerHTML = ''
-    window.removeEventListener('afterprint', cleanup)
-  }
-  window.addEventListener('afterprint', cleanup)
-  setTimeout(cleanup, 1500)
+  runPrint(html)
+}
+
+export function printConsent(specialist: Specialist = getSpecialist(undefined)): void {
+  runPrint(buildConsentDocHtml(specialist))
 }
 
 export function printBlank(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): void {
