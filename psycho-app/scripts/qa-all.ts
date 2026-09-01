@@ -314,6 +314,17 @@ mustOk('csbi13', '5'.repeat(13), '65/65')
 mustOk('cypat', '1'.repeat(11), '11/55')
 mustOk('cypat', '5'.repeat(11), '55/55')
 
+// MSQ: min 0 per subscale with all 1s
+mustOk('msq', '1'.repeat(30), '0/20')
+
+// Berg-Cross: all 1 = 100%
+mustOk('bergcrossm', '1'.repeat(20), '100%')
+mustOk('bergcrossf', '1'.repeat(20), '100%')
+
+// Sexual profile: 100 zeros
+mustOk('sxpf', '0'.repeat(100), '0/20')
+mustOk('sxpm', '0'.repeat(100), '0/20')
+
 // ACE
 mustOk('ace', '0'.repeat(10), '0/10')
 mustOk('ace', '1'.repeat(10), '10/10')
