@@ -25,6 +25,7 @@ export {
   scoreHbi19,
   scoreScl90,
 } from './scorers'
+export { scoreBergCross, scoreMsq, scoreSexProfile } from './sexologyScorers'
 
 function interpret(test: TestConfig, total: number): CalcOk {
   let label = ''
