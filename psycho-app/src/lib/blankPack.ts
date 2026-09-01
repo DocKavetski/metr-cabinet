@@ -138,8 +138,8 @@ export function printBlanks(tests: TestConfig[], specialist: Specialist = getSpe
   runPrint(html)
 }
 
-export function printConsent(_specialist?: Specialist): void {
-  runPrint(getInformedConsentHtml())
+export function printConsent(specialist: Specialist = getSpecialist(undefined)): void {
+  runPrint(getInformedConsentHtml(specialist))
 }
 
 export function printBlank(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): void {

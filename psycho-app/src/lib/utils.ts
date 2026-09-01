@@ -48,6 +48,16 @@ export function todayRu(): string {
   return `${dd}.${mm}.${yyyy} г.`
 }
 
+/** «12 августа 2026 г.» — как в официальных бланках */
+export function todayRuLong(): string {
+  const s = new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date())
+  return `${s} г.`
+}
+
 export function parseAnswerString(raw: string, len: number, min: number, max: number): number[] | null {
   const digits = raw.replace(/\D/g, '')
   if (digits.length !== len) return null

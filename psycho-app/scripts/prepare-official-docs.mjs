@@ -66,7 +66,35 @@ function escapeTsString(value) {
 
 async function convert(filePath, sheetClass) {
   const { value } = await mammoth.convertToHtml({ path: filePath })
-  return wrapDoc(value, sheetClass)
+  const body = injectPlaceholders(value, sheetClass)
+  return wrapDoc(body, sheetClass)
+}
+
+const MONTHS =
+  'января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря'
+
+function injectPlaceholders(body, sheetClass) {
+  let out = body
+  if (sheetClass.includes('asq')) {
+    out = out.replace(
+      new RegExp(
+        `\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4}\\s+г\\.\\s+Врач-психотерапевт\\s+[^<]+`,
+        'i',
+      ),
+      '{{ASQ_FOOTER}}',
+    )
+  }
+  if (sheetClass.includes('consent')) {
+    out = out.replace(
+      new RegExp(`<p>\\d{1,2}\\s+(?:${MONTHS})\\s+\\d{4}\\s+г\\.<\\/p>`, 'gi'),
+      '<p>{{PRINT_DATE}}</p>',
+    )
+    out = out.replace(
+      /<p>\(подпись врача-специалиста\)<\/p>/gi,
+      '<p>{{DOCTOR_LINE}}</p><p>(подпись врача-специалиста)</p>',
+    )
+  }
+  return out
 }
 
 const exports = []

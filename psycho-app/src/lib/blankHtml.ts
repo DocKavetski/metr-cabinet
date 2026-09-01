@@ -184,7 +184,7 @@ function scaleLegend(test: TestConfig, opts: Option[]): string {
 
 export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): string {
   if (test.kind === 'asq' || test.id === 'asq') {
-    return getAsqScreeningHtml()
+    return getAsqScreeningHtml(specialist)
   }
 
   const free = getFreeBlank(test.id)

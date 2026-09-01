@@ -88,6 +88,10 @@ for (const t of allTests) {
   if (t.id === 'asq') {
     if (!html.includes('official-doc-asq')) fail(`${t.id}: нет официальной формы скрининга`)
     if (!html.includes('Министерства здравоохранения')) fail(`${t.id}: нет шапки приказа Минздрава`)
+    if (!html.includes(defaultDoctor.fullName)) fail(`${t.id}: нет ФИО специалиста на бланке`)
+    const alt = buildBlankHtml(t, otherDoctor)
+    if (!alt.includes(otherDoctor.fullName)) fail(`${t.id}: смена специалиста не попала в бланк`)
+    if (alt.includes(defaultDoctor.fullName)) fail(`${t.id}: старый специалист остался на бланке`)
   } else {
     if (!html.includes('blank-footer')) fail(`${t.id}: нет футера`)
     if (!html.includes(defaultDoctor.fullName)) fail(`${t.id}: нет ФИО специалиста`)
