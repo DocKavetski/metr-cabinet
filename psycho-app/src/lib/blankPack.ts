@@ -2,7 +2,7 @@ import { isFreeOfficialBlank } from '../data/freeBlanks'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { TestConfig } from '../types'
-import { buildConsentDocHtml } from './consentDoc'
+import { getInformedConsentHtml } from './officialDocs'
 import { buildBlankHtml, prefersMatrixLayout } from './blankHtml'
 
 function runPrint(html: string): void {
@@ -138,8 +138,8 @@ export function printBlanks(tests: TestConfig[], specialist: Specialist = getSpe
   runPrint(html)
 }
 
-export function printConsent(specialist: Specialist = getSpecialist(undefined)): void {
-  runPrint(buildConsentDocHtml(specialist))
+export function printConsent(_specialist?: Specialist): void {
+  runPrint(getInformedConsentHtml())
 }
 
 export function printBlank(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): void {

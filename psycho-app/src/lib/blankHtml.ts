@@ -2,7 +2,7 @@ import { getFreeBlank } from '../data/freeBlanks'
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
 import type { Option, TestConfig } from '../types'
-import { buildAsqScreeningDocHtml } from './asqScreeningDoc'
+import { getAsqScreeningHtml } from './officialDocs'
 import {
   buildFreeOfficialTableBlank,
   phqDifficultyExtra,
@@ -184,7 +184,7 @@ function scaleLegend(test: TestConfig, opts: Option[]): string {
 
 export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpecialist(undefined)): string {
   if (test.kind === 'asq' || test.id === 'asq') {
-    return buildAsqScreeningDocHtml(specialist)
+    return getAsqScreeningHtml()
   }
 
   const free = getFreeBlank(test.id)

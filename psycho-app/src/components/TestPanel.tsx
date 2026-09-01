@@ -64,8 +64,7 @@ export function TestPanel({
       <div className="test-desc" dangerouslySetInnerHTML={{ __html: test.desc }} />
       {freeBlank && (
         <p className="free-blank-note no-print">
-          Печать — официальная свободная форма ({freeBlank.source}), внизу бланка — выбранный
-          специалист.
+          Печать — как в загруженном docx ({freeBlank.source}).
           {freeBlank.pdfFiles?.length ? (
             <>
               {' '}
