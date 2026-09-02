@@ -1,10 +1,78 @@
-import type { VisualResultModel } from '../lib/visualResult'
+import type { VisualItem, VisualResultModel } from '../lib/visualResult'
+import type { WippfReport, WippfScaleScore } from '../lib/wippf'
+
+const GROUP_LABEL: Record<WippfScaleScore['group'], string> = {
+  secondary: 'Вторичные способности (нормы)',
+  primary: 'Первичные способности (эмоции / отношения)',
+  conflict: 'Реакции на конфликт',
+  model: 'Модель отношений',
+}
+
+function ScaleBar({ item }: { item: VisualItem }) {
+  const pct = Math.max(0, Math.min(100, Math.round((item.ratio ?? 0) * 100)))
+  return (
+    <div className={`visual-scale visual-scale-bar level-${item.level || 'none'}`}>
+      <span className="visual-scale-code">{item.label}</span>
+      <span className="visual-scale-mean">{item.value}</span>
+      {item.hint ? <span className="visual-scale-flag">{item.hint}</span> : null}
+      <div className="visual-scale-track" aria-hidden>
+        <i style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  )
+}
+
+function WippfGroups({ report }: { report: WippfReport }) {
+  const groups: WippfScaleScore['group'][] = ['secondary', 'primary', 'conflict', 'model']
+  return (
+    <div className="wippf-groups">
+      {groups.map((g) => {
+        const list = report.scales.filter((s) => s.group === g)
+        return (
+          <div key={g} className="wippf-group">
+            <div className="visual-scales-label">{GROUP_LABEL[g]}</div>
+            <div className="visual-scale-grid wippf-scale-grid">
+              {list.map((s) => (
+                <ScaleBar
+                  key={s.id}
+                  item={{
+                    label: s.code,
+                    value: `${s.score}/12`,
+                    hint: `${s.flag} · ${s.name}`,
+                    level: s.level,
+                    ratio: (s.score - 3) / 9,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )
+      })}
+      <div className="wippf-group">
+        <div className="visual-scales-label">Обобщённые измерения</div>
+        <div className="visual-scale-grid wippf-agg-grid">
+          {report.agg.map((a) => (
+            <ScaleBar
+              key={a.id}
+              item={{
+                label: a.id.toUpperCase(),
+                value: `${a.value}/${a.max}`,
+                hint: `${a.name} · ${a.hint}`,
+                ratio: (a.value - a.min) / (a.max - a.min),
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function VisualResult({ model }: { model: VisualResultModel }) {
   const level = model.level || 'none'
   const showItemGrid =
     Boolean(model.scl90) ||
-    Boolean(model.items && model.items.length > 0 && !(model.metrics && model.metrics.length >= 2))
+    Boolean(model.items && model.items.length > 0 && !(model.metrics && model.metrics.length >= 2) && !model.wippf)
 
   return (
     <div className={`result-area visual-result level-${level}`}>
@@ -48,6 +116,8 @@ export function VisualResult({ model }: { model: VisualResultModel }) {
           </ul>
         </div>
       )}
+
+      {model.wippf ? <WippfGroups report={model.wippf} /> : null}
 
       {showItemGrid && model.scl90 && (
         <div className="visual-scales">

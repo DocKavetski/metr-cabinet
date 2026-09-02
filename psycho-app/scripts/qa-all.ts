@@ -167,7 +167,7 @@ for (const t of allTests) {
   if (!atMax.ok) fail(`${t.id} max: ${atMax.text}`)
 
   // сумма для простых шкал
-  if (!t.score && !['scl90', 'asq', 'fsfi', 'aq10', 'aq50'].includes(t.id) && t.kind !== 'scl90' && t.kind !== 'asq') {
+  if (!t.score && !['scl90', 'asq', 'fsfi', 'aq10', 'aq50', 'wippf'].includes(t.id) && t.kind !== 'scl90' && t.kind !== 'asq') {
     const sumMin = len * min
     const sumMax = len * max
     if (atMin.ok && atMin.score !== undefined && atMin.score !== sumMin) {
@@ -233,6 +233,22 @@ mustOk('scl90', '5'.repeat(90), 'GSI 4.00')
 // ответы «2» → балл 1 → GSI 1.0 → moderate
 mustOk('scl90', '2'.repeat(90), 'Есть признаки умеренного дистресса')
 mustOk('scl90', '2'.repeat(90), 'GSI 1.00')
+
+// WIPPF 2.0: все «скорее да» (3) → баланс; все «да» (4) → выраженные полюса
+mustOk('wippf', '3'.repeat(88), 'WIPPF 2.0')
+mustOk('wippf', '3'.repeat(88), 'a/r/k')
+mustOk('wippf', '4'.repeat(88), 'выражен')
+{
+  const t = allTests.find((x) => x.id === 'wippf')!
+  const r = calculateFromString(t, '3'.repeat(88))
+  if (!r.ok) fail(`wippf visual: ${r.text}`)
+  else {
+    const v = deriveVisualResult(t, r, Array(88).fill(3))
+    if (!v.wippf) fail('wippf visual: нет wippf-отчёта')
+    else if (v.wippf.scales.length !== 29) fail(`wippf scales: ${v.wippf.scales.length}`)
+    else if (v.wippf.secondary.every((s) => s.score !== 9)) fail('wippf: ожидали 9 по вторичным при ответах 3')
+  }
+}
 
 // Визуальный блок не меняет текст сводки
 {
