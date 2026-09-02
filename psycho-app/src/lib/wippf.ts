@@ -1,4 +1,5 @@
 import type { Level } from '../types'
+import { buildWippfRecommendations, pickScaleInterp } from './wippfInterpret'
 
 /** Диапазон сырых баллов одной шкалы (3 пункта × 1–4) */
 export const WIPPF_SCALE_MIN = 3
@@ -304,6 +305,12 @@ export interface WippfScaleScore {
   highPole: string
   /** a/r/k или e/w/i по пунктам шкалы */
   dims: [number, number, number]
+  /** Что измеряет шкала */
+  meaning: string
+  /** Интерпретация текущего полюса */
+  interpretation: string
+  /** Рекомендация по шкале */
+  recommendation: string
 }
 
 export interface WippfAgg {
@@ -330,6 +337,8 @@ export interface WippfReport {
   conclusion: string
   /** Краткая строка для сводки / копирования */
   summary: string
+  /** Рекомендации по профилю */
+  recommendations: string[]
 }
 
 export function wippfBand(score: number): WippfBand {
@@ -357,6 +366,7 @@ export function computeWippf(answers: number[]): WippfReport {
     ]
     const score = dims[0] + dims[1] + dims[2]
     const level = wippfBand(score)
+    const interp = pickScaleInterp(def.id, level)
     return {
       id: def.id,
       code: def.code,
@@ -368,6 +378,9 @@ export function computeWippf(answers: number[]): WippfReport {
       lowPole: def.lowPole,
       highPole: def.highPole,
       dims,
+      meaning: interp.meaning,
+      interpretation: interp.text,
+      recommendation: interp.recommendation,
     }
   })
 
@@ -435,6 +448,8 @@ export function computeWippf(answers: number[]): WippfReport {
     (conflictTop ? `Конфликт: ${conflictTop.code} ${conflictTop.score}/12. ` : '') +
     `a/r/k ${a}/${r}/${k}; e/w/i ${e}/${w}/${i}.`
 
+  const recommendations = buildWippfRecommendations(scales, extremes, conflict, agg)
+
   return {
     scales,
     secondary,
@@ -449,6 +464,7 @@ export function computeWippf(answers: number[]): WippfReport {
     verdict,
     conclusion,
     summary,
+    recommendations,
   }
 }
 

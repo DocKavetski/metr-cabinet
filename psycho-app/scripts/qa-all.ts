@@ -247,6 +247,8 @@ mustOk('wippf', '4'.repeat(88), 'выражен')
     if (!v.wippf) fail('wippf visual: нет wippf-отчёта')
     else if (v.wippf.scales.length !== 29) fail(`wippf scales: ${v.wippf.scales.length}`)
     else if (v.wippf.secondary.every((s) => s.score !== 9)) fail('wippf: ожидали 9 по вторичным при ответах 3')
+    else if (!v.wippf.recommendations.length) fail('wippf: нет рекомендаций')
+    else if (!v.wippf.scales[0]?.interpretation) fail('wippf: нет интерпретации шкалы')
   }
 }
 

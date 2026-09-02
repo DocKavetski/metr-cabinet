@@ -829,4 +829,51 @@
     border-top: 1px solid #000;
     font-size: 9pt;
   }
+
+  .result-print-recs {
+    margin: 0.2rem 0 0;
+    padding-left: 1.15rem;
+  }
+
+  .result-print-recs li {
+    margin: 0.18rem 0;
+    break-inside: avoid;
+  }
+
+  .result-print-interp {
+    border: 1px solid #999;
+    border-left: 3px solid #666;
+    padding: 0.35rem 0.45rem;
+    margin: 0.35rem 0;
+    break-inside: avoid;
+  }
+
+  .result-print-interp.rp-level-low {
+    border-left-color: #1a7a3c;
+  }
+  .result-print-interp.rp-level-moderate {
+    border-left-color: #b8860b;
+  }
+  .result-print-interp.rp-level-high {
+    border-left-color: #a11;
+  }
+
+  .result-print-interp h3 {
+    margin: 0 0 0.2rem;
+    font-size: 10pt;
+  }
+
+  .result-print-interp p {
+    margin: 0.15rem 0;
+    font-size: 9pt;
+  }
+
+  .result-print-interp .rpi-meaning {
+    font-style: italic;
+    color: #333;
+  }
+
+  .result-print-interp .rpi-rec {
+    margin-top: 0.25rem;
+  }
 }

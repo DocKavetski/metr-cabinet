@@ -107,7 +107,30 @@ function wippfTables(model: VisualResultModel): string {
     })
     .join('')
 
+  const focusScales = report.extremes.length ? report.extremes.slice(0, 8) : report.conflict
+  const interpBlocks = focusScales
+    .map(
+      (s) =>
+        `<article class="result-print-interp rp-level-${s.level}">` +
+        `<h3>${escapeHtml(s.code)} · ${escapeHtml(s.name)} — ${s.score}/12 (${escapeHtml(s.flag)})</h3>` +
+        `<p class="rpi-meaning">${escapeHtml(s.meaning)}</p>` +
+        `<p>${escapeHtml(s.interpretation)}</p>` +
+        `<p class="rpi-rec"><strong>Рекомендация.</strong> ${escapeHtml(s.recommendation)}</p>` +
+        `</article>`,
+    )
+    .join('')
+
+  const recList = report.recommendations.length
+    ? `<div class="result-print-section"><h2>Рекомендации по профилю</h2><ol class="result-print-recs">` +
+      report.recommendations.map((r) => `<li>${escapeHtml(r)}</li>`).join('') +
+      `</ol></div>`
+    : ''
+
   return (
+    recList +
+    (interpBlocks
+      ? `<div class="result-print-section"><h2>Интерпретация шкал</h2>${interpBlocks}</div>`
+      : '') +
     tables +
     `<div class="result-print-section"><h2>Обобщённые измерения</h2>` +
     `<table class="result-print-table"><thead><tr>` +

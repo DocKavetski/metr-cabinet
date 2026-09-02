@@ -22,6 +22,52 @@ function ScaleBar({ item }: { item: VisualItem }) {
   )
 }
 
+function WippfInterpCards({ report }: { report: WippfReport }) {
+  const focus = report.extremes.length ? report.extremes : report.scales.filter((s) => s.group === 'conflict')
+  const list = focus.slice(0, 8)
+  if (!list.length) return null
+  return (
+    <div className="wippf-interp">
+      <div className="visual-scales-label">
+        {report.extremes.length ? 'Интерпретация крайних шкал' : 'Интерпретация конфликтных реакций'}
+      </div>
+      <div className="wippf-interp-list">
+        {list.map((s) => (
+          <article key={s.id} className={`wippf-interp-card level-${s.level}`}>
+            <header>
+              <strong>
+                {s.code} · {s.name}
+              </strong>
+              <span>
+                {s.score}/12 · {s.flag}
+              </span>
+            </header>
+            <p className="wippf-interp-meaning">{s.meaning}</p>
+            <p className="wippf-interp-text">{s.interpretation}</p>
+            <p className="wippf-interp-rec">
+              <span>Рекомендация.</span> {s.recommendation}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function WippfRecommendations({ report }: { report: WippfReport }) {
+  if (!report.recommendations.length) return null
+  return (
+    <div className="wippf-recs">
+      <div className="visual-scales-label">Рекомендации по профилю</div>
+      <ol className="wippf-recs-list">
+        {report.recommendations.map((r, idx) => (
+          <li key={idx}>{r}</li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 function WippfGroups({ report }: { report: WippfReport }) {
   const groups: WippfScaleScore['group'][] = ['secondary', 'primary', 'conflict', 'model']
   return (
@@ -97,7 +143,7 @@ export function VisualResult({ model }: { model: VisualResultModel }) {
         </div>
       )}
 
-      {model.focus && model.focus.length > 0 && (
+      {model.focus && model.focus.length > 0 && !model.wippf && (
         <div className="visual-focus">
           <div className="visual-focus-label">На что обратить внимание</div>
           <ul className="visual-focus-list">
@@ -117,6 +163,8 @@ export function VisualResult({ model }: { model: VisualResultModel }) {
         </div>
       )}
 
+      {model.wippf ? <WippfRecommendations report={model.wippf} /> : null}
+      {model.wippf ? <WippfInterpCards report={model.wippf} /> : null}
       {model.wippf ? <WippfGroups report={model.wippf} /> : null}
 
       {showItemGrid && model.scl90 && (

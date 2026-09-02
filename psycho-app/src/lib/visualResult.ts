@@ -263,7 +263,7 @@ export function deriveVisualResult(test: TestConfig, res: CalcOk, answers?: numb
       focus: report.extremes.slice(0, 10).map((s) => ({
         label: `${s.code} · ${s.name}`,
         value: `${s.score}/12`,
-        hint: s.level === 'high' ? s.highPole : s.lowPole,
+        hint: s.interpretation,
         level: s.level,
         ratio: (s.score - 3) / 9,
       })),
