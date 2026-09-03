@@ -1,4 +1,4 @@
-import { expectedLength, optionLabel, optionValue } from '../lib/utils'
+import { expectedLength, optionLabel, optionValue, optionsForItem } from '../lib/utils'
 import type { TestConfig } from '../types'
 
 export function RadioQuestions({
@@ -56,39 +56,41 @@ export function RadioQuestions({
 
   const len = expectedLength(test)
   const questions = test.questions || []
-  const opts = test.kind === 'asq' ? [0, 1] : test.options || [0, 1, 2, 3]
 
   return (
     <div className="items scale-items">
-      {questions.slice(0, len).map((q, idx) => (
-        <div
-          key={idx}
-          className={`scale-item${showMissing && miss.has(idx) ? ' missing' : ''}`}
-        >
-          <div className="scale-item-q">
-            <span className="q-num">{idx + 1}.</span>
-            <span className="scale-item-text">{q}</span>
-            {showMissing && miss.has(idx) && <span className="miss-tag">нет ответа</span>}
+      {questions.slice(0, len).map((q, idx) => {
+        const opts = optionsForItem(test, idx)
+        return (
+          <div
+            key={idx}
+            className={`scale-item${showMissing && miss.has(idx) ? ' missing' : ''}`}
+          >
+            <div className="scale-item-q">
+              <span className="q-num">{idx + 1}.</span>
+              <span className="scale-item-text">{q}</span>
+              {showMissing && miss.has(idx) && <span className="miss-tag">нет ответа</span>}
+            </div>
+            <div className="scale-item-opts">
+              {opts.map((opt) => {
+                const val = typeof opt === 'number' ? opt : optionValue(opt)
+                const label = typeof opt === 'number' ? String(opt) : optionLabel(opt)
+                return (
+                  <label key={`${idx}-${val}`} className={get(idx) === val ? 'selected' : ''}>
+                    <input
+                      type="radio"
+                      name={`q_${test.id}_${idx}`}
+                      checked={get(idx) === val}
+                      onChange={() => onPick(idx, val)}
+                    />
+                    <span>{label}</span>
+                  </label>
+                )
+              })}
+            </div>
           </div>
-          <div className="scale-item-opts">
-            {opts.map((opt) => {
-              const val = typeof opt === 'number' ? opt : optionValue(opt)
-              const label = typeof opt === 'number' ? String(opt) : optionLabel(opt)
-              return (
-                <label key={`${idx}-${val}`} className={get(idx) === val ? 'selected' : ''}>
-                  <input
-                    type="radio"
-                    name={`q_${test.id}_${idx}`}
-                    checked={get(idx) === val}
-                    onChange={() => onPick(idx, val)}
-                  />
-                  <span>{label}</span>
-                </label>
-              )
-            })}
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

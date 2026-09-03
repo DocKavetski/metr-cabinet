@@ -1,3 +1,5 @@
+import type { Level } from '../types'
+
 /** Специализированные ключи подсчёта — подключаются через TestConfig.score */
 
 /** SCL-90-R — отдельный модуль с вердиктом и разбором шкал */
@@ -146,4 +148,63 @@ export function scoreCypat(a: number[]): string {
     `Чем выше балл, тем более выражено проблемное употребление онлайн-порнографии; ` +
     `официального диагностического cut-off нет.`
   )
+}
+
+export const MDQ_IMPAIRMENT_LABELS = [
+  'нет проблем',
+  'незначительные',
+  'умеренные',
+  'серьёзные',
+] as const
+
+export interface MdqReport {
+  symptomYes: number
+  clustered: boolean
+  impairment: number
+  impairmentLabel: string
+  metSymptoms: boolean
+  metCluster: boolean
+  metImpairment: boolean
+  positive: boolean
+  level: Level
+  text: string
+}
+
+/**
+ * MDQ (Hirschfeld): положительный скрининг при ≥7 «да» в пунктах 1–13,
+ * «да» в пункте 14 (несколько симптомов в один период) и умеренных/серьёзных
+ * проблемах в пункте 15.
+ */
+export function computeMdq(answers: number[]): MdqReport {
+  const symptomYes = answers.slice(0, 13).filter((v) => v === 1).length
+  const clustered = answers[13] === 1
+  const impairment = answers[14] ?? 0
+  const impairmentLabel = MDQ_IMPAIRMENT_LABELS[impairment] ?? String(impairment)
+  const metSymptoms = symptomYes >= 7
+  const metCluster = clustered
+  const metImpairment = impairment >= 2
+  const positive = metSymptoms && metCluster && metImpairment
+  const level: Level = positive ? 'high' : metSymptoms ? 'moderate' : 'low'
+  const text =
+    `MDQ: ${symptomYes}/13 — ${positive ? 'скрининг положительный' : 'скрининг отрицательный'}. ` +
+    `Симптомов «да» ${symptomYes}/13 (${metSymptoms ? 'порог ≥7 выполнен' : 'нужно ≥7'}); ` +
+    `несколько симптомов в один период: ${clustered ? 'да' : 'нет'}${metCluster ? '' : ' (нужно «да»)'}; ` +
+    `проблемы: ${impairmentLabel}${metImpairment ? '' : ' (нужны умеренные или серьёзные)'}.`
+  return {
+    symptomYes,
+    clustered,
+    impairment,
+    impairmentLabel,
+    metSymptoms,
+    metCluster,
+    metImpairment,
+    positive,
+    level,
+    text,
+  }
+}
+
+export function scoreMdq(answers: number[]): { text: string; level: Level; score: number } {
+  const r = computeMdq(answers)
+  return { text: r.text, level: r.level, score: r.symptomYes }
 }
