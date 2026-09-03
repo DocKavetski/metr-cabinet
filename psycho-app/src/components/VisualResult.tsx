@@ -1,5 +1,7 @@
 import type { VisualItem, VisualResultModel } from '../lib/visualResult'
 import type { WippfReport, WippfScaleScore } from '../lib/wippf'
+import { wippfScoreRatio } from '../lib/wippf'
+import { buildWippfClientReport } from '../lib/wippfClient'
 
 const GROUP_LABEL: Record<WippfScaleScore['group'], string> = {
   secondary: 'Вторичные способности (нормы)',
@@ -22,6 +24,56 @@ function ScaleBar({ item }: { item: VisualItem }) {
   )
 }
 
+function WippfBipolarRow({ scale }: { scale: WippfScaleScore }) {
+  const pct = wippfScoreRatio(scale.score) * 100
+  return (
+    <div className={`wippf-bi level-${scale.level}`}>
+      <div className="wippf-bi-head">
+        <strong>
+          {scale.code} · {scale.name}
+        </strong>
+        <span>
+          {scale.score}/12 · {scale.flag}
+        </span>
+      </div>
+      <div className="wippf-bi-row">
+        <span className="wippf-bi-pole wippf-bi-pole-low">{scale.lowLabel}</span>
+        <div
+          className="wippf-bi-track"
+          role="img"
+          aria-label={`${scale.name}: ${scale.score} из 12, ${scale.lowLabel} — ${scale.highLabel}`}
+        >
+          <span className="wippf-bi-zone wippf-bi-zone-low" />
+          <span className="wippf-bi-zone wippf-bi-zone-norm" title="Условная норма 6–9" />
+          <span className="wippf-bi-zone wippf-bi-zone-high" />
+          <i className="wippf-bi-marker" style={{ left: `${pct}%` }} />
+        </div>
+        <span className="wippf-bi-pole wippf-bi-pole-high">{scale.highLabel}</span>
+      </div>
+      <div className="wippf-bi-axis" aria-hidden>
+        <span>3</span>
+        <span>6</span>
+        <span className="wippf-bi-axis-norm">норма 6–9</span>
+        <span>9</span>
+        <span>12</span>
+      </div>
+    </div>
+  )
+}
+
+function WippfLegend() {
+  return (
+    <div className="wippf-legend" aria-hidden>
+      <span className="wippf-legend-swatch low" />
+      <span>3–5 слабо (левый полюс)</span>
+      <span className="wippf-legend-swatch norm" />
+      <span>6–9 баланс</span>
+      <span className="wippf-legend-swatch high" />
+      <span>10–12 выражено (правый полюс)</span>
+    </div>
+  )
+}
+
 function WippfInterpCards({ report }: { report: WippfReport }) {
   const focus = report.extremes.length ? report.extremes : report.scales.filter((s) => s.group === 'conflict')
   const list = focus.slice(0, 8)
@@ -39,7 +91,7 @@ function WippfInterpCards({ report }: { report: WippfReport }) {
                 {s.code} · {s.name}
               </strong>
               <span>
-                {s.score}/12 · {s.flag}
+                {s.score}/12 · {s.flag} · {s.lowLabel} ↔ {s.highLabel}
               </span>
             </header>
             <p className="wippf-interp-meaning">{s.meaning}</p>
@@ -68,27 +120,29 @@ function WippfRecommendations({ report }: { report: WippfReport }) {
   )
 }
 
+function WippfClientPreview({ report }: { report: WippfReport }) {
+  const client = buildWippfClientReport(report)
+  return (
+    <div className="wippf-client-preview">
+      <div className="visual-scales-label">Как это звучит для клиента</div>
+      <p className="wippf-client-lead">{client.overall}</p>
+    </div>
+  )
+}
+
 function WippfGroups({ report }: { report: WippfReport }) {
   const groups: WippfScaleScore['group'][] = ['secondary', 'primary', 'conflict', 'model']
   return (
     <div className="wippf-groups">
+      <WippfLegend />
       {groups.map((g) => {
         const list = report.scales.filter((s) => s.group === g)
         return (
           <div key={g} className="wippf-group">
             <div className="visual-scales-label">{GROUP_LABEL[g]}</div>
-            <div className="visual-scale-grid wippf-scale-grid">
+            <div className="wippf-bi-list">
               {list.map((s) => (
-                <ScaleBar
-                  key={s.id}
-                  item={{
-                    label: s.code,
-                    value: `${s.score}/12`,
-                    hint: `${s.flag} · ${s.name}`,
-                    level: s.level,
-                    ratio: (s.score - 3) / 9,
-                  }}
-                />
+                <WippfBipolarRow key={s.id} scale={s} />
               ))}
             </div>
           </div>
@@ -163,6 +217,7 @@ export function VisualResult({ model }: { model: VisualResultModel }) {
         </div>
       )}
 
+      {model.wippf ? <WippfClientPreview report={model.wippf} /> : null}
       {model.wippf ? <WippfRecommendations report={model.wippf} /> : null}
       {model.wippf ? <WippfInterpCards report={model.wippf} /> : null}
       {model.wippf ? <WippfGroups report={model.wippf} /> : null}

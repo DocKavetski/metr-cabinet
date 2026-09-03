@@ -1,4 +1,4 @@
 /** Печать бланков: HTML-сборка + пакетная/дуплексная печать */
 export { buildBlankHtml, prefersMatrixLayout } from './blankHtml'
 export { printBlank, printBlanks, printConsent } from './blankPack'
-export { printVisualResult } from './resultPrint'
+export { printClientResult, printVisualResult } from './resultPrint'

@@ -3,7 +3,7 @@ import { VisualResult } from './VisualResult'
 import { getFreeBlank, originalBlankHref } from '../data'
 import type { Specialist } from '../data'
 import { isAnswerComplete } from '../lib/answers'
-import { printBlank, printVisualResult } from '../lib/blank'
+import { printBlank, printClientResult, printVisualResult } from '../lib/blank'
 import { calculateFromString } from '../lib/scoring'
 import { deriveVisualResult, isPendingResultText } from '../lib/visualResult'
 import { expectedLength, getDigitRange, parseAnswerString } from '../lib/utils'
@@ -157,6 +157,25 @@ export function TestPanel({
         >
           Печать результата
         </button>
+        {test.id === 'wippf' && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            disabled={!visualModel}
+            title={
+              visualModel
+                ? 'Заключение простым языком — можно отдать клиенту домой'
+                : 'Сначала заполните и рассчитайте тест'
+            }
+            onClick={() => {
+              if (!visualModel) return
+              printClientResult(test.label, visualModel, specialist)
+              onToast('Печать для клиента')
+            }}
+          >
+            Печать для клиента
+          </button>
+        )}
         <button type="button" className="btn btn-danger" onClick={onClear}>
           Очистить
         </button>
