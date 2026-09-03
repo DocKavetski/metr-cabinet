@@ -18,7 +18,20 @@ export interface WippfScaleDef {
   items: [number, number, number]
   lowPole: string
   highPole: string
+  /** Короткий ярлык левого полюса (3–5) */
+  lowLabel: string
+  /** Короткий ярлык правого полюса (10–12) */
+  highLabel: string
 }
+
+/** Доля шкалы 3–12 → 0–1 для маркера */
+export function wippfScoreRatio(score: number): number {
+  return Math.max(0, Math.min(1, (score - WIPPF_SCALE_MIN) / (WIPPF_SCALE_MAX - WIPPF_SCALE_MIN)))
+}
+
+/** Зелёная условная норма 6–9 на шкале 3–12 */
+export const WIPPF_NORM_START_RATIO = (6 - WIPPF_SCALE_MIN) / (WIPPF_SCALE_MAX - WIPPF_SCALE_MIN)
+export const WIPPF_NORM_END_RATIO = (9 - WIPPF_SCALE_MIN) / (WIPPF_SCALE_MAX - WIPPF_SCALE_MIN)
 
 /**
  * Ключ WIPPF 2.0 (на основе формы Б Пезешкиана/Дайденбаха + Remmers):
@@ -35,6 +48,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [2, 39, 71],
     lowPole: 'беспорядок, небрежность',
     highPole: 'педантичность, потребность в «стерильном» порядке',
+    lowLabel: 'неряха',
+    highLabel: 'педант',
   },
   {
     id: 'clean',
@@ -44,6 +59,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [13, 55, 66],
     lowPole: 'неряшливость',
     highPole: 'избыточное внимание к чистоте',
+    lowLabel: 'грязнуля',
+    highLabel: 'чистюля',
   },
   {
     id: 'punct',
@@ -53,6 +70,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [36, 47, 56],
     lowPole: 'постоянные опоздания',
     highPole: 'точность до минуты',
+    lowLabel: 'опаздывающий',
+    highLabel: 'минута в минуту',
   },
   {
     id: 'polite',
@@ -62,6 +81,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [12, 40, 69],
     lowPole: 'бестактность, дерзость',
     highPole: 'сверхдружелюбие, трудность сказать «нет»',
+    lowLabel: 'грубиян',
+    highLabel: 'милый всем',
   },
   {
     id: 'honest',
@@ -71,6 +92,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [8, 43, 84],
     lowPole: 'скрытность, неискренность',
     highPole: 'избыточная прямота, «что на уме — то на языке»',
+    lowLabel: 'скрытный',
+    highLabel: 'прямолинейный',
   },
   {
     id: 'achieve',
@@ -80,6 +103,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [28, 44, 79],
     lowPole: 'лень, праздность',
     highPole: 'карьеризм, рвение',
+    lowLabel: 'лентяй',
+    highLabel: 'трудоголик',
   },
   {
     id: 'reliable',
@@ -89,6 +114,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [5, 41, 67],
     lowPole: 'необязательность',
     highPole: 'скрупулёзность, безусловное выполнение обещаний',
+    lowLabel: 'необязательный',
+    highLabel: 'сверхнадёжный',
   },
   {
     id: 'thrift',
@@ -98,6 +125,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [7, 24, 65],
     lowPole: 'расточительность',
     highPole: 'скупость, аскетизм',
+    lowLabel: 'транжира',
+    highLabel: 'скряга',
   },
   {
     id: 'obey',
@@ -107,6 +136,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [15, 45, 59],
     lowPole: 'бунт, отрицание авторитетов',
     highPole: 'слепое подчинение / жёсткость к подчинённым',
+    lowLabel: 'бунтарь',
+    highLabel: 'послушный',
   },
   {
     id: 'justice',
@@ -116,6 +147,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [26, 64, 80],
     lowPole: 'игнор справедливости ради симпатий',
     highPole: 'жажда справедливости',
+    lowLabel: 'по своим',
+    highLabel: 'судья',
   },
   {
     id: 'faithful',
@@ -125,6 +158,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [6, 34, 52],
     lowPole: 'неверность, смена установок',
     highPole: 'ригидность, «пока смерть не разлучит»',
+    lowLabel: 'флюгер',
+    highLabel: 'до гроба',
   },
   // —— Первичные способности ——
   {
@@ -135,6 +170,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [14, 22, 37],
     lowPole: 'нетерпеливость',
     highPole: 'сверхтерпение, откладывание своих нужд',
+    lowLabel: 'нетерпеливый',
+    highLabel: 'сверхтерпеливый',
   },
   {
     id: 'time',
@@ -144,6 +181,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [20, 46, 72],
     lowPole: 'дефицит времени, перегрузки',
     highPole: 'расточительное времяпрепровождение',
+    lowLabel: 'вечно занят',
+    highLabel: 'тянет время',
   },
   {
     id: 'contact',
@@ -153,6 +192,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [29, 61, 77],
     lowPole: 'застенчивость, трудность контакта',
     highPole: 'избыточная коммуникабельность',
+    lowLabel: 'стеснительный',
+    highLabel: 'душа компании',
   },
   {
     id: 'trust',
@@ -162,6 +203,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [17, 27, 62],
     lowPole: 'недоверие, подозрительность',
     highPole: 'наивное доверие',
+    lowLabel: 'недоверчивый',
+    highLabel: 'доверчивый',
   },
   {
     id: 'hope',
@@ -171,6 +214,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [9, 23, 68],
     lowPole: 'пессимизм, безнадёжность',
     highPole: 'безоглядный оптимизм',
+    lowLabel: 'пессимист',
+    highLabel: 'розовые очки',
   },
   {
     id: 'tenderness',
@@ -180,6 +225,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [16, 58, 82],
     lowPole: 'холодность, страх телесного контакта',
     highPole: 'преувеличение роли сексуальности',
+    lowLabel: 'холодный',
+    highLabel: 'жаждущий близости',
   },
   {
     id: 'love',
@@ -189,6 +236,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [30, 60, 75],
     lowPole: 'дистанцированность, отвержение',
     highPole: '«материнская» позиция, потакание',
+    lowLabel: 'отвергающий',
+    highLabel: 'балующий',
   },
   {
     id: 'faith',
@@ -198,6 +247,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [21, 35, 53],
     lowPole: 'индифферентность к смыслу',
     highPole: 'фанатичный интерес к мировоззрению',
+    lowLabel: 'верю только глазам',
+    highLabel: 'искатель смысла',
   },
   // —— Конфликтные реакции ——
   {
@@ -208,6 +259,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [1, 49, 76],
     lowPole: 'бегство в гиперактивность / расслабление',
     highPole: 'бегство в болезнь, психосоматика',
+    lowLabel: 'в активность',
+    highLabel: 'в болезнь',
   },
   {
     id: 'work',
@@ -217,6 +270,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [11, 51, 70],
     lowPole: 'бегство в бездеятельность',
     highPole: 'бегство в работу',
+    lowLabel: 'в безделье',
+    highLabel: 'в работу',
   },
   {
     id: 'contactRx',
@@ -226,6 +281,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [19, 50, 81],
     lowPole: 'бегство в одиночество',
     highPole: 'бегство в общение',
+    lowLabel: 'в одиночество',
+    highLabel: 'в людей',
   },
   {
     id: 'fantasy',
@@ -235,6 +292,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [4, 32, 57],
     lowPole: 'негативные катастрофические мысли',
     highPole: 'бегство в фантазии',
+    lowLabel: 'в катастрофы',
+    highLabel: 'в мечты',
   },
   // —— Модельные измерения ——
   {
@@ -245,6 +304,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [33, 63, 83],
     lowPole: 'дистанция / холодность',
     highPole: 'тепло / привязанность',
+    lowLabel: 'далеко',
+    highLabel: 'близко',
   },
   {
     id: 'iFather',
@@ -254,6 +315,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [18, 48, 74],
     lowPole: 'дистанция / холодность',
     highPole: 'тепло / привязанность',
+    lowLabel: 'далеко',
+    highLabel: 'близко',
   },
   {
     id: 'iOthers',
@@ -263,6 +326,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [85, 86, 87],
     lowPole: 'мало значимых фигур вне родителей',
     highPole: 'важная фигура вне родителей',
+    lowLabel: 'мало других',
+    highLabel: 'важный другой',
   },
   {
     id: 'you',
@@ -272,6 +337,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [10, 31, 42],
     lowPole: 'конфликтный / холодный союз',
     highPole: 'гармоничный / близкий союз',
+    lowLabel: 'холодный союз',
+    highLabel: 'тёплый союз',
   },
   {
     id: 'we',
@@ -281,6 +348,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [3, 38, 73],
     lowPole: 'замкнутость родителей',
     highPole: 'открытость, общительность',
+    lowLabel: 'закрытая семья',
+    highLabel: 'открытая семья',
   },
   {
     id: 'praWe',
@@ -290,6 +359,8 @@ export const WIPPF_SCALES: WippfScaleDef[] = [
     items: [25, 54, 78],
     lowPole: 'индифферентность к смыслу',
     highPole: 'сильные мировоззренческие идеалы',
+    lowLabel: 'без идеалов',
+    highLabel: 'сильные идеалы',
   },
 ]
 
@@ -303,6 +374,8 @@ export interface WippfScaleScore {
   flag: string
   lowPole: string
   highPole: string
+  lowLabel: string
+  highLabel: string
   /** a/r/k или e/w/i по пунктам шкалы */
   dims: [number, number, number]
   /** Что измеряет шкала */
@@ -377,6 +450,8 @@ export function computeWippf(answers: number[]): WippfReport {
       flag: flagOf(level),
       lowPole: def.lowPole,
       highPole: def.highPole,
+      lowLabel: def.lowLabel,
+      highLabel: def.highLabel,
       dims,
       meaning: interp.meaning,
       interpretation: interp.text,

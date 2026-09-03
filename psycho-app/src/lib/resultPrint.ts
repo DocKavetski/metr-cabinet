@@ -1,5 +1,7 @@
 import type { Specialist } from '../data/specialists'
 import { getSpecialist } from '../data/specialists'
+import { wippfScoreRatio, type WippfScaleScore } from './wippf'
+import { buildWippfClientReport } from './wippfClient'
 import type { VisualResultModel } from './visualResult'
 import { escapeHtml, todayRu } from './utils'
 
@@ -55,6 +57,63 @@ function focusList(model: VisualResultModel): string {
   )
 }
 
+function bipolarTrackHtml(score: number): string {
+  const pct = (wippfScoreRatio(score) * 100).toFixed(2)
+  return (
+    `<div class="wippf-bi-track">` +
+    `<span class="wippf-bi-zone wippf-bi-zone-low"></span>` +
+    `<span class="wippf-bi-zone wippf-bi-zone-norm"></span>` +
+    `<span class="wippf-bi-zone wippf-bi-zone-high"></span>` +
+    `<i class="wippf-bi-marker" style="left:${pct}%"></i>` +
+    `</div>`
+  )
+}
+
+function bipolarBarHtml(score: number, lowLabel: string, highLabel: string): string {
+  return (
+    `<div class="wippf-bi-row">` +
+    `<span class="wippf-bi-pole wippf-bi-pole-low">${escapeHtml(lowLabel)}</span>` +
+    bipolarTrackHtml(score) +
+    `<span class="wippf-bi-pole wippf-bi-pole-high">${escapeHtml(highLabel)}</span>` +
+    `</div>`
+  )
+}
+
+function wippfLegendHtml(): string {
+  return (
+    `<div class="wippf-legend">` +
+    `<span class="wippf-legend-swatch low"></span><span>3–5 слабо</span>` +
+    `<span class="wippf-legend-swatch norm"></span><span>6–9 баланс (норма)</span>` +
+    `<span class="wippf-legend-swatch high"></span><span>10–12 выражено</span>` +
+    `</div>`
+  )
+}
+
+const GROUP_PRINT: { title: string; key: WippfScaleScore['group'] }[] = [
+  { title: 'Вторичные способности', key: 'secondary' },
+  { title: 'Первичные способности', key: 'primary' },
+  { title: 'Реакции на конфликт', key: 'conflict' },
+  { title: 'Модель отношений', key: 'model' },
+]
+
+function wippfBipolarBlocks(scales: WippfScaleScore[], withYouText?: Map<string, string>): string {
+  return scales
+    .map((s) => {
+      const you = withYouText?.get(s.id)
+      return (
+        `<div class="wippf-bi rp-level-${s.level}">` +
+        `<div class="wippf-bi-head">` +
+        `<strong>${escapeHtml(s.code)} · ${escapeHtml(s.name)}</strong>` +
+        `<span>${s.score}/12 · ${escapeHtml(s.flag)}</span>` +
+        `</div>` +
+        bipolarBarHtml(s.score, s.lowLabel, s.highLabel) +
+        (you ? `<p class="wippf-bi-you">${escapeHtml(you)}</p>` : '') +
+        `</div>`
+      )
+    })
+    .join('')
+}
+
 function wippfTables(model: VisualResultModel): string {
   const report = model.wippf
   if (!report) return ''
@@ -71,14 +130,13 @@ function wippfTables(model: VisualResultModel): string {
         .map((id) => byId[id])
         .filter(Boolean)
         .map((s) => {
-          const pct = Math.round(((s!.score - 3) / 9) * 100)
           return (
             `<tr class="rp-level-${s!.level}">` +
             `<td class="rp-code">${escapeHtml(s!.code)}</td>` +
-            `<td>${escapeHtml(s!.name)}</td>` +
+            `<td>${escapeHtml(s!.name)}<div class="rp-poles">${escapeHtml(s!.lowLabel)} ↔ ${escapeHtml(s!.highLabel)}</div></td>` +
             `<td class="rp-score">${s!.score}/12</td>` +
             `<td class="rp-flag">${escapeHtml(s!.flag)}</td>` +
-            `<td class="rp-bar"><span style="width:${pct}%"></span></td>` +
+            `<td class="rp-bi">${bipolarTrackHtml(s!.score)}</td>` +
             `</tr>`
           )
         })
@@ -86,7 +144,7 @@ function wippfTables(model: VisualResultModel): string {
       return (
         `<div class="result-print-section"><h2>${escapeHtml(g.title)}</h2>` +
         `<table class="result-print-table"><thead><tr>` +
-        `<th>Код</th><th>Шкала</th><th>Балл</th><th>Полюс</th><th>Профиль</th>` +
+        `<th>Код</th><th>Шкала</th><th>Балл</th><th>Зона</th><th>Полюса 3 ← норма 6–9 → 12</th>` +
         `</tr></thead><tbody>${rows}</tbody></table></div>`
       )
     })
@@ -131,6 +189,8 @@ function wippfTables(model: VisualResultModel): string {
     (interpBlocks
       ? `<div class="result-print-section"><h2>Интерпретация шкал</h2>${interpBlocks}</div>`
       : '') +
+    `<div class="result-print-section"><h2>Как читать шкалы</h2>${wippfLegendHtml()}` +
+    `<p class="result-print-footnote" style="margin-top:0">Левый полюс 3–5 · зелёная норма 6–9 · правый полюс 10–12. Полюса не «хорошо/плохо».</p></div>` +
     tables +
     `<div class="result-print-section"><h2>Обобщённые измерения</h2>` +
     `<table class="result-print-table"><thead><tr>` +
@@ -187,6 +247,66 @@ export function printVisualResult(
       : '') +
     `<footer class="result-print-footer">` +
     `<span>Скрининговый / терапевтический ориентир, не диагноз</span>` +
+    `<span>${escapeHtml(specialist.shortName)}</span>` +
+    `</footer></div>`
+
+  runPrint(html)
+}
+
+/** Печать домашнего заключения для клиента (тёплый язык, без клинического жаргона) */
+export function printClientResult(
+  testLabel: string,
+  model: VisualResultModel,
+  specialist: Specialist = getSpecialist(undefined),
+): void {
+  const report = model.wippf
+  if (!report) {
+    printVisualResult(testLabel, model, specialist)
+    return
+  }
+  const client = buildWippfClientReport(report)
+  const youById = new Map(client.scales.map((s) => [s.id, s.youText]))
+  const groups = GROUP_PRINT.map((g) => {
+    const list = report.scales.filter((s) => s.group === g.key)
+    return (
+      `<div class="result-print-section">` +
+      `<h2>${escapeHtml(g.title)}</h2>` +
+      `<div class="wippf-bi-list">${wippfBipolarBlocks(list, youById)}</div>` +
+      `</div>`
+    )
+  }).join('')
+  const reflections =
+    `<div class="result-print-section"><h2>О чём подумать дома</h2><ol class="result-print-recs">` +
+    client.reflections.map((r) => `<li>${escapeHtml(r)}</li>`).join('') +
+    `</ol></div>`
+
+  const html =
+    `<div class="result-print-sheet client-print-sheet">` +
+    `<header class="result-print-header">` +
+    `<div class="result-print-mark">Для самостоятельной работы</div>` +
+    `<h1>${escapeHtml(testLabel)} — ваш профиль</h1>` +
+    `<div class="result-print-meta">` +
+    `<span>${escapeHtml(todayRu())}</span>` +
+    `<span>${escapeHtml(specialist.fullName)}</span>` +
+    `</div></header>` +
+    `<section class="result-print-verdict result-print-verdict-${report.level}">` +
+    `<div class="rpv-label">Как читать этот лист</div>` +
+    `<p>${escapeHtml(client.lead)}</p>` +
+    `<p>${escapeHtml(client.howToRead)}</p>` +
+    `</section>` +
+    `<section class="result-print-section">` +
+    `<h2>Что видно в вашем профиле</h2>` +
+    `<p>${escapeHtml(client.overall)}</p>` +
+    `</section>` +
+    wippfLegendHtml() +
+    groups +
+    reflections +
+    `<p class="result-print-footnote">` +
+    `Это материал для размышления, не диагноз и не оценка «хороший / плохой». ` +
+    `Если что-то зацепило — принесите это на встречу.` +
+    `</p>` +
+    `<footer class="result-print-footer">` +
+    `<span>Домашнее заключение · WIPPF 2.0</span>` +
     `<span>${escapeHtml(specialist.shortName)}</span>` +
     `</footer></div>`
 

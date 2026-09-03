@@ -9,6 +9,7 @@ import { getSpecialist, specialists } from '../src/data/specialists'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
 import { formatSummary } from '../src/lib/summaryTemplates'
 import { deriveVisualResult } from '../src/lib/visualResult'
+import { buildWippfClientReport } from '../src/lib/wippfClient'
 import { expectedLength, getDigitRange, optionValue } from '../src/lib/utils'
 import type { TestConfig } from '../src/types'
 
@@ -249,6 +250,17 @@ mustOk('wippf', '4'.repeat(88), 'выражен')
     else if (v.wippf.secondary.every((s) => s.score !== 9)) fail('wippf: ожидали 9 по вторичным при ответах 3')
     else if (!v.wippf.recommendations.length) fail('wippf: нет рекомендаций')
     else if (!v.wippf.scales[0]?.interpretation) fail('wippf: нет интерпретации шкалы')
+    else if (!v.wippf.scales[0]?.lowLabel || !v.wippf.scales[0]?.highLabel) fail('wippf: нет ярлыков полюсов')
+    else {
+      const clean = v.wippf.scales.find((s) => s.id === 'clean')
+      if (!clean || clean.lowLabel !== 'грязнуля' || clean.highLabel !== 'чистюля') {
+        fail(`wippf poles: ${clean?.lowLabel} / ${clean?.highLabel}`)
+      }
+      const client = buildWippfClientReport(v.wippf)
+      if (client.scales.length !== 29) fail(`wippf client scales: ${client.scales.length}`)
+      else if (!client.scales[0]?.youText) fail('wippf client: нет текста на «вы»')
+      else if (!client.howToRead.includes('6–9')) fail('wippf client: нет пояснения нормы')
+    }
   }
 }
 

@@ -27,6 +27,12 @@ export default function App() {
   const specialist = getSpecialist(state.specialistId)
   const displayString = answer.replace(/x/g, '')
 
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('test')
+    if (!id || !getTest(id)) return
+    setState((s) => (s.currentTestId === id ? s : { ...s, currentTestId: id }))
+  }, [setState])
+
   const showToast = (msg: string) => {
     setToast(msg)
     window.setTimeout(() => setToast(null), 2500)

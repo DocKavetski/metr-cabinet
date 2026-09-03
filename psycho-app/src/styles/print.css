@@ -876,4 +876,146 @@
   .result-print-interp .rpi-rec {
     margin-top: 0.25rem;
   }
+
+  .result-print-sub {
+    margin: 0.45rem 0 0.25rem;
+    font-size: 10pt;
+  }
+
+  .rp-poles {
+    font-size: 8pt;
+    color: #444;
+  }
+
+  .result-print-table .rp-bi {
+    width: 14rem;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .result-print-table .wippf-bi-row {
+    grid-template-columns: 4.2rem 1fr 4.2rem;
+    gap: 0.25rem;
+  }
+
+  .result-print-table .wippf-bi-pole {
+    font-size: 7pt;
+  }
+
+  .wippf-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.2rem 0.55rem;
+    font-size: 8.5pt;
+    margin: 0.2rem 0 0.45rem;
+  }
+
+  .wippf-legend-swatch {
+    width: 0.75rem;
+    height: 0.45rem;
+    display: inline-block;
+    border: 0.5px solid #666;
+  }
+
+  .wippf-legend-swatch.low {
+    background: #e07a6a;
+  }
+  .wippf-legend-swatch.norm {
+    background: #3d9a6a;
+  }
+  .wippf-legend-swatch.high {
+    background: #d4a017;
+  }
+
+  .wippf-bi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .wippf-bi {
+    break-inside: avoid;
+    padding: 0.2rem 0 0.35rem;
+  }
+
+  .wippf-bi-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 9pt;
+    margin-bottom: 0.15rem;
+  }
+
+  .wippf-bi-row {
+    display: grid;
+    grid-template-columns: 6.2rem 1fr 6.2rem;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .wippf-bi-pole {
+    font-size: 8pt;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .wippf-bi-pole-low {
+    text-align: right;
+    color: #a33;
+  }
+
+  .wippf-bi-pole-high {
+    text-align: left;
+    color: #8a6a00;
+  }
+
+  .wippf-bi-track {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 0.55rem;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .wippf-bi-zone {
+    display: block;
+    height: 0.55rem;
+  }
+
+  .wippf-bi-zone-low {
+    background: #e07a6a;
+    border-radius: 999px 0 0 999px;
+  }
+
+  .wippf-bi-zone-norm {
+    background: #3d9a6a;
+  }
+
+  .wippf-bi-zone-high {
+    background: #d4a017;
+    border-radius: 0 999px 999px 0;
+  }
+
+  .wippf-bi-marker {
+    position: absolute;
+    top: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: -0.25rem;
+    border-radius: 50%;
+    background: #000;
+    border: 1.5px solid #fff;
+    transform: translateY(-50%);
+  }
+
+  .wippf-bi-you {
+    margin: 0.2rem 0 0;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+
+  .client-print-sheet .result-print-verdict p {
+    margin: 0.25rem 0 0;
+  }
 }
