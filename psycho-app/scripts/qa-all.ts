@@ -338,6 +338,56 @@ mustOk('whodas', '4'.repeat(12), '48/48')
 mustOk('lsas', '0'.repeat(48), '0/144')
 mustOk('lsas', '3'.repeat(48), '144/144')
 
+// MDQ: пункты 1–14 да/нет, пункт 15 — 4 градации; положительный скрининг = ≥7 + кластер + ≥2
+{
+  const t = allTests.find((x) => x.id === 'mdq')!
+  if ((t.options?.length ?? 0) !== 2) fail(`mdq: общие options должны быть Да/Нет, сейчас ${t.options?.length}`)
+  if (!t.optionsByItem?.[14] || t.optionsByItem[14]!.length !== 4) {
+    fail(`mdq: пункт 15 должен иметь 4 варианта, сейчас ${t.optionsByItem?.[14]?.length}`)
+  }
+  const html = buildBlankHtml(t, defaultDoctor)
+  const choiceBlocks = html.split('class="blank-opts"')
+  if (choiceBlocks.length !== 16) fail(`mdq blank: ожидалось 15 блоков ответов, получили ${choiceBlocks.length - 1}`)
+  for (let i = 1; i <= 14; i++) {
+    const block = choiceBlocks[i] || ''
+    if (!block.includes('Нет') || !block.includes('Да')) fail(`mdq blank пункт ${i}: нет Да/Нет`)
+    if (block.includes('Умеренные') || block.includes('Серьёзные')) fail(`mdq blank пункт ${i}: лишние 4 градации`)
+  }
+  const last = choiceBlocks[15] || ''
+  for (const lab of ['Нет проблем', 'Незначительные', 'Умеренные', 'Серьёзные']) {
+    if (!last.includes(lab)) fail(`mdq blank пункт 15: нет «${lab}»`)
+  }
+  if ((last.split('blank-choice').length - 1) !== 4) {
+    fail(`mdq blank пункт 15: ожидалось 4 варианта, получили ${last.split('blank-choice').length - 1}`)
+  }
+
+  const neg = calculateFromString(t, '0'.repeat(15))
+  if (!neg.ok) fail(`mdq all no: ${neg.text}`)
+  else if (!/отрицательн/i.test(neg.text) || !neg.text.includes('0/13')) fail(`mdq all no: ${neg.text}`)
+  else if (neg.level !== 'low') fail(`mdq all no level: ${neg.level}`)
+
+  const pos = calculateFromString(t, '1'.repeat(14) + '2')
+  if (!pos.ok) fail(`mdq positive: ${pos.text}`)
+  else if (!/положительн/i.test(pos.text) || pos.level !== 'high') fail(`mdq positive: ${pos.text} / ${pos.level}`)
+  else {
+    const v = deriveVisualResult(t, pos, Array(14).fill(1).concat(2))
+    if (!/положительн/i.test(v.verdict)) fail(`mdq visual positive: ${v.verdict}`)
+    if (v.metrics?.length !== 3) fail(`mdq visual metrics: ${v.metrics?.length}`)
+  }
+
+  const noCluster = calculateFromString(t, '1'.repeat(13) + '03')
+  if (!noCluster.ok) fail(`mdq no cluster: ${noCluster.text}`)
+  else if (!/отрицательн/i.test(noCluster.text) || !noCluster.text.includes('нужно «да»')) {
+    fail(`mdq no cluster: ${noCluster.text}`)
+  }
+
+  const minor = calculateFromString(t, '1'.repeat(14) + '1')
+  if (!minor.ok) fail(`mdq minor: ${minor.text}`)
+  else if (!/отрицательн/i.test(minor.text) || !minor.text.includes('незначительные')) {
+    fail(`mdq minor: ${minor.text}`)
+  }
+}
+
 // PID-5
 {
   const t = allTests.find((x) => x.id === 'pid5bf')!

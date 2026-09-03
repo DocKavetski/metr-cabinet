@@ -41,6 +41,11 @@ export interface TestConfig {
   kind: TestKind
   questions?: string[]
   options?: Option[]
+  /**
+   * Варианты на конкретный пункт. Если элемент задан — он важнее `options`.
+   * Нужно, когда у шкалы смешанные ответы (например MDQ: да/нет и 4 градации в конце).
+   */
+  optionsByItem?: Array<Option[] | undefined>
   items?: BdiItem[]
   interpretation?: InterpretationRule[]
   /** Строка или объект с текстом и уровнем (для цветной полоски результата) */

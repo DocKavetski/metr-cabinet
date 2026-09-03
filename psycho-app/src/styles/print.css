@@ -304,6 +304,31 @@
     padding-top: 0.1rem;
   }
 
+  .blank-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.18rem;
+    margin-right: 0.7rem;
+    white-space: nowrap;
+  }
+
+  .blank-choice .blank-circle {
+    margin-right: 0;
+  }
+
+  .blank-item-wide {
+    grid-template-columns: 1.6rem 1fr;
+  }
+
+  .blank-item-wide .blank-opts {
+    grid-column: 2;
+    white-space: normal;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.15rem;
+    padding-top: 0.2rem;
+  }
+
   .blank-circle {
     display: inline-flex;
     align-items: center;
