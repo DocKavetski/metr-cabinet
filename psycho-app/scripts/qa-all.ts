@@ -7,7 +7,7 @@ import { buildBlankHtml } from '../src/lib/blank'
 import { isFreeOfficialBlank } from '../src/data/freeBlanks'
 import { getSpecialist, specialists } from '../src/data/specialists'
 import { calculateFromString, scoreAq10, scoreAq50, scoreFsfi } from '../src/lib/scoring'
-import { formatSummary } from '../src/lib/summaryTemplates'
+import { formatSummary, sanitizeSummaryResult } from '../src/lib/summaryTemplates'
 import { deriveVisualResult } from '../src/lib/visualResult'
 import { expectedLength, getDigitRange, optionValue } from '../src/lib/utils'
 import type { TestConfig } from '../src/types'
@@ -388,6 +388,48 @@ mustOk('lsas', '3'.repeat(48), '144/144')
     'ASQ:',
   ]) {
     if (!summary.includes(needle)) fail(`summary missing «${needle}»\n${summary}`)
+  }
+}
+
+// Сводка без рекомендаций обратиться к специалисту
+{
+  const cases: Array<{ in: string; out: string; forbid?: string }> = [
+    {
+      in: '16 баллов — Выраженная дневная сонливость; рекомендуется консультация врача',
+      out: '16 баллов — Выраженная дневная сонливость',
+      forbid: 'консультация',
+    },
+    {
+      in: '40 баллов — Клинически значимая выраженность симптомов; рекомендуется оценка специалистом',
+      out: '40 баллов — Клинически значимая выраженность симптомов',
+      forbid: 'специалист',
+    },
+    {
+      in: '30 баллов — возможна социальная тревога — клиническая оценка',
+      out: '30 баллов — возможна социальная тревога',
+      forbid: 'клиническая оценка',
+    },
+    {
+      in: '6 баллов — Скрининговый результат ≥6 — обсуждение со специалистом',
+      out: '6 баллов — Скрининговый результат ≥6',
+      forbid: 'специалист',
+    },
+    {
+      in: 'BHS: 12/20 — умеренная. Повышенный результат требует оценки суицидального риска специалистом.',
+      out: 'BHS: 12/20 — умеренная.',
+      forbid: 'специалист',
+    },
+    {
+      in: '22 баллов — Умеренная клиническая бессонница',
+      out: '22 баллов — Умеренная клиническая бессонница',
+    },
+  ]
+  for (const c of cases) {
+    const got = sanitizeSummaryResult(c.in)
+    if (got !== c.out) fail(`sanitizeSummaryResult:\n  in:  ${c.in}\n  got: ${got}\n  exp: ${c.out}`)
+    if (c.forbid && got.toLowerCase().includes(c.forbid.toLowerCase())) {
+      fail(`sanitizeSummaryResult left advisory «${c.forbid}»: ${got}`)
+    }
   }
 }
 
