@@ -3,9 +3,6 @@
 /** SCL-90-R — отдельный модуль с вердиктом и разбором шкал */
 export { scoreScl90 } from './scl90'
 
-/** WIPPF 2.0 — профиль актуальных способностей */
-export { scoreWippf } from './wippf'
-
 export function scoreAsq(answers: number[]): string {
   const screenYes = answers.slice(0, 4).filter((v) => v === 1).length
   const acuteYes = answers[4] === 1 ? 1 : 0

@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { allTests, categoryOrder, getSpecialist, getTest, primaryIntakeTests, specialists } from '../data'
+import { allTests, categoryOrder, getTest, primaryIntakeTests, specialists } from '../data'
 import { testMatchesQuery } from '../data/search'
 import { isAnswerComplete } from '../lib/answers'
-import { printConsent } from '../lib/blank'
 import type { TestConfig } from '../types'
 
 export function Sidebar({
@@ -165,14 +164,6 @@ export function Sidebar({
         })}
       </div>
       <div className="sidebar-foot">
-        <button
-          type="button"
-          className="sidebar-consent-btn"
-          onClick={() => printConsent(getSpecialist(specialistId))}
-          title="Информированное добровольное согласие"
-        >
-          Согласие
-        </button>
         <span className="sidebar-foot-meta">
           {searching ? `${totalShown} из ${allTests.length}` : `${allTests.length} шкал · свёртка категорий`}
         </span>
