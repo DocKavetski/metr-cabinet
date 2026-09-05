@@ -9,7 +9,6 @@ import { sexologyTests } from './sexology'
 import { suicideTests } from './suicide'
 import { cognitiveTests } from './cognitive'
 import { personalityTests } from './personality'
-import { wippfTests } from './wippf'
 import { substanceTests } from './substance'
 import { eatingSocialPanicTests } from './eating_social_panic'
 import { dissociationFunctionTests } from './dissociation_function'
@@ -52,7 +51,6 @@ export const allTests: TestConfig[] = [
   ...suicideTests,
   ...cognitiveTests,
   ...personalityTests,
-  ...wippfTests,
 ]
 
 export { specialists, defaultSpecialistId, getSpecialist } from './specialists'

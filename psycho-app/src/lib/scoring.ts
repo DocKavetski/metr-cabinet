@@ -24,7 +24,6 @@ export {
   scoreFsfi,
   scoreHbi19,
   scoreScl90,
-  scoreWippf,
 } from './scorers'
 
 function interpret(test: TestConfig, total: number): CalcOk {

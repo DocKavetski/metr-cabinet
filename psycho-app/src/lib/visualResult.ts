@@ -1,7 +1,6 @@
 import type { Level, TestConfig } from '../types'
 import type { CalcOk } from './scoring'
 import { computeScl90, type Scl90Report } from './scl90'
-import { computeWippf, type WippfReport } from './wippf'
 
 export interface VisualMetric {
   name: string
@@ -15,8 +14,6 @@ export interface VisualItem {
   value: string
   hint?: string
   level?: Level
-  /** Для шкальных баров (0–1) */
-  ratio?: number
 }
 
 export interface VisualResultModel {
@@ -29,8 +26,6 @@ export interface VisualResultModel {
   footnote?: string
   /** Полный SCL-отчёт — для расширенной сетки шкал */
   scl90?: Scl90Report
-  /** WIPPF 2.0 — группы шкал и агрегаты */
-  wippf?: WippfReport
 }
 
 const LEVEL_DETAIL: Record<Level, string> = {
@@ -219,64 +214,6 @@ export function deriveVisualResult(test: TestConfig, res: CalcOk, answers?: numb
       footnote:
         'Ориентиры: <0,7 — норма; ≥0,7 — повышено; ≥1,5 — высоко. Ответы 1–5 → шкала 0–4. Не заменяет диагноз.',
       scl90: report,
-    }
-  }
-
-  // WIPPF 2.0 — профиль актуальных способностей
-  if (test.id === 'wippf' && answers && answers.length >= 88) {
-    const report = computeWippf(answers)
-    const conflictTop = [...report.conflict].sort((a, b) => b.score - a.score)[0]
-    return {
-      level: report.level,
-      verdict: report.verdict,
-      detail: report.conclusion,
-      metrics: [
-        {
-          name: 'Крайние',
-          value: String(report.extremes.length),
-          hint: `↑${report.high.length} / ↓${report.low.length} из 29`,
-          level: report.extremes.length >= 8 ? 'high' : report.extremes.length <= 2 ? 'low' : 'moderate',
-        },
-        {
-          name: 'Конфликт',
-          value: conflictTop ? `${conflictTop.code} ${conflictTop.score}` : '—',
-          hint: conflictTop ? conflictTop.name : undefined,
-          level: conflictTop?.level,
-        },
-        {
-          name: 'a / r / k',
-          value: report.agg
-            .filter((x) => ['a', 'r', 'k'].includes(x.id))
-            .map((x) => x.value)
-            .join('/'),
-          hint: 'нормы: поведение / ожидания / идеалы',
-        },
-        {
-          name: 'e / w / i',
-          value: report.agg
-            .filter((x) => ['e', 'w', 'i'].includes(x.id))
-            .map((x) => x.value)
-            .join('/'),
-          hint: 'отношения: к себе / к другим / идеал',
-        },
-      ],
-      focus: report.extremes.slice(0, 10).map((s) => ({
-        label: `${s.code} · ${s.name}`,
-        value: `${s.score}/12`,
-        hint: s.interpretation,
-        level: s.level,
-        ratio: (s.score - 3) / 9,
-      })),
-      items: report.scales.map((s) => ({
-        label: s.code,
-        value: String(s.score),
-        hint: `${s.flag} · ${s.name}`,
-        level: s.level,
-        ratio: (s.score - 3) / 9,
-      })),
-      footnote:
-        '3–5 — слабо; 6–9 — баланс; 10–12 — выражено. Низкий/высокий балл — полюса, не «плохо/хорошо». Не заменяет клинический разбор.',
-      wippf: report,
     }
   }
 
