@@ -7,7 +7,7 @@ import {
   buildFreeOfficialTableBlank,
   phqDifficultyExtra,
 } from './officialBlank'
-import { escapeHtml, optionLabel, optionValue, todayRu } from './utils'
+import { escapeHtml, hasPerItemOptions, optionLabel, optionValue, optionsForItem, todayRu } from './utils'
 
 function doctorFooter(specialist: Specialist): string {
   return `<div class="blank-footer">
@@ -19,6 +19,7 @@ function doctorFooter(specialist: Specialist): string {
 export function prefersMatrixLayout(test: TestConfig, questionCount: number, optionCount: number): boolean {
   if (test.blankLayout === 'matrix') return true
   if (test.blankLayout === 'list') return false
+  if (hasPerItemOptions(test)) return false
   if (test.kind === 'scl90') return true
   return questionCount >= 20 && optionCount >= 2 && optionCount <= 10
 }
@@ -43,6 +44,30 @@ function header(test: TestConfig, layout: 'matrix' | 'list' | 'items' | 'clinici
 
 function circles(values: number[]): string {
   return values.map((v) => `<span class="blank-circle"><i></i>${v}</span>`).join('')
+}
+
+function itemHasWordLabels(opts: Option[]): boolean {
+  return opts.some((o) => typeof o === 'object' && optionLabel(o) !== String(optionValue(o)))
+}
+
+/** Подписи у кружков (Да/Нет, градации проблем) — без цифр в кружке */
+function labeledChoices(opts: Option[]): string {
+  return opts
+    .map((o) => {
+      const lab = shortOptLabel(o)
+      return `<span class="blank-choice"><span class="blank-circle"><i></i></span>${escapeHtml(lab)}</span>`
+    })
+    .join('')
+}
+
+function itemOptionMarks(opts: Option[]): string {
+  if (itemHasWordLabels(opts)) return labeledChoices(opts)
+  return circles(opts.map(optionValue))
+}
+
+function itemNeedsWideOpts(opts: Option[]): boolean {
+  if (opts.length > 2) return true
+  return opts.some((o) => typeof o === 'object' && shortOptLabel(o).length > 12)
 }
 
 function shortOptLabel(o: Option): string {
@@ -244,25 +269,28 @@ export function buildBlankHtml(test: TestConfig, specialist: Specialist = getSpe
 
   const questions = test.questions || []
   const opts = test.options || [0, 1, 2, 3]
+  const mixed = hasPerItemOptions(test)
 
-  if (prefersMatrixLayout(test, questions.length, opts.length)) {
+  if (!mixed && prefersMatrixLayout(test, questions.length, opts.length)) {
     return buildMatrixBlank(test, questions, opts, specialist)
   }
 
-  const values = opts.map(optionValue)
   const rows = questions
-    .map(
-      (q, i) => `<div class="blank-item">
+    .map((q, i) => {
+      const itemOpts = mixed ? optionsForItem(test, i) : opts
+      const wide = mixed && itemNeedsWideOpts(itemOpts)
+      const marks = mixed ? itemOptionMarks(itemOpts) : circles(itemOpts.map(optionValue))
+      return `<div class="blank-item${wide ? ' blank-item-wide' : ''}">
         <div class="blank-qnum">${i + 1}.</div>
         <div class="blank-qtext">${escapeHtml(q)}</div>
-        <div class="blank-opts">${circles(values)}</div>
-      </div>`,
-    )
+        <div class="blank-opts">${marks}</div>
+      </div>`
+    })
     .join('')
 
   return `<div class="blank-sheet">
     ${header(test, 'list')}
-    ${scaleLegend(test, opts)}
+    ${mixed ? '' : scaleLegend(test, opts)}
     ${rows}
     ${doctorFooter(specialist)}
   </div>`

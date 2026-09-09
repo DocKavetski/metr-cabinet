@@ -1,6 +1,7 @@
 import type { Level, TestConfig } from '../types'
 import type { CalcOk } from './scoring'
 import { computeScl90, type Scl90Report } from './scl90'
+import { computeMdq } from './scorers'
 
 export interface VisualMetric {
   name: string
@@ -214,6 +215,66 @@ export function deriveVisualResult(test: TestConfig, res: CalcOk, answers?: numb
       footnote:
         'Ориентиры: <0,7 — норма; ≥0,7 — повышено; ≥1,5 — высоко. Ответы 1–5 → шкала 0–4. Не заменяет диагноз.',
       scl90: report,
+    }
+  }
+
+  if (test.id === 'mdq' && answers && answers.length >= 15) {
+    const r = computeMdq(answers)
+    const unmet: VisualItem[] = []
+    if (!r.metSymptoms) {
+      unmet.push({
+        label: 'Симптомы',
+        value: `${r.symptomYes}/13`,
+        hint: 'нужно ≥7 ответов «да»',
+        level: 'moderate',
+      })
+    }
+    if (!r.metCluster) {
+      unmet.push({
+        label: 'Один период',
+        value: 'нет',
+        hint: 'несколько симптомов должны совпадать по времени',
+        level: 'moderate',
+      })
+    }
+    if (!r.metImpairment) {
+      unmet.push({
+        label: 'Проблемы',
+        value: r.impairmentLabel,
+        hint: 'нужны умеренные или серьёзные',
+        level: 'moderate',
+      })
+    }
+    return {
+      level: r.level,
+      verdict: r.positive
+        ? 'Скрининг положительный — нужна оценка на биполярное расстройство'
+        : 'Скрининг отрицательный',
+      detail: r.positive
+        ? 'Выполнены все три критерия MDQ: ≥7 симптомов, они совпадали по времени, проблемы умеренные или серьёзные.'
+        : 'По критериям Hirschfeld нужны одновременно ≥7 пунктов «да», совпадение симптомов по времени и умеренные либо серьёзные проблемы.',
+      metrics: [
+        {
+          name: 'Симптомы',
+          value: `${r.symptomYes}/13`,
+          hint: r.metSymptoms ? 'порог ≥7 выполнен' : 'нужно ≥7',
+          level: r.metSymptoms ? 'high' : 'low',
+        },
+        {
+          name: 'Одновременно',
+          value: r.clustered ? 'да' : 'нет',
+          hint: 'несколько симптомов в один период',
+          level: r.metCluster ? 'high' : 'low',
+        },
+        {
+          name: 'Проблемы',
+          value: r.impairmentLabel,
+          hint: 'пункт 15',
+          level: r.metImpairment ? 'high' : 'low',
+        },
+      ],
+      focus: r.positive ? undefined : unmet.length ? unmet : undefined,
+      footnote: 'MDQ — скрининг, не диагноз. Положительный результат: ≥7 «да» + один период + умеренные/серьёзные проблемы.',
     }
   }
 

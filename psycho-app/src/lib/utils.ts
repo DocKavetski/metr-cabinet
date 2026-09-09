@@ -16,6 +16,19 @@ export function optionLabel(opt: Option): string {
   return typeof opt === 'object' ? opt.label : String(opt)
 }
 
+/** Варианты ответа на пункт: свой набор или общие `options`. */
+export function optionsForItem(test: TestConfig, index: number): Option[] {
+  const per = test.optionsByItem?.[index]
+  if (per?.length) return per
+  if (test.kind === 'asq') return [0, 1]
+  if (test.options?.length) return test.options
+  return [0, 1, 2, 3]
+}
+
+export function hasPerItemOptions(test: TestConfig): boolean {
+  return Boolean(test.optionsByItem?.some((opts) => opts && opts.length > 0))
+}
+
 export function getDigitRange(test: TestConfig): { min: number; max: number } {
   if (test.digitMin !== undefined && test.digitMax !== undefined) {
     return { min: test.digitMin, max: test.digitMax }

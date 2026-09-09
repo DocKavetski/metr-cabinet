@@ -16,6 +16,7 @@ export interface CalcErr {
 export type CalcResult = CalcOk | CalcErr
 
 export {
+  computeMdq,
   scoreAq10,
   scoreAq50,
   scoreAsq,
@@ -23,6 +24,7 @@ export {
   scoreCypat,
   scoreFsfi,
   scoreHbi19,
+  scoreMdq,
   scoreScl90,
 } from './scorers'
 
