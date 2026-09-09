@@ -245,14 +245,19 @@ export function deriveVisualResult(test: TestConfig, res: CalcOk, answers?: numb
         level: 'moderate',
       })
     }
+    const onlyImpairmentMissing = !r.positive && r.metSymptoms && r.metCluster && !r.metImpairment
     return {
       level: r.level,
       verdict: r.positive
         ? 'Скрининг положительный — нужна оценка на биполярное расстройство'
-        : 'Скрининг отрицательный',
+        : onlyImpairmentMissing
+          ? `Скрининг отрицательный — в пункте 15 «${r.impairmentLabel}»`
+          : 'Скрининг отрицательный',
       detail: r.positive
         ? 'Выполнены все три критерия MDQ: ≥7 симптомов, они совпадали по времени, проблемы умеренные или серьёзные.'
-        : 'По критериям Hirschfeld нужны одновременно ≥7 пунктов «да», совпадение симптомов по времени и умеренные либо серьёзные проблемы.',
+        : onlyImpairmentMissing
+          ? `Пункты 1–14 выполнены, но пункт 15 — не «Да/Нет». Сейчас «${r.impairmentLabel}»; для положительного скрининга нужны «Умеренные» или «Серьёзные».`
+          : 'По критериям Hirschfeld нужны одновременно ≥7 пунктов «да», совпадение симптомов по времени и умеренные либо серьёзные проблемы.',
       metrics: [
         {
           name: 'Симптомы',
@@ -269,12 +274,13 @@ export function deriveVisualResult(test: TestConfig, res: CalcOk, answers?: numb
         {
           name: 'Проблемы',
           value: r.impairmentLabel,
-          hint: 'пункт 15',
+          hint: r.metImpairment ? 'пункт 15 · порог выполнен' : 'пункт 15 · нужны умеренные/серьёзные',
           level: r.metImpairment ? 'high' : 'low',
         },
       ],
       focus: r.positive ? undefined : unmet.length ? unmet : undefined,
-      footnote: 'MDQ — скрининг, не диагноз. Положительный результат: ≥7 «да» + один период + умеренные/серьёзные проблемы.',
+      footnote:
+        'MDQ — скрининг, не диагноз. Положительный: ≥7 «да» (1–13) + «да» в пункте 14 + умеренные/серьёзные в пункте 15. Цифра 1 в пункте 15 = незначительные, не «да».',
     }
   }
 

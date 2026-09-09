@@ -185,11 +185,18 @@ export function computeMdq(answers: number[]): MdqReport {
   const metImpairment = impairment >= 2
   const positive = metSymptoms && metCluster && metImpairment
   const level: Level = positive ? 'high' : metSymptoms ? 'moderate' : 'low'
+  // Пункт 15 — не Да/Нет: 0 нет / 1 незначительные / 2 умеренные / 3 серьёзные.
+  // Строка из одних «1» даёт незначительные проблемы → скрининг отрицательный.
+  let headline = 'скрининг отрицательный'
+  if (positive) headline = 'скрининг положительный'
+  else if (metSymptoms && metCluster && !metImpairment) {
+    headline = `скрининг отрицательный — пункт 15 «${impairmentLabel}», нужны умеренные или серьёзные`
+  }
   const text =
-    `MDQ: ${symptomYes}/13 — ${positive ? 'скрининг положительный' : 'скрининг отрицательный'}. ` +
+    `MDQ: ${symptomYes}/13 — ${headline}. ` +
     `Симптомов «да» ${symptomYes}/13 (${metSymptoms ? 'порог ≥7 выполнен' : 'нужно ≥7'}); ` +
     `несколько симптомов в один период: ${clustered ? 'да' : 'нет'}${metCluster ? '' : ' (нужно «да»)'}; ` +
-    `проблемы: ${impairmentLabel}${metImpairment ? '' : ' (нужны умеренные или серьёзные)'}.`
+    `проблемы (пункт 15): ${impairmentLabel}${metImpairment ? '' : ' (нужны умеренные или серьёзные, не «да»)'}.`
   return {
     symptomYes,
     clustered,
