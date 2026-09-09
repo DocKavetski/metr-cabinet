@@ -386,6 +386,12 @@ mustOk('lsas', '3'.repeat(48), '144/144')
   if (!minor.ok) fail(`mdq minor: ${minor.text}`)
   else if (!/отрицательн/i.test(minor.text) || !minor.text.includes('незначительные')) {
     fail(`mdq minor: ${minor.text}`)
+  } else if (!minor.text.includes('пункт 15')) {
+    fail(`mdq minor should call out пункт 15: ${minor.text}`)
+  } else {
+    const v = deriveVisualResult(t, minor, Array(14).fill(1).concat(1))
+    if (!/пункт 15|незначительн/i.test(v.verdict)) fail(`mdq visual minor: ${v.verdict}`)
+    if (!/не «Да\/Нет»|Умеренные|Серьёзные/i.test(v.detail || '')) fail(`mdq visual minor detail: ${v.detail}`)
   }
 }
 
