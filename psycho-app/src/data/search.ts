@@ -14,6 +14,20 @@ const ALIAS_GROUPS: { keys: string[]; testIds: string[] }[] = [
   { keys: ['травм', 'птср', 'ptsd', 'ace'], testIds: ['pcl5', 'ace', 'ctq'] },
   { keys: ['биполяр', 'мани'], testIds: ['hcl33', 'mdq', 'ymrs'] },
   { keys: ['приём', 'скрининг', 'intake'], testIds: ['phq9', 'gad7', 'asq', 'isi', 'audit'] },
+  {
+    keys: [
+      'беремен',
+      'послерод',
+      'перинатал',
+      'epds',
+      'эдинбург',
+      'токофоб',
+      'страх родов',
+      'бондинг',
+      'родов',
+    ],
+    testIds: ['epds', 'praqr2', 'wdeqa', 'pass', 'pbq', 'citybits'],
+  },
 ]
 
 const extraById = new Map<string, string>()

@@ -13,6 +13,7 @@ import { substanceTests } from './substance'
 import { eatingSocialPanicTests } from './eating_social_panic'
 import { dissociationFunctionTests } from './dissociation_function'
 import { traumaTests } from './trauma'
+import { perinatalTests } from './perinatal'
 import type { TestConfig } from '../types'
 
 export const categoryOrder = [
@@ -25,6 +26,7 @@ export const categoryOrder = [
   'ПТСР',
   'ОКР',
   'Травма',
+  'Беременность / послеродовый',
   'Зависимости',
   'Пищевое поведение',
   'Диссоциация',
@@ -45,6 +47,7 @@ export const allTests: TestConfig[] = [
   ...autismTests,
   ...ptsdOcdTests,
   ...traumaTests,
+  ...perinatalTests,
   ...substanceTests,
   ...dissociationFunctionTests,
   ...sexologyTests,

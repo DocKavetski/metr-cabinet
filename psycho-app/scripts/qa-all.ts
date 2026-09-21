@@ -315,6 +315,24 @@ mustOk('csbi13', '5'.repeat(13), '65/65')
 mustOk('cypat', '1'.repeat(11), '11/55')
 mustOk('cypat', '5'.repeat(11), '55/55')
 
+// —— Перинатальные шкалы ——
+// EPDS: reverse (0-based) 2,4–9 — для минимума на reverse нужен вариант «3»
+mustOk('epds', '0030333333', '0/30')
+mustOk('epds', '0030333333', 'низкая вероятность')
+mustOk('epds', '3303000000', '30/30')
+mustOk('epds', '3303000000', 'вероятная депрессия')
+// пункт 10 > 0 (reverse: индекс 0 → балл 3)
+mustOk('epds', '0030333330', 'пункт 10')
+mustOk('praqr2', '1'.repeat(10), '10/50')
+mustOk('praqr2', '5'.repeat(10), '50/50')
+mustOk('wdeqa', '0'.repeat(33), /W-DEQ-A: \d+\/165/)
+mustOk('pass', '0'.repeat(31), '0/93')
+mustOk('pass', '3'.repeat(31), '93/93')
+mustOk('pass', '1'.repeat(26) + '0'.repeat(5), '26/93') // cut-off
+mustOk('pbq', '0'.repeat(25), /PBQ: \d+\/125/)
+mustOk('citybits', '0'.repeat(29), '0/60')
+mustOk('citybits', '0'.repeat(29), 'Критерий A')
+
 // ACE
 mustOk('ace', '0'.repeat(10), '0/10')
 mustOk('ace', '1'.repeat(10), '10/10')
